@@ -36,6 +36,28 @@ export const tableRegistry = {
       { key: 'startValue', label: 'Value', type: 'number' },
       { key: 'expirationDate', label: 'Expires', type: 'date' }
     ]
+  },
+  contacts: {
+    model: schema.contact,
+    label: 'Contacts',
+    columns: [
+      { key: 'name', label: 'Name', type: 'text' },
+      { key: 'email', label: 'Email', type: 'text' },
+      { key: 'phone', label: 'Phone', type: 'text' },
+      { key: 'companyId', label: 'Company', type: 'select' }
+    ]
+  },
+  transactions: {
+    model: schema.transaction,
+    label: 'Transactions',
+    columns: [
+      { key: 'transactionTypeId', label: 'Type', type: 'select' },
+      { key: 'value', label: 'Value', type: 'number' },
+      { key: 'companyId', label: 'Company', type: 'select' },
+      { key: 'date', label: 'Date', type: 'date' },
+      { key: 'buildingId', label: 'Building', type: 'select' },
+      { key: 'document', label: 'Document', type: 'text' }
+    ]
   }
 } as const;
 

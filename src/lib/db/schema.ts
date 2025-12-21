@@ -45,7 +45,19 @@ export const contact = pgTable('contact', {
   id: serial('id').primaryKey(),
   name: text('name').notNull(),
   email: text('email'),
+  phone: text('phone'),
   role: text('role'),
   companyId: integer('company_id').references(() => company.id).notNull(),
+  obs: text('obs'),
+});
+
+export const transaction = pgTable('transaction', {
+  id: serial('id').primaryKey(),
+  transactionTypeId: integer('transaction_type_id').references(() => transactionType.id).notNull(),
+  value: numeric('value', { precision: 12, scale: 2 }).notNull(),
+  companyId: integer('company_id').references(() => company.id).notNull(),
+  date: date('date').notNull(),
+  buildingId: integer('building_id').references(() => building.id).notNull(),
+  document: text('document').notNull(),
   obs: text('obs'),
 });
