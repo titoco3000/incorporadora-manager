@@ -1,64 +1,58 @@
-<script lang="ts">
-  export let data: any[];
-  export let columns: { key: string; label: string; type: 'text' | 'number' | 'boolean' | 'date' }[];
-  export let tableName: string;
+<script>
+  import { invalidateAll } from '$app/navigation';
+  export let rows = [];
+  export let columns = [];
+  export let tableSlug = '';
 
-  async function updateRow(id: number, field: string, value: any) {
-    await fetch(`/api/table/${tableName}`, {
+  async function updateField(id, key, value) {
+    await fetch(`/api/table/${tableSlug}`, {
       method: 'PATCH',
-      body: JSON.stringify({ id, field, value }),
+      body: JSON.stringify({ id, [key]: value })
     });
   }
 
-  async function deleteRow(id: number) {
-    if (!confirm('Are you sure?')) return;
-    await fetch(`/api/table/${tableName}`, {
+  async function deleteRow(id) {
+    if (!confirm('Delete this row?')) return;
+    await fetch(`/api/table/${tableSlug}`, {
       method: 'DELETE',
-      body: JSON.stringify({ id }),
+      body: JSON.stringify({ id })
     });
-    // Refresh page or filter local state
-    location.reload();
+    invalidateAll();
   }
 </script>
 
-<table class="excel-table">
+<table class="admin-table">
   <thead>
     <tr>
-      {#each columns as col} <th>{col.label}</th> {/each}
+      {#each columns as col} 
+        <th>{col.label}</th> 
+      {/each}
       <th>Actions</th>
     </tr>
   </thead>
   <tbody>
-    {#each data as row}
+    {#each rows as row}
       <tr>
         {#each columns as col}
           <td>
             {#if col.type === 'boolean'}
               <input type="checkbox" checked={row[col.key]} 
-                on:change={(e) => updateRow(row.id, col.key, e.currentTarget.checked)} />
-            {:else if col.type === 'number'}
-              <input type="number" value={row[col.key]} 
-                on:blur={(e) => updateRow(row.id, col.key, parseFloat(e.currentTarget.value))} />
-            {:else if col.type === 'date'}
-              <input type="date" value={row[col.key]} 
-                on:blur={(e) => updateRow(row.id, col.key, e.currentTarget.value)} />
+                on:change={(e) => updateField(row.id, col.key, e.target.checked)} />
             {:else}
-              <input type="text" value={row[col.key]} 
-                on:blur={(e) => updateRow(row.id, col.key, e.currentTarget.value)} />
+              <input type={col.type} value={row[col.key]} 
+                on:blur={(e) => updateField(row.id, col.key, e.target.value)} />
             {/if}
           </td>
         {/each}
-        <td>
-          <button on:click={() => deleteRow(row.id)}>Delete</button>
-        </td>
+        <td><button on:click={() => deleteRow(row.id)}>Remove</button></td>
       </tr>
     {/each}
   </tbody>
 </table>
 
 <style>
-  .excel-table { width: 100%; border-collapse: collapse; }
-  .excel-table td, .excel-table th { border: 1px solid #ccc; padding: 4px; }
-  input { border: none; width: 100%; background: transparent; }
-  input:focus { background: #fff; outline: 1px solid #007bff; }
+  .admin-table { width: 100%; border-collapse: collapse; }
+  td, th { border: 1px solid #ddd; padding: 8px; }
+  input:not([type="checkbox"]) { width: 100%; border: none; background: transparent; }
+  input:focus { outline: 1px solid blue; background: white; }
 </style>
