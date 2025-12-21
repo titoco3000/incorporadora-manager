@@ -1,4 +1,3 @@
-// src/lib/table-config.js
 import * as schema from '$lib/db/schema';
 
 export const tableRegistry = {
@@ -10,7 +9,7 @@ export const tableRegistry = {
       { key: 'isExpense', label: 'Is Expense', type: 'boolean' }
     ]
   },
-  'buildings': {
+  buildings: {
     model: schema.building,
     label: 'Buildings',
     columns: [
@@ -20,7 +19,7 @@ export const tableRegistry = {
       { key: 'height', label: 'Height', type: 'number' }
     ]
   },
-  'companies': {
+  companies: {
     model: schema.company,
     label: 'Companies',
     columns: [
@@ -29,7 +28,7 @@ export const tableRegistry = {
       { key: 'isSupplier', label: 'Supplier', type: 'boolean' }
     ]
   },
-  'contracts': {
+  contracts: {
     model: schema.contract,
     label: 'Contracts',
     columns: [
@@ -38,4 +37,6 @@ export const tableRegistry = {
       { key: 'expirationDate', label: 'Expires', type: 'date' }
     ]
   }
-};
+} as const;
+
+export type TableKey = keyof typeof tableRegistry;

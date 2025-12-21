@@ -1,14 +1,14 @@
 // src/routes/api/table/[table]/+server.ts
 import { json } from '@sveltejs/kit';
 import { db } from '$lib/db';
-import { tableRegistry } from '$lib/table-config';
+import { tableRegistry, type TableKey } from '$lib/table-config';
 import { eq } from 'drizzle-orm';
 
 export const PATCH = async ({ params, request }) => {
   try {
     const body = await request.json();
     const { id, ...updates } = body;
-    const config = tableRegistry[params.table];
+    const config = tableRegistry[params.table as TableKey];
 
     if (!config) return json({ error: 'Table not found' }, { status: 404 });
 
@@ -26,7 +26,7 @@ export const PATCH = async ({ params, request }) => {
 export const DELETE = async ({ params, request }) => {
   try {
     const { id } = await request.json();
-    const config = tableRegistry[params.table];
+    const config = tableRegistry[params.table as TableKey];
 
     if (!config) return json({ error: 'Table not found' }, { status: 404 });
 
@@ -43,7 +43,7 @@ export const DELETE = async ({ params, request }) => {
 export const POST = async ({ params, request }) => {
   try {
     const values = await request.json();
-    const config = tableRegistry[params.table];
+    const config = tableRegistry[params.table as TableKey];
 
     const result = await db.insert(config.model)
       .values(values)

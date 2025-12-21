@@ -1,9 +1,10 @@
 import { db } from '$lib/db';
-import { tableRegistry } from '$lib/table-config';
+import { tableRegistry, type TableKey } from '$lib/table-config';
+
 import { error } from '@sveltejs/kit';
 
 export const load = async ({ params }) => {
-  const config = tableRegistry[params.table];
+  const config = tableRegistry[params.table as TableKey];
   if (!config) throw error(404, 'Table not found');
 
   const rows = await db.select().from(config.model);
