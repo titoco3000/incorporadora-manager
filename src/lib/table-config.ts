@@ -69,10 +69,10 @@ type ColumnOverrides = Partial<Record<string, string>>;
 export const tableRegistry = {
   'transaction-types': {
     model: schema.transactionType,
-    label: 'Transaction Types',
+    label: 'Tipos de Transação',
     columns: autoGenerateColumns(schema.transactionType, {
       name: 'Nome',
-      isExpense: 'É Gasto'
+      isExpense: 'É Despesa'
     })
   },
   buildings: {
@@ -84,16 +84,24 @@ export const tableRegistry = {
       iptuId: 'Nº IPTU',
       terrainArea: 'Área do Terreno (m²)',
       builtArea: 'Área Construída (m²)',
-      insuranceInfo: 'Dados do Seguro',
+      insuranceInfo: 'Informações do Seguro',
       height: 'Altura (m)',
-      floorWeightCapacity: 'Capacidade do piso (ton/m²)',
+      floorWeightCapacity: 'Capacidade do Piso (ton/m²)',
+      obs: 'Observações'
     })
   },
   companies: {
     model: schema.company,
     label: 'Empresas',
     columns: autoGenerateColumns(schema.company, {
-      isSupplier: 'É Fornecedor?'
+      name: 'Nome',
+      cnpj: 'CNPJ',
+      hqAddress: 'Endereço da Sede',
+      stateId: 'Inscrição Estadual',
+      municipalityId: 'Inscrição Municipal',
+      transactionTypeId: 'Tipo de Transação',
+      isSupplier: 'É Fornecedor',
+      obs: 'Observações'
     })
   },
   contracts: {
@@ -101,15 +109,23 @@ export const tableRegistry = {
     label: 'Contratos',
     columns: autoGenerateColumns(schema.contract, {
       startDate: 'Data de Início',
+      buildingId: 'Imóvel',
+      companyId: 'Empresa',
       startValue: 'Valor Inicial',
-      expirationDate: 'Data de Expiração'
+      expirationDate: 'Data de Vencimento',
+      obs: 'Observações'
     })
   },
   contacts: {
     model: schema.contact,
     label: 'Contatos',
     columns: autoGenerateColumns(schema.contact, {
-      companyId: 'Empresa'
+      name: 'Nome',
+      email: 'E-mail',
+      phone: 'Telefone',
+      role: 'Cargo',
+      companyId: 'Empresa',
+      obs: 'Observações'
     })
   },
   transactions: {
@@ -121,7 +137,8 @@ export const tableRegistry = {
       companyId: 'Empresa',
       date: 'Data',
       buildingId: 'Imóvel',
-      document: 'Documento'
+      document: 'Documento',
+      obs: 'Observações'
     })
   }
 } as const;
