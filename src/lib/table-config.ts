@@ -11,7 +11,7 @@ export const tableRegistry = {
   },
   buildings: {
     model: schema.building,
-    label: 'Buildings',
+    label: 'Imóveis',
     columns: [
       { key: 'name', label: 'Name', type: 'text' },
       { key: 'address', label: 'Address', type: 'text' },
@@ -21,7 +21,7 @@ export const tableRegistry = {
   },
   companies: {
     model: schema.company,
-    label: 'Companies',
+    label: 'Empresas',
     columns: [
       { key: 'name', label: 'Name', type: 'text' },
       { key: 'cnpj', label: 'CNPJ', type: 'text' },
@@ -30,7 +30,7 @@ export const tableRegistry = {
   },
   contracts: {
     model: schema.contract,
-    label: 'Contracts',
+    label: 'Contratos',
     columns: [
       { key: 'startDate', label: 'Start Date', type: 'date' },
       { key: 'startValue', label: 'Value', type: 'number' },
@@ -39,7 +39,7 @@ export const tableRegistry = {
   },
   contacts: {
     model: schema.contact,
-    label: 'Contacts',
+    label: 'Contatos',
     columns: [
       { key: 'name', label: 'Name', type: 'text' },
       { key: 'email', label: 'Email', type: 'text' },
@@ -49,7 +49,7 @@ export const tableRegistry = {
   },
   transactions: {
     model: schema.transaction,
-    label: 'Transactions',
+    label: 'Transações',
     columns: [
       { key: 'transactionTypeId', label: 'Type', type: 'select' },
       { key: 'value', label: 'Value', type: 'number' },
