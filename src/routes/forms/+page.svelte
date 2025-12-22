@@ -51,7 +51,7 @@
 </script>
 
 <div class="container">
-  <h1>Management Dashboard</h1>
+  <h1>Novos Registros</h1>
 
   {#if message}
     <div class="alert {statusType}">{message}</div>
@@ -59,18 +59,18 @@
 
   <div class="form-grid">
     <section class="card">
-      <h2>New Contact</h2>
+      <h2>Novo Contato</h2>
       <form on:submit|preventDefault={(e) => handleStandardSubmit(e, 'contacts')}>
-        <label>Name</label>
+        <label>Nome</label>
         <input name="name" required />
         
         <label>Email</label>
         <input name="email" type="email" />
         
-        <label>Phone</label>
+        <label>Telefone</label>
         <input name="phone" type="phone" />
 
-        <label>Company</label>
+        <label>Empresa</label>
         <select name="companyId" required>
           <option value="">-- Select --</option>
           {#each data.companies as c}<option value={c.id}>{c.name}</option>{/each}
@@ -81,21 +81,21 @@
     </section>
 
     <section class="card">
-      <h2>New Contract</h2>
+      <h2>Novo Contrato</h2>
       <form on:submit|preventDefault={(e) => handleStandardSubmit(e, 'contracts')}>
-        <label>Start Date</label>
+        <label>Início</label>
         <input name="startDate" type="date" required />
         
-        <label>Start Value</label>
+        <label>Valor Inicial</label>
         <input name="startValue" type="number" step="0.01" required />
 
-        <label>Building</label>
+        <label>Imóvel</label>
         <select name="buildingId" required>
           <option value="">-- Select --</option>
           {#each data.buildings as b}<option value={b.id}>{b.name}</option>{/each}
         </select>
 
-        <label>Company</label>
+        <label>Cliente</label>
         <select name="companyId" required>
           <option value="">-- Select --</option>
           {#each data.companies as c}<option value={c.id}>{c.name}</option>{/each}
@@ -106,25 +106,25 @@
     </section>
 
     <section class="card">
-      <h2>New Supplier</h2>
+      <h2>Novo Fornecededor</h2>
       <form on:submit|preventDefault={(e) => handleStandardSubmit(e, 'companies', { isSupplier: true, transactionTypeId: null })}>
-        <label>Company Name</label>
+        <label>Nome</label>
         <input name="name" required />
         
         <label>CNPJ</label>
         <input name="cnpj" />
 
-        <button type="submit" class="btn-supplier">Register Supplier</button>
+        <button type="submit" class="btn-supplier">Registrar</button>
       </form>
     </section>
 
     <section class="card">
-      <h2>New Client</h2>
+      <h2>Novo Cliente</h2>
       <form on:submit|preventDefault={(e) => handleStandardSubmit(e, 'companies', { isSupplier: false, transactionTypeId: null })}>
-        <label>Client Name</label>
+        <label>Nome</label>
         <input name="name" required />
         
-        <label>HQ Address</label>
+        <label>Endereço da Sede</label>
         <input name="hqAddress" />
 
         <button type="submit" class="btn-client">Register Client</button>

@@ -1,12 +1,12 @@
-export type ColumnType = 'text' | 'number' | 'boolean' | 'date';
-
+// src/lib/types/table.ts
 export interface ColumnDef {
   key: string;
   label: string;
-  type: ColumnType;
+  type: 'text' | 'number' | 'boolean' | 'date' | 'select';
+  reference?: {
+    foreignTable: string;
+    displayColumn?: string;
+  };
 }
 
-export interface RowData {
-  id: number | string;
-  [key: string]: unknown;
-}
+export type RowData = Record<string, any>;

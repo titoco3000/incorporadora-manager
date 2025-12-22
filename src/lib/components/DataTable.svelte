@@ -1,35 +1,44 @@
 <script lang="ts">
   import { invalidateAll } from '$app/navigation';
-
   import { type ColumnDef, type RowData } from '$lib/types/table';
 
   export let rows: RowData[] = [];
-export let columns: readonly ColumnDef[] = [];
+  export let columns: readonly ColumnDef[] = [];
   export let tableSlug: string = '';
+  export let referenceData: Record<string, any[]> = {};
 
   let displayRows: RowData[] = [];
   $: displayRows = [...rows];
+
+  // Helper to get display value for foreign key
+  function getDisplayValue(refRows: any[], id: any): string {
+    if (!id) return '';
+    const item = refRows.find(r => r.id === id);
+    return item?.name || item?.title || String(id);
+  }
 
   function addEmptyRow() {
     const newRow: RowData = { id: `temp-${Date.now()}` };
 
     columns.forEach((col) => {
-      newRow[col.key] = col.type === 'boolean' ? false : '';
+      if (col.type === 'boolean') {
+        newRow[col.key] = false;
+      } else if (col.type === 'select') {
+        newRow[col.key] = null;
+      } else {
+        newRow[col.key] = '';
+      }
     });
 
     displayRows = [...displayRows, newRow];
   }
 
-  async function handleEdit(
-    row: RowData,
-    key: string,
-    value: unknown
-  ) {
+  async function handleEdit(row: RowData, key: string, value: unknown) {
     const isTemp = String(row.id).startsWith('temp-');
 
     const payload: Record<string, unknown> = {
       ...row,
-      [key]: value
+      [key]: value === '' ? null : value
     };
 
     if (isTemp) delete payload.id;
@@ -40,7 +49,7 @@ export let columns: readonly ColumnDef[] = [];
       const res = await fetch(`/api/table/${tableSlug}`, {
         method,
         body: JSON.stringify(
-          isTemp ? payload : { id: row.id, [key]: value }
+          isTemp ? payload : { id: row.id, [key]: value === '' ? null : value }
         )
       });
 
@@ -105,6 +114,24 @@ export let columns: readonly ColumnDef[] = [];
                   )
                 }
               />
+            {:else if col.type === 'select'}
+              <select
+                value={row[col.key] ?? ''}
+                on:change={(e) =>
+                  handleEdit(
+                    row,
+                    col.key,
+                    (e.target as HTMLSelectElement).value || null
+                  )
+                }
+              >
+                <option value="">-- Select --</option>
+                {#each referenceData[col.key] || [] as refItem}
+                  <option value={refItem.id}>
+                    {getDisplayValue(referenceData[col.key], refItem.id)}
+                  </option>
+                {/each}
+              </select>
             {:else}
               <input
                 type={col.type}
@@ -160,15 +187,22 @@ export let columns: readonly ColumnDef[] = [];
     background-color: #f0fff4;
   }
 
-  input:not([type='checkbox']) {
+  input:not([type='checkbox']),
+  select {
     width: 100%;
     border: none;
     background: transparent;
     height: 100%;
+    padding: 4px;
   }
 
-  input:focus {
+  input:focus,
+  select:focus {
     outline: 2px solid #007bff;
     background: white;
+  }
+
+  select {
+    cursor: pointer;
   }
 </style>

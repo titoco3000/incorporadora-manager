@@ -7,5 +7,6 @@
 <DataTable 
   rows={data.rows} 
   columns={data.columns} 
-  tableSlug={data.tableSlug} 
+  tableSlug={data.tableSlug}
+  referenceData={data.referenceData}
 />
