@@ -33,15 +33,44 @@
     displayRows = [...displayRows, newRow];
   }
 
+  // Helper to convert value based on column type
+  function convertValue(col: ColumnDef, value: any): any {
+    if (value === '' || value === null || value === undefined) {
+      return null;
+    }
+
+    if (col.type === 'number') {
+      const num = Number(value);
+      return isNaN(num) ? null : num;
+    }
+
+    if (col.type === 'boolean') {
+      return Boolean(value);
+    }
+
+    return value;
+  }
+
   async function handleEdit(row: RowData, key: string, value: unknown) {
     const isTemp = String(row.id).startsWith('temp-');
+    const col = columns.find(c => c.key === key);
+    const convertedValue = col ? convertValue(col, value) : value;
 
     const payload: Record<string, unknown> = {
       ...row,
-      [key]: value === '' ? null : value
+      [key]: convertedValue
     };
 
-    if (isTemp) delete payload.id;
+    if (isTemp) {
+      delete payload.id;
+      
+      // Convert all values in payload for POST
+      columns.forEach(c => {
+        if (payload[c.key] !== undefined) {
+          payload[c.key] = convertValue(c, payload[c.key]);
+        }
+      });
+    }
 
     const method: 'POST' | 'PATCH' = isTemp ? 'POST' : 'PATCH';
 
@@ -49,7 +78,7 @@
       const res = await fetch(`/api/table/${tableSlug}`, {
         method,
         body: JSON.stringify(
-          isTemp ? payload : { id: row.id, [key]: value === '' ? null : value }
+          isTemp ? payload : { id: row.id, [key]: convertedValue }
         )
       });
 
@@ -134,9 +163,10 @@
               </select>
             {:else}
               <input
-                type={col.type}
+                type={col.type === 'number' ? 'number' : col.type === 'date' ? 'date' : 'text'}
                 value={String(row[col.key] ?? '')}
                 placeholder={col.label}
+                step={col.type === 'number' ? 'any' : undefined}
                 on:blur={(e) =>
                   handleEdit(
                     row,
