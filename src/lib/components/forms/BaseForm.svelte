@@ -59,6 +59,7 @@
     gap: 1rem;
     margin-bottom: 1.5rem;
     align-items: flex-start;
+    container-type: inline-size;
   }
 
   .form-actions {
