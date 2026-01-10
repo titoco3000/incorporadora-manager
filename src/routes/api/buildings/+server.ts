@@ -10,6 +10,7 @@ export const GET: RequestHandler = async () => {
     const buildings = await db.select().from(building);
     return json(buildings);
   } catch (error) {
+    console.error(error);
     return json({ error: 'Failed to fetch buildings' }, { status: 500 });
   }
 };
@@ -20,6 +21,7 @@ export const POST: RequestHandler = async ({ request }) => {
     const [newBuilding] = await db.insert(building).values(body).returning();
     return json(newBuilding, { status: 201 });
   } catch (error) {
+    console.error(error);
     return json({ error: 'Failed to create building' }, { status: 500 });
   }
 };
@@ -45,6 +47,7 @@ export const PATCH: RequestHandler = async ({ request }) => {
 
     return json(updated);
   } catch (error) {
+    console.error(error);
     return json({ error: 'Failed to update building' }, { status: 500 });
   }
 };
@@ -68,6 +71,7 @@ export const DELETE: RequestHandler = async ({ request }) => {
 
     return json({ success: true });
   } catch (error) {
+    console.error(error);
     return json({ error: 'Failed to delete building' }, { status: 500 });
   }
 };

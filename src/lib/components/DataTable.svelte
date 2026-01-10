@@ -1,6 +1,7 @@
 <script lang="ts">
   import { invalidateAll } from '$app/navigation';
   import { type ColumnDef, type RowData } from '$lib/types/table';
+  import { api } from '$lib/api';
 
   export let rows: RowData[] = [];
   export let columns: readonly ColumnDef[] = [];
@@ -9,6 +10,19 @@
 
   let displayRows: RowData[] = [];
   $: displayRows = [...rows];
+
+  // Track unsaved temp rows
+  let tempRowData = new Map<string, RowData>();
+
+  // Map table slugs to API methods
+  const apiMap: Record<string, any> = {
+    'transaction-types': api.transactionTypes,
+    'buildings': api.buildings,
+    'companies': api.companies,
+    'contacts': api.contacts,
+    'contracts': api.contracts,
+    'transactions': api.transactions
+  };
 
   // Helper to get display value for foreign key
   function getDisplayValue(refRows: any[], id: any): string {
@@ -19,7 +33,6 @@
 
   function addEmptyRow() {
     const newRow: RowData = { id: `temp-${Date.now()}` };
-
     columns.forEach((col) => {
       if (col.type === 'boolean') {
         newRow[col.key] = false;
@@ -29,8 +42,8 @@
         newRow[col.key] = '';
       }
     });
-
     displayRows = [...displayRows, newRow];
+    tempRowData.set(newRow.id as string, { ...newRow });
   }
 
   // Helper to convert value based on column type
@@ -38,75 +51,105 @@
     if (value === '' || value === null || value === undefined) {
       return null;
     }
-
     if (col.type === 'number') {
       const num = Number(value);
       return isNaN(num) ? null : num;
     }
-
     if (col.type === 'boolean') {
       return Boolean(value);
     }
-
     return value;
+  }
+
+  // Update temp row data without saving
+  function updateTempRow(rowId: string, key: string, value: unknown) {
+    const currentData = tempRowData.get(rowId) || {};
+    const col = columns.find(c => c.key === key);
+    const convertedValue = col ? convertValue(col, value) : value;
+    
+    tempRowData.set(rowId, {
+      ...currentData,
+      [key]: convertedValue
+    });
+
+    // Update display
+    displayRows = displayRows.map(r => 
+      r.id === rowId ? { ...r, [key]: value } : r
+    );
+  }
+
+  // Save a temp row
+  async function saveTempRow(rowId: string) {
+    const apiClient = apiMap[tableSlug];
+    if (!apiClient) {
+      console.error(`No API client found for table: ${tableSlug}`);
+      return;
+    }
+
+    const rowData = tempRowData.get(rowId);
+    if (!rowData) return;
+
+    // Prepare full payload for POST
+    const payload: Record<string, unknown> = {};
+    columns.forEach(c => {
+      payload[c.key] = convertValue(c, rowData[c.key]);
+    });
+
+    try {
+      await apiClient.post(payload);
+      tempRowData.delete(rowId);
+      invalidateAll();
+    } catch (e) {
+      console.error('Save failed:', e);
+      alert('Failed to save. Please check all required fields are filled.');
+    }
   }
 
   async function handleEdit(row: RowData, key: string, value: unknown) {
     const isTemp = String(row.id).startsWith('temp-');
-    const col = columns.find(c => c.key === key);
-    const convertedValue = col ? convertValue(col, value) : value;
-
-    const payload: Record<string, unknown> = {
-      ...row,
-      [key]: convertedValue
-    };
-
+    
+    // For temp rows, just update the local data
     if (isTemp) {
-      delete payload.id;
-      
-      // Convert all values in payload for POST
-      columns.forEach(c => {
-        if (payload[c.key] !== undefined) {
-          payload[c.key] = convertValue(c, payload[c.key]);
-        }
-      });
+      updateTempRow(row.id as string, key, value);
+      return;
     }
 
-    const method: 'POST' | 'PATCH' = isTemp ? 'POST' : 'PATCH';
+    // For existing rows, patch immediately
+    const col = columns.find(c => c.key === key);
+    const convertedValue = col ? convertValue(col, value) : value;
+    const apiClient = apiMap[tableSlug];
+    
+    if (!apiClient) {
+      console.error(`No API client found for table: ${tableSlug}`);
+      return;
+    }
 
     try {
-      const res = await fetch(`/api/table/${tableSlug}`, {
-        method,
-        body: JSON.stringify(
-          isTemp ? payload : { id: row.id, [key]: convertedValue }
-        )
-      });
-
-      if (res.ok) {
-        invalidateAll();
-      } else {
-        const err = await res.json();
-        console.error('Save failed:', err.error);
-      }
+      await apiClient.patch(row.id, { [key]: convertedValue });
+      invalidateAll();
     } catch (e) {
-      console.error('Network error', e);
+      console.error('Save failed:', e);
     }
   }
 
   async function deleteRow(id: RowData['id']) {
     if (String(id).startsWith('temp-')) {
       displayRows = displayRows.filter((r) => r.id !== id);
+      tempRowData.delete(id as string);
       return;
     }
 
     if (!confirm('Delete this row?')) return;
 
-    await fetch(`/api/table/${tableSlug}`, {
-      method: 'DELETE',
-      body: JSON.stringify({ id })
-    });
-
-    invalidateAll();
+    try {
+      await fetch(`/api/table/${tableSlug}`, {
+        method: 'DELETE',
+        body: JSON.stringify({ id })
+      });
+      invalidateAll();
+    } catch (e) {
+      console.error('Delete failed:', e);
+    }
   }
 </script>
 
@@ -125,10 +168,10 @@
       <th>Actions</th>
     </tr>
   </thead>
-
   <tbody>
     {#each displayRows as row (row.id)}
-      <tr class:is-temp={String(row.id).startsWith('temp-')}>
+      {@const isTemp = String(row.id).startsWith('temp-')}
+      <tr class:is-temp={isTemp}>
         {#each columns as col}
           <td>
             {#if col.type === 'boolean'}
@@ -178,9 +221,14 @@
             {/if}
           </td>
         {/each}
-        <td>
-          <button on:click={() => deleteRow(row.id)}>
-            Remove
+        <td class="actions-cell">
+          {#if isTemp}
+            <button class="save-btn" on:click={() => saveTempRow(row.id as string)}>
+              Save
+            </button>
+          {/if}
+          <button class="delete-btn" on:click={() => deleteRow(row.id)}>
+            {isTemp ? 'Cancel' : 'Remove'}
           </button>
         </td>
       </tr>
@@ -192,7 +240,6 @@
   .controls {
     margin-bottom: 1rem;
   }
-
   .add-btn {
     background: #28a745;
     color: white;
@@ -201,22 +248,38 @@
     cursor: pointer;
     border-radius: 4px;
   }
-
   .admin-table {
     width: 100%;
     border-collapse: collapse;
   }
-
   td,
   th {
     border: 1px solid #ddd;
     padding: 8px;
   }
-
   .is-temp {
-    background-color: #f0fff4;
+    background-color: #fff3cd;
   }
-
+  .actions-cell {
+    white-space: nowrap;
+  }
+  .save-btn {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 4px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-right: 4px;
+  }
+  .delete-btn {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 4px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+  }
   input:not([type='checkbox']),
   select {
     width: 100%;
@@ -225,13 +288,11 @@
     height: 100%;
     padding: 4px;
   }
-
   input:focus,
   select:focus {
     outline: 2px solid #007bff;
     background: white;
   }
-
   select {
     cursor: pointer;
   }

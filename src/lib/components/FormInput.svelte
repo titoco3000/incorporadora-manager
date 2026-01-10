@@ -1,8 +1,9 @@
 <script lang="ts">
   import { onMount, getContext } from 'svelte';
   import { type Writable } from 'svelte/store';
-  import { fetchCached } from '$lib/stores/apiCache';
   import type { Company, Building, TransactionType } from '$lib/types/api';
+	import { api } from '$lib/api';
+  
 
   type InputKind = 'text' 
         | 'obs' 
@@ -93,13 +94,13 @@ $: if (onValueChange) {
       loading = true;
       
       if (type === 'supplier') {
-        suppliers = await fetchCached<Company[]>('/api/companies?isSupplier=true');
+        suppliers = await api.companies.get({isSupplier:true});
       } else if (type === 'company') {
-        companies = await fetchCached<Company[]>('/api/companies');
+        companies = await api.companies.get()
       } else if (type === 'building') {
-        buildings = await fetchCached<Building[]>('/api/buildings');
+        buildings = await api.buildings.get()
       } else if (type === 'transactionType') {
-        transactionTypes = await fetchCached<TransactionType[]>('/api/transaction-types');
+        transactionTypes = await api.transactionTypes.get()
       }
     } catch (e) {
       error = e instanceof Error ? e.message : 'Erro ao carregar dados';
