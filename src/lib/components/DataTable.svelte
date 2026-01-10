@@ -11,10 +11,8 @@
   let displayRows: RowData[] = [];
   $: displayRows = [...rows];
 
-  // Track unsaved temp rows
   let tempRowData = new Map<string, RowData>();
 
-  // Map table slugs to API methods
   const apiMap: Record<string, any> = {
     'transaction-types': api.transactionTypes,
     'buildings': api.buildings,
@@ -24,7 +22,6 @@
     'transactions': api.transactions
   };
 
-  // Helper to get display value for foreign key
   function getDisplayValue(refRows: any[], id: any): string {
     if (!id) return '';
     const item = refRows.find(r => r.id === id);
@@ -46,7 +43,6 @@
     tempRowData.set(newRow.id as string, { ...newRow });
   }
 
-  // Helper to convert value based on column type
   function convertValue(col: ColumnDef, value: any): any {
     if (value === '' || value === null || value === undefined) {
       return null;
@@ -61,7 +57,6 @@
     return value;
   }
 
-  // Update temp row data without saving
   function updateTempRow(rowId: string, key: string, value: unknown) {
     const currentData = tempRowData.get(rowId) || {};
     const col = columns.find(c => c.key === key);
@@ -72,13 +67,11 @@
       [key]: convertedValue
     });
 
-    // Update display
     displayRows = displayRows.map(r => 
       r.id === rowId ? { ...r, [key]: value } : r
     );
   }
 
-  // Save a temp row
   async function saveTempRow(rowId: string) {
     const apiClient = apiMap[tableSlug];
     if (!apiClient) {
@@ -89,7 +82,6 @@
     const rowData = tempRowData.get(rowId);
     if (!rowData) return;
 
-    // Prepare full payload for POST
     const payload: Record<string, unknown> = {};
     columns.forEach(c => {
       payload[c.key] = convertValue(c, rowData[c.key]);
@@ -106,25 +98,20 @@
   }
 
   async function handleEdit(row: RowData, key: string, value: unknown) {
-    // 1. Find column and convert the incoming value immediately
     const col = columns.find(c => c.key === key);
     const convertedValue = col ? convertValue(col, value) : value;
 
-    // 2. GUARD: Only proceed if the value actually changed
-    // This prevents unnecessary API calls on simple blur/unfocus
     if (row[key] === convertedValue) {
       return;
     }
 
     const isTemp = String(row.id).startsWith('temp-');
     
-    // For temp rows, update local data
     if (isTemp) {
       updateTempRow(row.id as string, key, convertedValue);
       return;
     }
 
-    // For existing rows, patch immediately
     const apiClient = apiMap[tableSlug];
     if (!apiClient) {
       console.error(`No API client found for table: ${tableSlug}`);
@@ -148,11 +135,11 @@
 
     if (!confirm('Delete this row?')) return;
 
+    const apiClient = apiMap[tableSlug];
+    if (!apiClient) return;
+
     try {
-      await fetch(`/api/table/${tableSlug}`, {
-        method: 'DELETE',
-        body: JSON.stringify({ id })
-      });
+      await apiClient.delete(id as number);
       invalidateAll();
     } catch (e) {
       console.error('Delete failed:', e);
