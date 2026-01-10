@@ -1,12 +1,13 @@
 <script lang="ts">
   import { onMount, getContext } from 'svelte';
-  import { writable, type Writable } from 'svelte/store';
+  import { type Writable } from 'svelte/store';
   import { fetchCached } from '$lib/stores/apiCache';
   import type { Company, Building, TransactionType } from '$lib/types/api';
 
   type InputKind = 'text' 
         | 'obs' 
         | 'value' 
+        | 'number' 
         | 'email' 
         | 'phone'  
         | 'supplier' 
@@ -25,6 +26,7 @@
   export let minwidth: number = 200;
   export let grow: number = 1;
   export let formId: symbol | undefined = undefined;
+  export let onValueChange: ((value: any) => void) | undefined = undefined;
 
   let value: string | number = '';
 
@@ -35,6 +37,11 @@
     formDataStore = getContext(formId);
   }
 
+  // Expose value setter for external control
+  export function setValue(newValue: string | number) {
+    value = newValue;
+  }
+
   // Sync value with formData store
   $: if (formDataStore && name) {
     formDataStore.update(data => ({
@@ -42,6 +49,29 @@
       [name]: value
     }));
   }
+
+  // Reactive lookup for the full object
+$: selectedObject = (() => {
+  if (!value) return value;
+
+  switch (type) {
+    case 'supplier':
+      return suppliers.find(s => s.id === value);
+    case 'company':
+      return companies.find(c => c.id === value);
+    case 'building':
+      return buildings.find(b => b.id === value);
+    case 'transactionType':
+      return transactionTypes.find(t => t.id === value);
+    default:
+      return value; // For text, email, cnpj, etc., just return the string
+  }
+})();
+
+// Trigger the callback with the full object
+$: if (onValueChange) {
+  onValueChange(selectedObject);
+}
 
   // Options for select dropdowns
   let companies: Company[] = [];
@@ -199,6 +229,18 @@
         type="text"
         value={value ? formatValue(value) : ''}
         on:input={handleValueInput}
+        on:blur={handleBlur}
+        {placeholder}
+        {required}
+        {disabled}
+        {name}
+        class="field-input {validationClass}"
+      />
+
+    {:else if type === 'number'}
+      <input
+        type="number"
+        bind:value
         on:blur={handleBlur}
         {placeholder}
         {required}

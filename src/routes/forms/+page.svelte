@@ -1,9 +1,9 @@
 <script>
+	import BuildingForm from "$lib/components/forms/BuildingForm.svelte";
 	import TransactionForm from "$lib/components/forms/TransactionForm.svelte";
 
 </script>
-<div><TransactionForm/></div>
-<div><TransactionForm/></div>
+<div><BuildingForm/></div>
 
 <style>
 	div{
