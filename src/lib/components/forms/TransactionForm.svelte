@@ -1,6 +1,6 @@
 <script lang="ts">
-  import FormInput from '../FormInput.svelte';
-  import BaseForm from './BaseForm.svelte';
+  import FormInput from './components/FormInput.svelte';
+  import BaseForm from './components/BaseForm.svelte';
 
   function onSupplierUpdate(value:String){
     console.log(value);
