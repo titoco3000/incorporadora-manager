@@ -1,3 +1,4 @@
+//src/lib/db/schema.ts
 import { pgTable, serial, text, doublePrecision, boolean, integer, date, numeric } from 'drizzle-orm/pg-core';
 
 export const transactionType = pgTable('transaction_type', {

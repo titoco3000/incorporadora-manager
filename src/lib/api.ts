@@ -23,7 +23,7 @@ async function apiFetch(path: string, method = 'GET', body?: any) {
     if (method === 'GET' && !path.includes('?')) {
         cache.set(path, data);
     } else if (method !== 'GET') {
-        // Invalidate cache on mutations
+        console.log("Invalidate cache on mutations")
         cache.delete(path.split('?')[0]);
     }
 
