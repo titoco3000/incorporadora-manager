@@ -106,19 +106,26 @@
   }
 
   async function handleEdit(row: RowData, key: string, value: unknown) {
+    // 1. Find column and convert the incoming value immediately
+    const col = columns.find(c => c.key === key);
+    const convertedValue = col ? convertValue(col, value) : value;
+
+    // 2. GUARD: Only proceed if the value actually changed
+    // This prevents unnecessary API calls on simple blur/unfocus
+    if (row[key] === convertedValue) {
+      return;
+    }
+
     const isTemp = String(row.id).startsWith('temp-');
     
-    // For temp rows, just update the local data
+    // For temp rows, update local data
     if (isTemp) {
-      updateTempRow(row.id as string, key, value);
+      updateTempRow(row.id as string, key, convertedValue);
       return;
     }
 
     // For existing rows, patch immediately
-    const col = columns.find(c => c.key === key);
-    const convertedValue = col ? convertValue(col, value) : value;
     const apiClient = apiMap[tableSlug];
-    
     if (!apiClient) {
       console.error(`No API client found for table: ${tableSlug}`);
       return;
