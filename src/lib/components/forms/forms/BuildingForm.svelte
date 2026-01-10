@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { api } from '$lib/api';
 	import type { Building } from '$lib/types/api'; 
-	import FormInput from '../FormInput.svelte';
-	import BaseForm from './BaseForm.svelte';
+	import FormInput from '../components/FormInput.svelte';
+	import BaseForm from '../components/BaseForm.svelte';
 
 
 	async function handleSubmit(formData: Record<string, any>) {
