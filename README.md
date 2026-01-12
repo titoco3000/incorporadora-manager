@@ -27,7 +27,7 @@ Instale deps:
 
 ## Deploy
 
-    Ao fazer deploy na branch main, já faz deploy automatico.
+Ao fazer deploy na branch main, já faz deploy automatico.
 
 ## Modificando a DB
 
