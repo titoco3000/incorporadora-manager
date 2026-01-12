@@ -3,7 +3,7 @@
 	import ClientForm from "$lib/components/forms/forms/ClientForm.svelte";
 	import ContactForm from "$lib/components/forms/forms/ContactForm.svelte";
 	import SupplierForm from "$lib/components/forms/forms/SupplierForm.svelte";
-	import TransactionForm from "$lib/components/forms/TransactionForm.svelte";
+	import TransactionForm from "$lib/components/forms/forms/TransactionForm.svelte";
 
 </script>
 <div><BuildingForm/></div>
