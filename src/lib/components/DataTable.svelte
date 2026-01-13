@@ -286,6 +286,7 @@
   select:focus {
     outline: 2px solid #007bff;
     background: white;
+    color: #000;
   }
   select {
     cursor: pointer;

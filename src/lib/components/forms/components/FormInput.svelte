@@ -408,7 +408,7 @@ $: if (onValueChange) {
   .field-label {
     font-size: 0.875rem;
     font-weight: 500;
-    color: #374151;
+    color: var(--text-color-2);
     display: block;
   }
 
@@ -428,12 +428,12 @@ $: if (onValueChange) {
 
   .field-input:focus {
     outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    border-color: #156fff;
+    box-shadow: 0 0 0 3px rgba(8, 103, 255, 0.1);
   }
 
   .field-input:disabled {
-    background-color: #f3f4f6;
+    background-color: #b9bdc5;
     color: #9ca3af;
     cursor: not-allowed;
   }
@@ -469,14 +469,14 @@ $: if (onValueChange) {
   }
 
   .field-error {
-    color: #dc2626;
+    color: #ff6868;
     font-size: 0.75rem;
     margin-top: 0.25rem;
     display: block;
   }
 
   .validation-error {
-    color: #dc2626;
+    color: #ff6868;
     font-size: 0.75rem;
     display: block;
     margin-top: 0.25rem;
