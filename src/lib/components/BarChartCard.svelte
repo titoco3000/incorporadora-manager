@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { Progressbar } from 'flowbite-svelte';
 	import type { ApexOptions } from 'apexcharts';
 	import { Chart } from '@flowbite-svelte-plugins/chart';
 
@@ -15,7 +14,10 @@
 			type: 'bar',
 			height: 400,
 			width: '90%',
-			background: 'transparent'
+			background: 'transparent',
+			toolbar: {
+				show: false
+			}
 		},
 		plotOptions: {
 			bar: {
