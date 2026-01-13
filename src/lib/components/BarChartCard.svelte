@@ -1,47 +1,73 @@
 <script lang="ts">
-  import { Progressbar } from "flowbite-svelte";
+	import { Progressbar } from 'flowbite-svelte';
+	import type { ApexOptions } from 'apexcharts';
+	import { Chart } from '@flowbite-svelte-plugins/chart';
 
 	export let title: string = '';
+	const options: ApexOptions = {
+		series: [
+			{
+				name: 'Resultado',
+				data: [120, -80, 150, -40, 60]
+			}
+		],
+		chart: {
+			type: 'bar',
+			height: 400,
+			width: '90%',
+			background: 'transparent'
+		},
+		plotOptions: {
+			bar: {
+				horizontal: true,
+				barHeight: '60%'
+			}
+		},
+		colors: [
+			function ({ value }) {
+				return value >= 0 ? '#16BDCA' : '#F05252';
+			}
+		],
+		dataLabels: {
+			enabled: true,
+			formatter: (val) => `${val}k`,
+			style: {
+				colors: ['#ffffff']
+			}
+		},
+		xaxis: {
+			categories: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai'],
+			min: -200,
+			max: 200,
+			axisBorder: { show: false },
+			axisTicks: { show: false },
+			labels: {
+				style: {
+					colors: '#ffffff'
+				}
+			}
+		},
+		yaxis: {
+			labels: {
+				style: {
+					colors: '#ffffff'
+				}
+			}
+		},
+		grid: {
+			borderColor: '#374151'
+		},
+		tooltip: {
+			theme: 'dark'
+		}
+	};
 </script>
 
 <div class="card">
 	<h2>{title}</h2>
-	<!-- <div>
-		<div class="my-4">
-			<div class="mb-1 text-base font-medium dark:text-white">Gray</div>
-			<Progressbar progress="50" color="gray" size="h-2.5" />
-		</div>
-
-		<div class="my-4">
-			<div class="mb-1 text-base font-medium text-blue-700 dark:text-blue-500">Blue</div>
-			<Progressbar progress="50" color="blue" />
-		</div>
-
-		<div class="my-4">
-			<div class="mb-1 text-base font-medium text-red-700 dark:text-red-500">Red</div>
-			<Progressbar progress="50" color="red" />
-		</div>
-
-		<div class="my-4">
-			<div class="mb-1 text-base font-medium text-green-700 dark:text-green-500">Green</div>
-			<Progressbar progress="50" color="green" />
-		</div>
-
-		<div class="mb-1 text-base font-medium text-yellow-700 dark:text-yellow-500">Yellow</div>
-		<div class="my-4">
-			<Progressbar progress="50" color="yellow" />
-		</div>
-
-		<div class="mb-1 text-base font-medium text-indigo-700 dark:text-indigo-400">Indigo</div>
-		<div class="my-4">
-			<Progressbar progress="50" color="indigo" />
-		</div>
-
-		<div class="mb-1 text-base font-medium text-purple-700 dark:text-purple-400">Purple</div>
-		<div class="my-4">
-			<Progressbar progress="50" color="purple" />
-		</div>
-	</div> -->
+	<div class=" w-[100%]">
+		<Chart {options} class="flex items-center justify-center" />
+	</div>
 </div>
 
 <style>
@@ -59,11 +85,5 @@
 		color: #fff;
 		font-size: 2rem;
 		padding-top: 0.95em;
-		padding-bottom: 0.72em;
-	}
-
-	.card img {
-		width: 260px;
-		height: auto;
 	}
 </style>
