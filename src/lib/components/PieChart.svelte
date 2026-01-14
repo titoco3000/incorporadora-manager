@@ -34,16 +34,21 @@
 		labels: ['Direct', 'Organic search', 'Referrals'],
 		dataLabels: {
 			enabled: true,
+			formatter: function (val: number) {
+				return val.toFixed(1) + '%';
+			},
 			style: {
 				fontFamily: 'Inter, sans-serif',
+				fontSize: '18px'
 			}
 		},
 		legend: {
 			position: 'right',
 			fontFamily: 'Inter, sans-serif',
-      labels: {
-        colors: "#ffffff",
-      }
+			fontSize: '14px',
+			labels: {
+				colors: '#ffffff'
+			}
 		},
 		yaxis: {
 			labels: {
@@ -116,18 +121,16 @@
 				>Last 7 days<ChevronDownOutline class="m-2.5 ms-1.5 w-2.5" /></Button
 			>
 			<Dropdown simple class="w-40" offset={-6}>
-				<DropdownItem>Yesterday</DropdownItem>
-				<DropdownItem>Today</DropdownItem>
-				<DropdownItem>Last 7 days</DropdownItem>
-				<DropdownItem>Last 30 days</DropdownItem>
-				<DropdownItem>Last 90 days</DropdownItem>
+				<DropdownItem>Últimos 6 meses</DropdownItem>
+				<DropdownItem>Último ano</DropdownItem>
+				<DropdownItem>Sempre</DropdownItem>
 			</Dropdown>
 		</div>
 	</div>
 </Card>
 
 <style>
-  :global(.apexcharts-canvas .apexcharts-legend-text) {
-    color: #ffffff !important;
-  }
+	:global(.apexcharts-canvas .apexcharts-legend-text) {
+		color: #ffffff !important;
+	}
 </style>
