@@ -112,18 +112,24 @@
 		</div>
 	</div>
 
-	<Chart {options} class="pb-6" />
+	<Chart {options} class="" />
 
-	<div class="grid grid-cols-1 items-center justify-between">
-		<div class="flex items-center justify-between pt-5">
+	<div class="margin flex items-center justify-end">
+		<div class="flex items-center justify-between relative">
 			<Button
-				class="inline-flex items-center bg-transparent py-0 text-center text-sm font-medium text-white hover:bg-transparent focus:ring-transparent dark:bg-transparent dark:focus:ring-transparent"
-				>Last 7 days<ChevronDownOutline class="m-2.5 ms-1.5 w-2.5" /></Button
+				class="inline-flex items-center bg-transparent p-2 text-center text-base font-medium text-white hover:bg-transparent focus:ring-transparent dark:bg-transparent dark:focus:ring-transparent"
+				>Últimos 6 meses<ChevronDownOutline class="m-2.5 ms-1.5 w-2.5" /></Button
 			>
-			<Dropdown simple class="w-40" offset={-6}>
-				<DropdownItem>Últimos 6 meses</DropdownItem>
-				<DropdownItem>Último ano</DropdownItem>
-				<DropdownItem>Sempre</DropdownItem>
+			<Dropdown simple class="w-40 py-2" offset={-6}>
+				<DropdownItem class="z-1000 text-black text-base hover:bg-gray-200 hover:text-black"
+					>Últimos 6 meses</DropdownItem
+				>
+				<DropdownItem class="z-1000 text-black text-base hover:bg-gray-200 hover:text-black"
+					>Último ano</DropdownItem
+				>
+				<DropdownItem class="z-1000 text-black text-base hover:bg-gray-200 hover:text-black"
+					>Sempre</DropdownItem
+				>
 			</Dropdown>
 		</div>
 	</div>
@@ -132,5 +138,10 @@
 <style>
 	:global(.apexcharts-canvas .apexcharts-legend-text) {
 		color: #ffffff !important;
+	}
+
+	.margin {
+		margin-top: -10%;
+		margin-right: 1%;
 	}
 </style>

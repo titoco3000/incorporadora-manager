@@ -1,36 +1,37 @@
-@source "../node_modules/@flowbite-svelte-plugins/chart/dist";
+@source '../node_modules/@flowbite-svelte-plugins/chart/dist';
 
-body{
-    --bg-color: #ffffff;
-    --bg-color-2: #898989;
-    --bg-color-3: #555555;
-    --black: #191A21;
-    --light-black: #373841;
-    
-    --text-color-1: #1a1923;
-    --text-color-2: #d4edfc;
-    --text-color-3: #ffffff;
+body {
+	--bg-color: #ffffff;
+	--bg-color-2: #898989;
+	--bg-color-3: #555555;
+	--black: #191a21;
+	--light-black: #373841;
 
-    --main-text-color: #FFF;
+	--text-color-1: #1a1923;
+	--text-color-2: #d4edfc;
+	--text-color-3: #ffffff;
 
-    background-color: var(--black);    
-    margin: 0;
-    overflow: clip auto;
-    font-family: Arial, Helvetica, sans-serif;
+	--main-text-color: #fff;
+
+	background-color: var(--black);
+	margin: 0;
+	overflow: clip auto;
+	font-family: Arial, Helvetica, sans-serif;
 }
 
-*{
-    color: var(--main-text-color);
-    box-sizing: border-box;
-    margin: 0;
+* {
+	box-sizing: border-box;
+	margin: 0;
 }
 
-button, input[type="submit"], input[type="button"]{
-    cursor: pointer;
-    background-color: transparent;
-    border: 1px solid var(--main-text-color);
+button,
+input[type='submit'],
+input[type='button'] {
+	cursor: pointer;
+	background-color: transparent;
+	border: 1px solid var(--main-text-color);
 }
 
-p{
-    margin: 1em 0;
+p {
+	margin: 1em 0;
 }
