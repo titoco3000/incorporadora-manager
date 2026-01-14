@@ -1,9 +1,10 @@
 <script>
   import DataTable from '$lib/components/DataTable.svelte';
+  import Header from '$lib/components/Header.svelte';
   export let data;
 </script>
 
-<h1>{data.label}</h1>
+<Header title={data.label} />
 <DataTable 
   rows={data.rows} 
   columns={data.columns} 

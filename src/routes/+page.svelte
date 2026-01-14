@@ -2,11 +2,10 @@
 	import Card from '$lib/components/Card.svelte';
 	import BarChartCard from '$lib/components/BarChartCard.svelte';
 	import ReportCard from '$lib/components/ReportCard.svelte';
+	import Header from '$lib/components/Header.svelte';
 </script>
 
-<header>
-	<h1>Dashboard</h1>
-</header>
+<Header title="Dashboard" />
 <main>
 	<div class="esquerda">
 		<div class="superior">
@@ -19,21 +18,6 @@
 </main>
 
 <style>
-	header {
-		background-color: var(--light-black);
-		width: 100%;
-		height: 7.875rem;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		margin-top: 2rem;
-	}
-	header h1 {
-		color: #fff;
-		text-align: center;
-		font-size: 4rem;
-	}
-
 	main {
 		display: flex;
 		justify-content: center;
