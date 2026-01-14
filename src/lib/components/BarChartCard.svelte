@@ -34,7 +34,8 @@
 			enabled: true,
 			formatter: (val) => `${val}k`,
 			style: {
-				colors: ['#ffffff']
+				colors: ['#ffffff'],
+				fontSize: "18px",
 			}
 		},
 		xaxis: {
@@ -45,14 +46,16 @@
 			axisTicks: { show: false },
 			labels: {
 				style: {
-					colors: '#ffffff'
+					colors: '#ffffff',
+					fontSize: "14px",
 				}
 			}
 		},
 		yaxis: {
 			labels: {
 				style: {
-					colors: '#ffffff'
+					colors: '#ffffff',
+					fontSize: "14px",
 				}
 			}
 		},
