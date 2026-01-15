@@ -51,6 +51,12 @@
 			const num = Number(value);
 			return isNaN(num) ? null : num;
 		}
+		if (col.type === 'date') {
+			const [day, month, year] = value.split('/').map(Number);
+			const date = new Date(year, month - 1, day);
+
+			return date.toString() === 'Invalid Date' ? null : value;
+		}
 		if (col.type === 'boolean') {
 			return Boolean(value);
 		}
@@ -143,6 +149,13 @@
 			console.error('Delete failed:', e);
 		}
 	}
+
+	function maskDateBR(value: string) {
+		let v = value.replace(/\D/g, '');
+		if (v.length > 2) v = v.slice(0, 2) + '/' + v.slice(2);
+		if (v.length > 5) v = v.slice(0, 5) + '/' + v.slice(5, 9);
+		return v;
+	}
 </script>
 
 <main>
@@ -176,7 +189,7 @@
 								<select
 									value={row[col.key] ?? ''}
 									on:change={(e) =>
-										handleEdit(row, col.key, (e.target as HTMLSelectElement).value || null)}
+										handleEdit(row, col.key, e.target.value === '' ? null : Number(e.target.value))}
 								>
 									<option value="">-- Select --</option>
 									{#each referenceData[col.key] || [] as refItem}
@@ -185,9 +198,21 @@
 										</option>
 									{/each}
 								</select>
+							{:else if col.type === 'date'}
+								<input
+									type="text"
+									placeholder={col.label}
+									value={String(row[col.key] ?? '')}
+									pattern="^\d{2}/\d{2}/\d{4}$"
+									on:change={(e) => handleEdit(row, col.key, (e.target as HTMLInputElement).value)}
+									on:input={(e) => {
+										const input = e.target as HTMLInputElement;
+										input.value = maskDateBR(input.value);
+									}}
+								/>
 							{:else}
 								<input
-									type={col.type === 'number' ? 'number' : col.type === 'date' ? 'date' : 'text'}
+									type={col.type === 'number' ? 'number' : 'text'}
 									value={String(row[col.key] ?? '')}
 									placeholder={col.label}
 									step={col.type === 'number' ? 'any' : undefined}
@@ -213,10 +238,9 @@
 </main>
 
 <style>
-
-  main {
-    padding: 2.5vw;
-  }
+	main {
+		padding: 2.5vw;
+	}
 
 	.controls {
 		margin-bottom: 1.5rem;
@@ -238,7 +262,7 @@
 	th {
 		border: 1px solid #ddd;
 		padding: 8px;
-    background-color: var(--light-black);
+		background-color: var(--light-black);
 	}
 	.is-temp {
 		background-color: #fff3cd;

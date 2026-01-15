@@ -22,7 +22,10 @@ export const load = async ({ params }) => {
   // Load reference data for foreign key dropdowns
   const referenceData: Record<string, any[]> = {};
   
+  let i: number = 0;
   for (const col of config.columns) {
+    if (col.label === "Data") config.columns[i].type = "date"; 
+
     if (col.type === 'select' && col.reference) {
       // Determine which table this references
       const refTableName = col.reference.foreignTable;
@@ -33,6 +36,7 @@ export const load = async ({ params }) => {
         referenceData[col.key] = refRows;
       }
     }
+    i++;
   }
   
   return {
