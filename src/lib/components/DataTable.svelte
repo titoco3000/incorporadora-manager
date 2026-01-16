@@ -2,6 +2,7 @@
 	import { invalidateAll } from '$app/navigation';
 	import { type ColumnDef, type RowData } from '$lib/types/table';
 	import { api } from '$lib/api';
+	import { onMount } from 'svelte';
 
 	export let rows: RowData[] = [];
 	export let columns: readonly ColumnDef[] = [];
@@ -156,6 +157,33 @@
 		if (v.length > 5) v = v.slice(0, 5) + '/' + v.slice(5, 9);
 		return v;
 	}
+
+	function ISOToDateBR(value: string) {
+		const [year, month, day] = value.split('-')
+		return `${day}/${month}/${year}`;
+	}
+	function NumEUAToNumBR(value: string) {
+		return value.replace(',', '.');
+		
+	}
+
+	onMount(() => {
+		let i: number = 0;
+		for (let row of rows) {
+			for (let col of columns) {
+				const cellValue = row[col.key];
+				if (col.type === 'date') {
+					rows[i][col.key] = ISOToDateBR(cellValue)
+				}
+				else if (col.type === 'number') {
+					rows[i][col.key] = NumEUAToNumBR(cellValue)
+					console.log(rows[i][col.key], cellValue, col.type)
+				}
+				console.log(rows[i][col.key], cellValue, col.type)
+			}
+			i++;
+		}
+	})
 </script>
 
 <main>

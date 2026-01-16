@@ -54,7 +54,7 @@ export const POST: RequestHandler = async ({ request }) => {
 	try {
 		const body = await request.json();
 		function ParseDateBR(value: string): string {
-			const [day, month, year] = body.date.split('/').map(Number);
+			const [day, month, year] = value.split('/').map(Number);
 			const date = new Date(year, month - 1, day);
 
 			if (date.toString() === 'Invalid Date') throw new Error('invalid date');
@@ -62,24 +62,44 @@ export const POST: RequestHandler = async ({ request }) => {
 			return date.toISOString().slice(0, 10).toString();
 		}
 
-    const date = ParseDateBR(body.date)
+		const url = new URL(request.url);
+		const splittedURL = url.pathname.split('/');
+		const page = splittedURL[splittedURL.length - 1];
 
 		// Make convertions
-		const payload = {
-			transactionTypeId: Number(body.transactionTypeId),
-			value: body.value.toString(),
-			companyId: Number(body.companyId),
-			buildingId: Number(body.buildingId),
-			document: body.document,
-			obs: body.obs ?? null,
-			date
-		};
+		let payload = undefined;
+		if (page === 'transactions') {
+      const date = ParseDateBR(body.date);
+			payload = {
+				transactionTypeId: Number(body.transactionTypeId),
+				value: body.value.toString(),
+				companyId: Number(body.companyId),
+				buildingId: Number(body.buildingId),
+				document: body.document,
+				obs: body.obs ?? null,
+				date
+			};
+		} else if (page === 'contracts') {
+      const expirationDate = ParseDateBR(body.expirationDate);
+      const startDate = ParseDateBR(body.startDate);
+			payload = {
+				buildingId: Number(body.buildingId),
+				companyId: Number(body.companyId),
+				expirationDate,
+				obs: 'omin',
+				startDate,
+				startValue: body.value.toString()
+			};
+		}
 
 		// Create transaction
 		const [newTransaction] = await db.insert(transaction).values(payload).returning();
 
 		// Update company's transactionTypeId if it's a supplier
-		const [supplierCompany] = await db.select().from(company).where(eq(company.id, payload.companyId));
+		const [supplierCompany] = await db
+			.select()
+			.from(company)
+			.where(eq(company.id, payload.companyId));
 
 		if (supplierCompany?.isSupplier) {
 			await db
@@ -96,7 +116,20 @@ export const POST: RequestHandler = async ({ request }) => {
 
 export const PATCH: RequestHandler = async ({ request }) => {
 	try {
-		const body = await request.json();
+		let body = await request.json();
+		function ParseDateBR(value: string): string {
+			const [day, month, year] = value.split('/').map(Number);
+			const date = new Date(year, month - 1, day);
+
+			if (date.toString() === 'Invalid Date') throw new Error('invalid date');
+
+			return date.toISOString().slice(0, 10).toString();
+		}
+
+		if (body?.date) {
+			body['date'] = ParseDateBR(body.date);
+		}
+
 		const { id, ...data } = body;
 
 		if (!id) {
@@ -144,7 +177,7 @@ export const PATCH: RequestHandler = async ({ request }) => {
 
 		return json(updated);
 	} catch (error) {
-		return json({ error: 'Failed to update transaction' }, { status: 500 });
+		return json({ error: 'Failed to update transaction', detais: String(error) }, { status: 500 });
 	}
 };
 

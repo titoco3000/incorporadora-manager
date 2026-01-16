@@ -24,9 +24,9 @@ export const load = async ({ params }) => {
   
   let i: number = 0;
   for (const col of config.columns) {
-    if (col.label === "Data") config.columns[i].type = "date"; 
-
-    if (col.type === 'select' && col.reference) {
+    if (col.label === "Data" || col.label === 'Data de Vencimento' || col.label === 'Data de Início') config.columns[i].type = "date"; 
+    else if (col.label === "Valor" || col.label === 'Valor Inicial' ) config.columns[i].type = "number"; 
+    else if (col.type === 'select' && col.reference) {
       // Determine which table this references
       const refTableName = col.reference.foreignTable;
       const refModel = tableModels[refTableName];
