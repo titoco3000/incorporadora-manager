@@ -38,7 +38,6 @@
 	footer {
 		flex-grow: 0;
 		flex-shrink: 0;
-		background-color: var(--bg-color-2);
 	}
 
 	nav {
@@ -47,20 +46,24 @@
 
 	button {
 		display: inline-block;
-		background-color: var(--bg-color-3);
-		color: var(--text-color-3);
+		background-color: var(--light-black);
+		color: var(--main-text-color);
 		text-decoration: none;
 		padding: 0.3em;
 		display: flex;
 		gap: 0.3em;
-		margin-right: 0.2em;
+		border: none;
+		border-right: 2px solid #ffffff4d;
 	}
 
 	button:disabled {
-		background-color: var(--bg-color-1);
-		color: var(--text-color-1);
+		background-color: #FFF;
 		pointer-events: none;
 		cursor: default;
-		opacity: 0.7;
+		color: var(--black)		
+	}
+
+	nav button:last-child {
+		border-right: none;
 	}
 </style>
