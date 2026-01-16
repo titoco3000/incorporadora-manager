@@ -157,33 +157,37 @@
 		if (v.length > 5) v = v.slice(0, 5) + '/' + v.slice(5, 9);
 		return v;
 	}
+	function maskCNPJ(value: string) {
+		let v = value.replace(/[^A-Z0-9]/g, '');
+		if (v.length > 2) v = v.slice(0, 2) + '.' + v.slice(2);
+		if (v.length > 6) v = v.slice(0, 6) + '.' + v.slice(6);
+		if (v.length > 10) v = v.slice(0, 10) + '/' + v.slice(10);
+		if (v.length > 15) v = v.slice(0, 15) + '-' + v.slice(15, 17);
+		return v;
+	}
 
 	function ISOToDateBR(value: string) {
-		const [year, month, day] = value.split('-')
-		return `${day}/${month}/${year}`;
+		const [year, month, day] = value.split('-');
+		return value ? `${day}/${month}/${year}` : value;
 	}
 	function NumEUAToNumBR(value: string) {
-		return value.replace(',', '.');
-		
+		return value ? value.replace(',', '.') : value;
 	}
 
-	onMount(() => {
+	$: {
 		let i: number = 0;
 		for (let row of rows) {
 			for (let col of columns) {
 				const cellValue = row[col.key];
 				if (col.type === 'date') {
-					rows[i][col.key] = ISOToDateBR(cellValue)
+					rows[i][col.key] = ISOToDateBR(cellValue);
+				} else if (col.type === 'number') {
+					rows[i][col.key] = NumEUAToNumBR(cellValue);
 				}
-				else if (col.type === 'number') {
-					rows[i][col.key] = NumEUAToNumBR(cellValue)
-					console.log(rows[i][col.key], cellValue, col.type)
-				}
-				console.log(rows[i][col.key], cellValue, col.type)
 			}
 			i++;
 		}
-	})
+	}
 </script>
 
 <main>
@@ -236,6 +240,18 @@
 									on:input={(e) => {
 										const input = e.target as HTMLInputElement;
 										input.value = maskDateBR(input.value);
+									}}
+								/>
+							{:else if col.type === 'cnpj'}
+								<input
+									type="text"
+									placeholder={col.label}
+									value={String(row[col.key] ?? '')}
+									pattern="^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$"
+									on:change={(e) => handleEdit(row, col.key, (e.target as HTMLInputElement).value)}
+									on:input={(e) => {
+										const input = e.target as HTMLInputElement;
+										input.value = maskCNPJ(input.value);
 									}}
 								/>
 							{:else}

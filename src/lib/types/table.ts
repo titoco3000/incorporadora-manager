@@ -2,7 +2,7 @@
 export interface ColumnDef {
   key: string;
   label: string;
-  type: 'text' | 'number' | 'boolean' | 'date' | 'select';
+  type: 'text' | 'number' | 'boolean' | 'date' | 'select' | 'cnpj';
   reference?: {
     foreignTable: string;
     displayColumn?: string;

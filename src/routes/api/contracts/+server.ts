@@ -17,7 +17,27 @@ export const GET: RequestHandler = async () => {
 export const POST: RequestHandler = async ({ request }) => {
   try {
     const body = await request.json();
-    const [newContract] = await db.insert(contract).values(body).returning();
+		function ParseDateBR(value: string): string {
+			const [day, month, year] = value.split('/').map(Number);
+			const date = new Date(year, month - 1, day);
+
+			if (date.toString() === 'Invalid Date') throw new Error('invalid date');
+
+			return date.toISOString().slice(0, 10).toString();
+		}
+
+		// Make convertions
+		const startDate = ParseDateBR(body.startDate);
+		const expirationDate = ParseDateBR(body.startDate);
+		const payload = {
+			buildingId: Number(body.buildingId),
+      companyId: Number(body.companyId),
+			expirationDate,
+      startDate,
+			obs: body.obs ?? null,
+			startValue: body.startValue.toString(),
+		};
+    const [newContract] = await db.insert(contract).values(payload).returning();
     return json(newContract, { status: 201 });
   } catch (error) {
     return json({ error: 'Failed to create contract' }, { status: 500 });

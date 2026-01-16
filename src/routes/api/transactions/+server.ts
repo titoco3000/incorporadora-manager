@@ -61,11 +61,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 			return date.toISOString().slice(0, 10).toString();
 		}
-
-		const url = new URL(request.url);
-		const splittedURL = url.pathname.split('/');
-		const page = splittedURL[splittedURL.length - 1];
-
+		
 		// Make convertions
 		const date = ParseDateBR(body.date);
 		const payload = {
