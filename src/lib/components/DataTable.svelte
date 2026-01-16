@@ -2,7 +2,7 @@
 	import { invalidateAll } from '$app/navigation';
 	import { type ColumnDef, type RowData } from '$lib/types/table';
 	import { api } from '$lib/api';
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 
 	export let rows: RowData[] = [];
 	export let columns: readonly ColumnDef[] = [];
@@ -151,14 +151,16 @@
 		}
 	}
 
+	// Masks the input to format DD/MM/YYYY
 	function maskDateBR(value: string) {
 		let v = value.replace(/\D/g, '');
 		if (v.length > 2) v = v.slice(0, 2) + '/' + v.slice(2);
 		if (v.length > 5) v = v.slice(0, 5) + '/' + v.slice(5, 9);
 		return v;
 	}
+	// Masks the input to the format 00.000.000/0000-00
 	function maskCNPJ(value: string) {
-		let v = value.replace(/[^A-Z0-9]/g, '');
+		let v = value.replace(/[^A-Z0-9]/g, ''); // alfanumérico!
 		if (v.length > 2) v = v.slice(0, 2) + '.' + v.slice(2);
 		if (v.length > 6) v = v.slice(0, 6) + '.' + v.slice(6);
 		if (v.length > 10) v = v.slice(0, 10) + '/' + v.slice(10);
@@ -173,6 +175,37 @@
 	function NumEUAToNumBR(value: string) {
 		return value ? value.replace(',', '.') : value;
 	}
+
+	const columnTypeToRatioMap: Record<string, number> = {
+		numeric: 1,
+		'text-short': 1.67,
+		'text-long': 3.33,
+		date: 1.5,
+		select: 1.67,
+		boolean: 1,
+		cnpj: 2
+	};
+
+	const MIN_COL_WIDTH = 150;
+
+	let table: HTMLTableElement;
+	let tableColumns: {
+		header: HTMLTableCellElement;
+		size: string;
+	}[] = [];
+
+	let headerBeingResized: HTMLTableCellElement | null = null;
+
+	
+
+	$: gridTemplateColumns = [
+		...columns.map((col) => {
+			const ratio = columnTypeToRatioMap[col.type] ?? 1.67;
+			return `minmax(${MIN_COL_WIDTH}px, ${ratio}fr)`;
+		}),
+		// coluna de ações
+		'minmax(120px, 1fr)'
+	].join(' ');
 
 	$: {
 		let i: number = 0;
@@ -195,13 +228,13 @@
 		<button class="add-btn" on:click={addEmptyRow}> + Add New Row </button>
 	</div>
 
-	<table class="admin-table">
+	<table class="admin-table" style={`grid-template-columns: ${gridTemplateColumns};`}>
 		<thead>
 			<tr>
 				{#each columns as col}
-					<th>{col.label}</th>
+					<th>{col.label}<span class="resize-handle"></span></th>
 				{/each}
-				<th>Actions</th>
+				<th>Actions <span class="resize-handle"></span></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -301,12 +334,47 @@
 		width: 100%;
 		border-collapse: collapse;
 		color: white;
+		display: grid;
+		flex: 1;
+	}
+	thead,
+	tbody,
+	tr {
+		display: contents;
 	}
 	td,
 	th {
-		border: 1px solid #ddd;
-		padding: 8px;
 		background-color: var(--light-black);
+		border: 1px solid #ddd;
+		padding: 15px;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+	th {
+		position: sticky;
+		top: 0;
+	}
+
+	.resize-handle {
+		position: absolute;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		background: black;
+		opacity: 0;
+		width: 3px;
+		cursor: col-resize;
+	}
+
+	.resize-handle:hover,
+	/* The following selector is needed so the handle is visible during resize
+	even if the mouse isn't over the handle anymore */
+	.header--being-resized .resize-handle {
+		opacity: 0.5;
+	}
+	th:hover .resize-handle {
+		opacity: 0.3;
 	}
 	.is-temp {
 		background-color: #fff3cd;
