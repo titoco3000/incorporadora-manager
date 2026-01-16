@@ -67,30 +67,16 @@ export const POST: RequestHandler = async ({ request }) => {
 		const page = splittedURL[splittedURL.length - 1];
 
 		// Make convertions
-		let payload = undefined;
-		if (page === 'transactions') {
-      const date = ParseDateBR(body.date);
-			payload = {
-				transactionTypeId: Number(body.transactionTypeId),
-				value: body.value.toString(),
-				companyId: Number(body.companyId),
-				buildingId: Number(body.buildingId),
-				document: body.document,
-				obs: body.obs ?? null,
-				date
-			};
-		} else if (page === 'contracts') {
-      const expirationDate = ParseDateBR(body.expirationDate);
-      const startDate = ParseDateBR(body.startDate);
-			payload = {
-				buildingId: Number(body.buildingId),
-				companyId: Number(body.companyId),
-				expirationDate,
-				obs: 'omin',
-				startDate,
-				startValue: body.value.toString()
-			};
-		}
+		const date = ParseDateBR(body.date);
+		const payload = {
+			transactionTypeId: Number(body.transactionTypeId),
+			value: body.value.toString(),
+			companyId: Number(body.companyId),
+			buildingId: Number(body.buildingId),
+			document: body.document,
+			obs: body.obs ?? null,
+			date
+		};
 
 		// Create transaction
 		const [newTransaction] = await db.insert(transaction).values(payload).returning();
