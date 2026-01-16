@@ -189,23 +189,63 @@
 	const MIN_COL_WIDTH = 150;
 
 	let table: HTMLTableElement;
-	let tableColumns: {
-		header: HTMLTableCellElement;
-		size: string;
-	}[] = [];
-
+	let maxTableWidth: number | null = null;
 	let headerBeingResized: HTMLTableCellElement | null = null;
+	let columnWidths: number[] = [];
 
-	
+	function getMaxTableWidthPx(el: HTMLElement): number | null {
+		const styles = getComputedStyle(el);
+		const maxWidth = styles.maxWidth;
 
-	$: gridTemplateColumns = [
-		...columns.map((col) => {
-			const ratio = columnTypeToRatioMap[col.type] ?? 1.67;
-			return `minmax(${MIN_COL_WIDTH}px, ${ratio}fr)`;
-		}),
-		// coluna de ações
-		'minmax(120px, 1fr)'
-	].join(' ');
+		if (!maxWidth || maxWidth === 'none') {
+			return null;
+		}
+
+		return parseFloat(maxWidth);
+	}
+
+	function startResize(e: MouseEvent, index: number) {
+		e.preventDefault();
+		let tableWidth:number = columnWidths.reduce((acc, v) => acc + v, 0);
+		const startX = e.clientX;
+		const startWidth = columnWidths[index];
+		headerBeingResized = e.target as HTMLSpanElement;
+		headerBeingResized.parentElement?.classList.add('header--being-resized');
+
+		function onMouseMove(ev: MouseEvent) {
+			const delta = ev.clientX - startX;
+			const newWidth = Math.max(MIN_COL_WIDTH, startWidth + delta);
+			
+			const currentWidth = columnWidths[index]
+			tableWidth = columnWidths.reduce((acc, v) => acc + v, 0);
+			if (maxTableWidth < tableWidth && newWidth >= currentWidth) return;
+			columnWidths[index] = newWidth;
+		}
+
+		function onMouseUp() {
+			headerBeingResized?.parentElement?.classList.remove('header--being-resized');
+			headerBeingResized = null;
+
+			window.removeEventListener('mousemove', onMouseMove);
+			window.removeEventListener('mouseup', onMouseUp);
+		}
+
+		window.addEventListener('mousemove', onMouseMove);
+		window.addEventListener('mouseup', onMouseUp);
+	}
+
+	onMount(() => {
+		maxTableWidth = getMaxTableWidthPx(table);
+		columnWidths = [
+			...columns.map((col) => {
+				const ratio = columnTypeToRatioMap[col.type] ?? 1.67;
+				return MIN_COL_WIDTH * ratio;
+			}),
+			120 // actions
+		];
+	});
+
+	$: gridTemplateColumns = columnWidths.map((w) => `minmax(${w}px, ${w}px)`).join(' ');
 
 	$: {
 		let i: number = 0;
@@ -228,13 +268,23 @@
 		<button class="add-btn" on:click={addEmptyRow}> + Add New Row </button>
 	</div>
 
-	<table class="admin-table" style={`grid-template-columns: ${gridTemplateColumns};`}>
+	<table
+		bind:this={table}
+		class="admin-table"
+		style={`grid-template-columns: ${gridTemplateColumns};`}
+	>
 		<thead>
 			<tr>
-				{#each columns as col}
-					<th>{col.label}<span class="resize-handle"></span></th>
+				{#each columns as col, index}
+					<th
+						>{col.label}<span class="resize-handle" on:mousedown={(e) => startResize(e, index)}
+						></span></th
+					>
 				{/each}
-				<th>Actions <span class="resize-handle"></span></th>
+				<th bind:this={headerBeingResized}
+					>Actions <span class="resize-handle" on:mousedown={(e) => startResize(e, columns.length)}
+					></span></th
+				>
 			</tr>
 		</thead>
 		<tbody>
@@ -332,6 +382,7 @@
 	}
 	.admin-table {
 		width: 100%;
+		max-width: 95vw;
 		border-collapse: collapse;
 		color: white;
 		display: grid;
@@ -352,7 +403,7 @@
 		white-space: nowrap;
 	}
 	th {
-		position: sticky;
+		position: relative;
 		top: 0;
 	}
 
@@ -371,10 +422,12 @@
 	/* The following selector is needed so the handle is visible during resize
 	even if the mouse isn't over the handle anymore */
 	.header--being-resized .resize-handle {
-		opacity: 0.5;
+		/* opacity: 0.5; */
+		background-color: #ff00dd;
 	}
 	th:hover .resize-handle {
-		opacity: 0.3;
+		background-color: #00ccff;
+		/* opacity: 0.3; */
 	}
 	.is-temp {
 		background-color: #fff3cd;
