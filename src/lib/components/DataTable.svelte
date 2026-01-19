@@ -212,11 +212,12 @@
 		const startX = e.clientX;
 		const startWidth = columnWidths[index];
 		headerBeingResized = e.target as HTMLSpanElement;
-		headerBeingResized.parentElement?.classList.add('header--being-resized');
 
 		function onMouseMove(ev: MouseEvent) {
 			const delta = ev.clientX - startX;
 			const newWidth = Math.max(MIN_COL_WIDTH, startWidth + delta);
+			headerBeingResized.style.backgroundColor = '#00ccff';
+			headerBeingResized.style.opacity = '0.8';
 
 			const currentWidth = columnWidths[index];
 			tableWidth = columnWidths.reduce((acc, v) => acc + v, 0);
@@ -225,7 +226,8 @@
 		}
 
 		function onMouseUp() {
-			headerBeingResized?.parentElement?.classList.remove('header--being-resized');
+			headerBeingResized.style.backgroundColor = '';
+			headerBeingResized.style.opacity = '';
 			headerBeingResized = null;
 
 			window.removeEventListener('mousemove', onMouseMove);
@@ -422,20 +424,14 @@
 		bottom: 0;
 		background: black;
 		opacity: 0;
-		width: 3px;
+		width: 5px;
 		cursor: col-resize;
 	}
 
-	.resize-handle:hover,
-	/* The following selector is needed so the handle is visible during resize
-	even if the mouse isn't over the handle anymore */
-	.header--being-resized .resize-handle {
-		/* opacity: 0.5; */
-		background-color: #ff00dd;
-	}
-	th:hover .resize-handle {
+	/* The following selector is needed so the handle is visible during resize */
+	th .resize-handle:hover {
 		background-color: #00ccff;
-		/* opacity: 0.3; */
+		opacity: 0.3;
 	}
 	.is-temp {
 		background-color: #fff3cd;
