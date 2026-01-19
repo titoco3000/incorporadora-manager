@@ -100,7 +100,7 @@
 			invalidateAll();
 		} catch (e) {
 			console.error('Save failed:', e);
-			alert('Failed to save. Please check all required fields are filled.');
+			alert('Failed to save.' + e.error);
 		}
 	}
 

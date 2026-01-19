@@ -92,6 +92,9 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		return json(newTransaction, { status: 201 });
 	} catch (error) {
+		if (error instanceof Error) {
+			return json({ error: error.message }, { status: 400 });
+		}
 		return json({ error: 'Failed to create transaction', detais: String(error) }, { status: 500 });
 	}
 };
@@ -159,6 +162,9 @@ export const PATCH: RequestHandler = async ({ request }) => {
 
 		return json(updated);
 	} catch (error) {
+		if (error instanceof Error) {
+			return json({ error: error.message }, { status: 400 });
+		}
 		return json({ error: 'Failed to update transaction', detais: String(error) }, { status: 500 });
 	}
 };
