@@ -246,7 +246,7 @@
 				const ratio = columnTypeToRatioMap[col.type] ?? 1.67;
 				return MIN_COL_WIDTH * ratio;
 			}),
-			120 // actions
+			180 // actions column
 		];
 	}
 
@@ -416,9 +416,6 @@
 	th {
 		position: relative;
 		top: 0;
-	}
-	th.actions, td.actions-cell{
-		width: 11.25rem;
 	}
 
 	.resize-handle {
