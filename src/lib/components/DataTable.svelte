@@ -467,8 +467,8 @@
 	input:focus,
 	select:focus {
 		outline: 2px solid #007bff;
-		background: white;
-		color: #000;
+		background: var(--black);
+		color: var(--main-text-color);
 	}
 	select {
 		cursor: pointer;
