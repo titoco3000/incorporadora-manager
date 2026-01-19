@@ -193,7 +193,7 @@
 
 	let table: HTMLTableElement;
 	let maxTableWidth: number | null = null;
-	let headerBeingResized: HTMLTableCellElement | null = null;
+	let headerBeingResized: HTMLSpanElement | null = null;
 	let columnWidths: number[] = [];
 
 	function getMaxTableWidthPx(el: HTMLElement): number | null {
@@ -215,6 +215,7 @@
 		headerBeingResized = e.target as HTMLSpanElement;
 
 		function onMouseMove(ev: MouseEvent) {
+			if (headerBeingResized === null || maxTableWidth === null) return;
 			const delta = ev.clientX - startX;
 			const newWidth = Math.max(MIN_COL_WIDTH, startWidth + delta);
 			headerBeingResized.style.backgroundColor = '#00ccff';
@@ -227,6 +228,7 @@
 		}
 
 		function onMouseUp() {
+			if (headerBeingResized === null) return;
 			headerBeingResized.style.backgroundColor = '';
 			headerBeingResized.style.opacity = '';
 			headerBeingResized = null;
@@ -292,7 +294,7 @@
 						></span></th
 					>
 				{/each}
-				<th bind:this={headerBeingResized} class="actions"
+				<th bind:this={headerBeingResized}
 					>Actions <span class="resize-handle" on:mousedown={(e) => startResize(e, columns.length)}
 					></span></th
 				>
@@ -314,8 +316,10 @@
 							{:else if col.type === 'select'}
 								<select
 									value={row[col.key] ?? ''}
-									on:change={(e) =>
-										handleEdit(row, col.key, e.target.value === '' ? null : Number(e.target.value))}
+									on:change={(e) => {
+										const target = e.target as HTMLSelectElement;
+										handleEdit(row, col.key, target.value === '' ? null : Number(target.value));
+									}}
 								>
 									<option value="">-- Select --</option>
 									{#each referenceData[col.key] || [] as refItem}
