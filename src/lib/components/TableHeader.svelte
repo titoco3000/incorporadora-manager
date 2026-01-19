@@ -9,7 +9,7 @@
 <style>
 	header {
 		width: 100%;
-		margin: 1rem 2.5vw;
+		padding: 1rem 2.5vw;
 	}
 	header h1 {
 		color: #fff;

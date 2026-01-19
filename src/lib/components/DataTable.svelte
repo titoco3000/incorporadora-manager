@@ -100,7 +100,8 @@
 			invalidateAll();
 		} catch (e) {
 			console.error('Save failed:', e);
-			alert('Failed to save.' + e.error);
+			if (e instanceof Error) alert('Failed to save.' + e);
+			else alert('Failed to save.');
 		}
 	}
 
@@ -188,7 +189,7 @@
 		cnpj: 2
 	};
 
-	const MIN_COL_WIDTH = 150;
+	const MIN_COL_WIDTH = 100;
 
 	let table: HTMLTableElement;
 	let maxTableWidth: number | null = null;
@@ -291,7 +292,7 @@
 						></span></th
 					>
 				{/each}
-				<th bind:this={headerBeingResized}
+				<th bind:this={headerBeingResized} class="actions"
 					>Actions <span class="resize-handle" on:mousedown={(e) => startResize(e, columns.length)}
 					></span></th
 				>
@@ -415,6 +416,9 @@
 	th {
 		position: relative;
 		top: 0;
+	}
+	th.actions, td.actions-cell{
+		width: 11.25rem;
 	}
 
 	.resize-handle {

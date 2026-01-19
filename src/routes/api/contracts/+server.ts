@@ -109,17 +109,13 @@ export const PATCH: RequestHandler = async ({ request }) => {
 		}
 
 		const body = await request.json();
-
-		// Make convertions
-		// const startDate = ParseDateBR(body.startDate);
-		// const expirationDate = ParseDateBR(body.expirationDate);
-
 		const { id, ...data } = body;
 		let payload = {};
 
 		if (!id) {
 			return json({ error: 'ID is required' }, { status: 400 });
 		}
+		// Get current data in the row
 		const [current] = await db
 			.select({
 				startDate: contract.startDate,
@@ -155,7 +151,10 @@ export const PATCH: RequestHandler = async ({ request }) => {
 
 		return json(updated);
 	} catch (error) {
-		return json({ error: error.message }, { status: 500 });
+		if (error instanceof Error) {
+			return json({ error: error.message }, { status: 400 });
+		}
+		return json({ error: 'Failed to update contract' }, { status: 500 });
 	}
 };
 
