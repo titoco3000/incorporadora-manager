@@ -2,7 +2,9 @@
 	import { invalidateAll } from '$app/navigation';
 	import { type ColumnDef, type RowData } from '$lib/types/table';
 	import { api } from '$lib/api';
-	import { onMount, onDestroy } from 'svelte';
+	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
+	import { page } from '$app/stores';
 
 	export let rows: RowData[] = [];
 	export let columns: readonly ColumnDef[] = [];
@@ -206,7 +208,7 @@
 
 	function startResize(e: MouseEvent, index: number) {
 		e.preventDefault();
-		let tableWidth:number = columnWidths.reduce((acc, v) => acc + v, 0);
+		let tableWidth: number = columnWidths.reduce((acc, v) => acc + v, 0);
 		const startX = e.clientX;
 		const startWidth = columnWidths[index];
 		headerBeingResized = e.target as HTMLSpanElement;
@@ -215,8 +217,8 @@
 		function onMouseMove(ev: MouseEvent) {
 			const delta = ev.clientX - startX;
 			const newWidth = Math.max(MIN_COL_WIDTH, startWidth + delta);
-			
-			const currentWidth = columnWidths[index]
+
+			const currentWidth = columnWidths[index];
 			tableWidth = columnWidths.reduce((acc, v) => acc + v, 0);
 			if (maxTableWidth < tableWidth && newWidth >= currentWidth) return;
 			columnWidths[index] = newWidth;
@@ -234,7 +236,7 @@
 		window.addEventListener('mouseup', onMouseUp);
 	}
 
-	onMount(() => {
+	function resetColumns() {
 		maxTableWidth = getMaxTableWidthPx(table);
 		columnWidths = [
 			...columns.map((col) => {
@@ -243,7 +245,13 @@
 			}),
 			120 // actions
 		];
-	});
+	}
+
+	onMount(() => resetColumns());
+	$: if (browser && table) {
+		$page.url.pathname;
+		resetColumns();
+	}
 
 	$: gridTemplateColumns = columnWidths.map((w) => `minmax(${w}px, ${w}px)`).join(' ');
 
