@@ -5,7 +5,6 @@
 	import Header from '$lib/components/Header.svelte';
 
 	export let data: any;
-	console.log(data)
 </script>
 
 <Header title="Dashboard" />
@@ -15,7 +14,7 @@
 			<Card title="Ganhos por imóvel" transactionData={data} />
 			<Card title="Gastos por imóvel" transactionData={data} />
 		</div>
-		<BarChartCard title="Custos X Ganhos" />
+		<BarChartCard title="Custos X Ganhos" transactionData={data} />
 	</div>
 	<ReportCard title="Relatórios" />
 </main>
