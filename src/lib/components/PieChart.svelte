@@ -12,9 +12,43 @@
 		DotsHorizontalOutline
 	} from 'flowbite-svelte-icons';
 
+	export let transactionData;
+	export let isExpenseChart;
+
+	const filteredTransactionsTypes = transactionData.referenceData.transactionTypeId.filter(
+		(tr: any) => tr.isExpense === isExpenseChart
+	);
+
+	const filteredTransactionRows = transactionData.rows.filter((tr: any) =>
+		filteredTransactionsTypes.some((type: any) => type.id === tr.transactionTypeId)
+	);
+
+	const totalValue = filteredTransactionRows.reduce((acc: number, ftr: any) => {
+		const value = Number(ftr.value);
+		return acc + (isNaN(value) ? 0 : value);
+	}, 0);
+
+	const valuesList = filteredTransactionRows.reduce((acc: Record<number, number>, ftr: any) => {
+		const value = Number(ftr.value);
+		const typeId = ftr.transactionTypeId;
+		if (isNaN(value)) return acc;
+		acc[typeId] = (acc[typeId] ?? 0) + value;
+		return acc;
+	}, {});
+
+	const percentageList = filteredTransactionsTypes.map((type: any) => {
+		if (isNaN(valuesList[type.id])) return 0;
+		else {
+			const DECIMALS = 4
+			const factor = 10 ** DECIMALS
+			const rawValue = valuesList[type.id] / totalValue;
+			return Math.round((rawValue + Number.EPSILON) * factor) / factor;
+		}
+	});
+
 	const options: ApexOptions = {
-		series: [52.8, 26.8, 20.4],
-		colors: ['#1C64F2', '#16BDCA', '#9061F9'],
+		series: percentageList,
+		colors: ['#245193', '#61B035', '#CD2122', '#EB7B00', ' #FCC61E', '#31A3EB', '#8D11D6'],
 		chart: {
 			height: '',
 			width: 400,
@@ -31,7 +65,7 @@
 				}
 			}
 		},
-		labels: ['Direct', 'Organic search', 'Referrals'],
+		labels: filteredTransactionsTypes.map((ftr: any) => ftr.name),
 		dataLabels: {
 			enabled: true,
 			formatter: function (val: number) {
@@ -115,19 +149,19 @@
 	<Chart {options} class="" />
 
 	<div class="margin flex items-center justify-end">
-		<div class="flex items-center justify-between relative">
+		<div class="relative flex items-center justify-between">
 			<Button
 				class="inline-flex items-center bg-transparent p-2 text-center text-base font-medium text-white hover:bg-transparent focus:ring-transparent dark:bg-transparent dark:focus:ring-transparent"
 				>Últimos 6 meses<ChevronDownOutline class="m-2.5 ms-1.5 w-2.5" /></Button
 			>
 			<Dropdown simple class="w-40 py-2" offset={-6}>
-				<DropdownItem class="z-1000 text-black text-base hover:bg-gray-200 hover:text-black"
+				<DropdownItem class="z-1000 text-base text-black hover:bg-gray-200 hover:text-black"
 					>Últimos 6 meses</DropdownItem
 				>
-				<DropdownItem class="z-1000 text-black text-base hover:bg-gray-200 hover:text-black"
+				<DropdownItem class="z-1000 text-base text-black hover:bg-gray-200 hover:text-black"
 					>Último ano</DropdownItem
 				>
-				<DropdownItem class="z-1000 text-black text-base hover:bg-gray-200 hover:text-black"
+				<DropdownItem class="z-1000 text-base text-black hover:bg-gray-200 hover:text-black"
 					>Sempre</DropdownItem
 				>
 			</Dropdown>

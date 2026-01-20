@@ -1,11 +1,14 @@
 <script lang="ts">
 	import PieChart from "./PieChart.svelte";
 	export let title: string = '';
+	export let transactionData: any;
+
+	const isExpenseChart = title === "Gastos por imóvel" ? true : false
 </script>
 
 <div class="card">
 	<h2>{title}</h2>
-  <PieChart />
+  <PieChart transactionData={transactionData} isExpenseChart={isExpenseChart}/>
 </div>
 
 <style>

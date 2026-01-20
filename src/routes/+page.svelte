@@ -3,14 +3,17 @@
 	import BarChartCard from '$lib/components/BarChartCard.svelte';
 	import ReportCard from '$lib/components/ReportCard.svelte';
 	import Header from '$lib/components/Header.svelte';
+
+	export let data: any;
+	console.log(data)
 </script>
 
 <Header title="Dashboard" />
 <main>
 	<div class="esquerda">
 		<div class="superior">
-			<Card title="Ganhos por imóvel" />
-			<Card title="Gastos por imóvel" />
+			<Card title="Ganhos por imóvel" transactionData={data} />
+			<Card title="Gastos por imóvel" transactionData={data} />
 		</div>
 		<BarChartCard title="Custos X Ganhos" />
 	</div>
