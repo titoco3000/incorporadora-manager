@@ -38,6 +38,7 @@
 	},
 	"dependencies": {
 		"drizzle-orm": "^0.45.1",
+		"lucide-svelte": "^0.562.0",
 		"postgres": "^3.4.7"
 	}
 }
