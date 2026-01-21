@@ -19,6 +19,7 @@ body{
     color: var(--main-text-color);
     box-sizing: border-box;
     margin: 0;
+    border-color: var(--border-color-1);
 }
 
 button, input[type="submit"], input[type="button"]{

@@ -40,8 +40,8 @@
   .base-form {
     width: 100%;
     padding: 1.5rem;
-    background-color: #ffffff;
-    border: 1px solid #e5e7eb;
+    background-color: var(--bg-color-2);
+    border: 1px solid var(--border-color-1);
     border-radius: 0.5rem;
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
   }
@@ -49,7 +49,6 @@
   .form-title {
     font-size: 1.5rem;
     font-weight: 600;
-    color: #1f2937;
     margin: 0 0 1.5rem 0;
   }
 
@@ -67,7 +66,7 @@
     justify-content: flex-end;
     gap: 0.75rem;
     padding-top: 1rem;
-    border-top: 1px solid #e5e7eb;
+    border-top: 1px solid;
   }
 
   .submit-button {

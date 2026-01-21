@@ -408,7 +408,6 @@ $: if (onValueChange) {
   .field-label {
     font-size: 0.875rem;
     font-weight: 500;
-    color: #374151;
     display: block;
   }
 
@@ -419,7 +418,7 @@ $: if (onValueChange) {
     font-size: 0.875rem;
     line-height: 1.5;
     color: #1f2937;
-    background-color: #ffffff;
+    background-color: var(--bg-color-3);
     border: 1px solid #d1d5db;
     border-radius: 0.375rem;
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
