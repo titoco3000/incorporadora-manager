@@ -1,16 +1,18 @@
 body{
-    --bg-color: #ffffff;
-    --bg-color-2: #898989;
-    --bg-color-3: #555555;
+    --bg-color: #171413;
+	--bg-color-2: #181615;
+    --bg-color-3: #1a1a1a;
     
-    --text-color-1: #1a1923;
-    --text-color-2: #000000;
-    --text-color-3: #ffffff;
+    --text-color-1: #aaa7a5;
+    --text-color-2: #ffffff;
 
-    background-color: var(--main-bg-color);    
+    --border-color-1: #202020;
+
+    background-color: var(--bg-color);    
     margin: 0;
     overflow: clip auto;
     font-family: Arial, Helvetica, sans-serif;
+	color: var(--text-color-1);
 }
 
 *{
@@ -27,4 +29,8 @@ button, input[type="submit"], input[type="button"]{
 
 p{
     margin: 1em 0;
+}
+
+h1, h2, h3, h4, h5{
+    color: var(--text-color-2);
 }
