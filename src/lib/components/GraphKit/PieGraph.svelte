@@ -1,30 +1,28 @@
 <script lang="ts">
 	interface Slice {
-		label: string;
-		color: string;
-		value: number;
-	}
+        label: string;
+        value: number;
+        color?: string;
+    }
 
-	let data = $state<Slice[]>([
-		{ label: 'apples', color: 'red', value: 200 },
-		{ label: 'bananas', color: 'yellow', value: 300 },
-		{ label: 'oranges', color: 'orange', value: 300 },
-		{ label: 'grapes', color: 'purple', value: 300 },
-		{ label: 'mangoes', color: '#cdf031', value: 100 },
-		{ label: 'strawberries', color: 'pink', value: 500 }
-	]);
+    let { 
+        colors = ['red', 'blue', 'green', 'yellow', 'purple', 'gray', 'cian', 'magenta'],
+        data = []
+    } = $props<{ colors?: string[], data?: Slice[] }>();
 
 	// state to track which label is currently hovered
 	let hoveredLabel = $state<string | null>(null);
 
-	const total = $derived(data.reduce((sum, s) => sum + s.value, 0));
+	const total = $derived(data.reduce((sum:number, s:Slice) => sum + s.value, 0));
 	let width = $state(0);
 
 	const processedSlices = $derived.by(() => {
 		let currentAngle = 0;
 		const radius = width * 0.5;
 
-		return data.map((slice) => {
+		return data.map((slice:Slice, i:number) => {
+			const finalColor = slice.color || colors[i % colors.length];
+
 			const startAngle = currentAngle;
 			const sliceAngle = (slice.value / total) * 360;
 			currentAngle += sliceAngle;
@@ -45,14 +43,14 @@
 			const largeArc = sliceAngle > 180 ? 1 : 0;
 			const clipPath = `path('M ${radius} ${radius} L ${start.x} ${start.y} A ${radius} ${radius} 0 ${largeArc} 1 ${end.x} ${end.y} Z')`;
 
-			return { ...slice, clipPath };
+			return { ...slice, color: finalColor, clipPath };
 		});
 	});
 
 	// as a fallback, draw the slices as bg of the pie
 	const conicGradient = $derived.by(() => {
 		let currentPercent = 0;
-		const parts = data.map((slice) => {
+		const parts = data.map((slice:Slice) => {
 			const start = currentPercent;
 			const end = start + (slice.value / total) * 100;
 			currentPercent = end;

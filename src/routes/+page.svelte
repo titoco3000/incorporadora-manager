@@ -24,7 +24,14 @@
 		<div class="panel-container column wide-column">
 			<div class="panel gastos-por-area">
 				<h3>Gastos por area</h3>
-				<PieGraph/>
+				<PieGraph data = {[
+					{ label: 'apples', color: 'red', value: 200 },
+					{ label: 'bananas', color: 'yellow', value: 300 },
+					{ label: 'oranges', color: 'orange', value: 300 },
+					{ label: 'grapes', color: 'purple', value: 300 },
+					{ label: 'mangoes', color: '#cdf031', value: 100 },
+					{ label: 'strawberries', value: 500 }
+				]}/>
 			</div>
 			<div class="panel volume-imoveis">
 				<h3>
