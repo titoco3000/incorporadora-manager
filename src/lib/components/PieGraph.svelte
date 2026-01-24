@@ -14,11 +14,12 @@
 		{ label: 'strawberries', color: 'pink', value: 500 }
 	]);
 
-	const total = $derived(data.reduce((sum, s) => sum + s.value, 0));
+	// state to track which label is currently hovered
+	let hoveredLabel = $state<string | null>(null);
 
+	const total = $derived(data.reduce((sum, s) => sum + s.value, 0));
 	let width = $state(0);
 
-	// Calculate the CSS clip-path for each slice
 	const processedSlices = $derived.by(() => {
 		let currentAngle = 0;
 		const radius = width * 0.5;
@@ -47,34 +48,55 @@
 			return { ...slice, clipPath };
 		});
 	});
+
+	// as a fallback, draw the slices as bg of the pie
+	const conicGradient = $derived.by(() => {
+		let currentPercent = 0;
+		const parts = data.map((slice) => {
+			const start = currentPercent;
+			const end = start + (slice.value / total) * 100;
+			currentPercent = end;
+			return `${slice.color} ${start}% ${end}%`;
+		});
+		return `conic-gradient(${parts.join(', ')})`;
+	});
 </script>
 
 <main>
-	<div class="pie" bind:clientWidth={width}>
+	<div class="pie" bind:clientWidth={width} style:background={conicGradient}>
 		{#each processedSlices as slice}
 			<div
 				class="slice"
+				class:highlighted={hoveredLabel === slice.label}
 				style:background-color={slice.color}
 				style:clip-path={slice.clipPath}
-				title="{slice.label}: {slice.value}"
+				onmouseenter={() => (hoveredLabel = slice.label)}
+				onmouseleave={() => (hoveredLabel = null)}
+				role="presentation"
 			></div>
 		{/each}
 	</div>
 
 	<div class="labels">
 		{#each processedSlices as slice}
-			<div class="label">
-				<div class="tag" style={`background-color:${slice.color}`}></div>
+			<div
+				class="label"
+				class:highlighted={hoveredLabel === slice.label}
+				onmouseenter={() => (hoveredLabel = slice.label)}
+				onmouseleave={() => (hoveredLabel = null)}
+				role="presentation"
+			>
+				<div class="tag" style:background-color={slice.color}></div>
 				<div>
-					{slice.label} - {(slice.value/total * 100).toFixed(1)}%
+					{slice.label} - {((slice.value / total) * 100).toFixed(1)}%
 				</div>
-			</div>			
+			</div>
 		{/each}
 	</div>
 </main>
 
 <style>
-	main{
+	main {
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: center;
@@ -87,7 +109,6 @@
 		width: 60vw;
 		max-width: 300px;
 		aspect-ratio: 1;
-		background: #eee;
 		border-radius: 50%;
 	}
 
@@ -95,17 +116,32 @@
 		position: absolute;
 		inset: 0;
 		cursor: pointer;
+		transition:
+			filter 0.2s,
+			transform 0.2s;
 	}
 
-	.slice:hover {
+	.slice.highlighted {
 		filter: brightness(1.1);
+		transform: scale(1.05);
+		z-index: 10;
 	}
-	.label{
+
+	.label {
 		display: flex;
-		gap: 0.3em;
-		padding: 0.3em;
+		gap: 0.5em;
+		padding: 0.4em;
+		border-radius: 4px;
+		transition: background 0.2s;
+		cursor: default;
 	}
-	.tag{
+
+	.label.highlighted {
+		background: #f0f0f0;
+		color: rgb(45, 45, 45);
+	}
+
+	.tag {
 		width: 1.2em;
 		height: 1.2em;
 		border-radius: 50%;
