@@ -1,5 +1,6 @@
 <script lang="ts">
 	import DateRangeInput from "$lib/components/DateRangeInput.svelte";
+	import BarGraph from "$lib/components/GraphKit/BarGraph.svelte";
 	import PieGraph from "$lib/components/GraphKit/PieGraph.svelte";
 
 </script>
@@ -37,6 +38,14 @@
 				<h3>
 					Entradas e saidas por Imóvel
 				</h3>
+				<BarGraph data={[
+					{ label: 'apples', value: 200,  },
+					{ label: 'bananas', value: 30, },
+					{ label: 'bananas', value: 30, },
+					{ label: 'bananas', value: 30, },
+					{ label: 'bananas', value: 30, },
+					{ label: 'bananas', value: 30, negativeValue: 300 },
+				]}/>
 			</div>
 		</div>
 		<div class="panel-container column thin-column">
