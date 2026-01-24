@@ -417,7 +417,6 @@ $: if (onValueChange) {
     padding: 0.5rem 0.75rem;
     font-size: 0.875rem;
     line-height: 1.5;
-    color: #1f2937;
     background-color: var(--bg-color-3);
     border: 1px solid #d1d5db;
     border-radius: 0.375rem;
@@ -432,8 +431,6 @@ $: if (onValueChange) {
   }
 
   .field-input:disabled {
-    background-color: #f3f4f6;
-    color: #9ca3af;
     cursor: not-allowed;
   }
 
@@ -443,7 +440,6 @@ $: if (onValueChange) {
 
   .field-input.invalid {
     border-color: #ef4444;
-    background-color: #fef2f2;
   }
 
   .field-input.invalid:focus {

@@ -9,6 +9,7 @@
     import ContactForm from "$lib/components/forms/forms/ContactForm.svelte";
     import SupplierForm from "$lib/components/forms/forms/SupplierForm.svelte";
     import TransactionForm from "$lib/components/forms/forms/TransactionForm.svelte";
+	import ContractForm from "$lib/components/forms/forms/ContractForm.svelte";
 
     let isExpanded = false;
     // Set the default form to show on load
@@ -19,7 +20,7 @@
         { label: "Fornecedor", icon: Truck, component: SupplierForm },
         { label: "Contato", icon: Contact, component: ContactForm },
         { label: "Cliente", icon: Users, component: ClientForm },
-        { label: "Contrato", icon: FileText, component: null }, // Placeholder for Contract
+        { label: "Contrato", icon: FileText, component: ContractForm },
         { label: "Imóvel", icon: Building2, component: BuildingForm },
     ];
 
