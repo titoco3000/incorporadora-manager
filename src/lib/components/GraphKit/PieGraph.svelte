@@ -1,4 +1,6 @@
 <script lang="ts">
+	import defaultGraphColors from "./defaultGraphColors";
+
 	interface Slice {
         label: string;
         value: number;
@@ -6,12 +8,12 @@
     }
 
     let { 
-        colors = ['red', 'blue', 'green', 'yellow', 'purple', 'gray', 'cian', 'magenta'],
+        colors = defaultGraphColors,
         data = []
     } = $props<{ colors?: string[], data?: Slice[] }>();
 
 	// state to track which label is currently hovered
-	let hoveredLabel = $state<string | null>(null);
+	let hoveredItem = $state<number | null>(null);
 
 	const total = $derived(data.reduce((sum:number, s:Slice) => sum + s.value, 0));
 	let width = $state(0);
@@ -62,26 +64,26 @@
 
 <main>
 	<div class="pie" bind:clientWidth={width} style:background={conicGradient}>
-		{#each processedSlices as slice}
+		{#each processedSlices as slice, i}
 			<div
 				class="slice"
-				class:highlighted={hoveredLabel === slice.label}
+				class:highlighted={hoveredItem === i}
 				style:background-color={slice.color}
 				style:clip-path={slice.clipPath}
-				onmouseenter={() => (hoveredLabel = slice.label)}
-				onmouseleave={() => (hoveredLabel = null)}
+				onmouseenter={() => (hoveredItem = i)}
+				onmouseleave={() => (hoveredItem = null)}
 				role="presentation"
 			></div>
 		{/each}
 	</div>
 
 	<div class="labels">
-		{#each processedSlices as slice}
+		{#each processedSlices as slice, i}
 			<div
 				class="label"
-				class:highlighted={hoveredLabel === slice.label}
-				onmouseenter={() => (hoveredLabel = slice.label)}
-				onmouseleave={() => (hoveredLabel = null)}
+				class:highlighted={hoveredItem === i}
+				onmouseenter={() => (hoveredItem = i)}
+				onmouseleave={() => (hoveredItem = null)}
 				role="presentation"
 			>
 				<div class="tag" style:background-color={slice.color}></div>
