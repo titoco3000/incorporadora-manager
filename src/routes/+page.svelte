@@ -1,4 +1,6 @@
 <script lang="ts">
+	import DateRangeInput from "$lib/components/DateRangeInput.svelte";
+
 </script>
 <main>
 
@@ -8,14 +10,7 @@
 			<h1>Costa Leste</h1>
 		</div>
 		<div class="header-controls">
-			<label>
-				<span>De</span>
-				<input type="date" name="" id="">
-			</label>
-			<label>
-				<span>Até</span>
-				<input type="date" name="" id="">
-			</label>
+			<DateRangeInput onChange={(a,b)=>console.log(a,b)}/>
 		</div>
 	</header>
 	<div class="panels">
@@ -69,7 +64,7 @@
 		min-width: 100px;
 		margin: 10px;
 		border: 1px solid var(--border-color-1);
-		border-radius: 10px;
+		border-radius: var(--border-radius);
 		flex-grow: 1;
 	}
 	.top-row{

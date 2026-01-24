@@ -8,6 +8,8 @@ body{
 
     --border-color-1: #202020;
 
+    --border-radius: 10px;
+
     background-color: var(--bg-color);    
     margin: 0;
     overflow: clip auto;
