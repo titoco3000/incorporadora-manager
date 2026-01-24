@@ -1,5 +1,6 @@
 <script lang="ts">
 	import DateRangeInput from "$lib/components/DateRangeInput.svelte";
+	import PieGraph from "$lib/components/PieGraph.svelte";
 
 </script>
 <main>
@@ -23,6 +24,7 @@
 		<div class="panel-container column wide-column">
 			<div class="panel gastos-por-area">
 				<h3>Gastos por area</h3>
+				<PieGraph/>
 			</div>
 			<div class="panel volume-imoveis">
 				<h3>
