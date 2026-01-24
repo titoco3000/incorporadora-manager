@@ -1,6 +1,6 @@
 <script lang="ts">
 	import DateRangeInput from "$lib/components/DateRangeInput.svelte";
-	import PieGraph from "$lib/components/PieGraph.svelte";
+	import PieGraph from "$lib/components/GraphKit/PieGraph.svelte";
 
 </script>
 <main>
