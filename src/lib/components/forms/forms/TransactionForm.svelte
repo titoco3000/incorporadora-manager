@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
 	import { api } from '$lib/api';
 	import type { Transaction } from '$lib/types/api'; 
 	import FormInput from '../components/FormInput.svelte';
@@ -34,4 +34,87 @@
 	<FormInput {formId} label="Empresa" type="company" name="companyId" grow={0.5} required />
 	<FormInput {formId} label="Imóvel" type="building" name="buildingId" grow={0.5} required />
 	<FormInput {formId} label="Observações" type="obs" name="obs" grow={1} />
-</BaseForm>
+</BaseForm> -->
+
+<script lang="ts">
+	import type { FormFieldDefinition, FormFieldType } from '$lib/types/forms';
+	import NewBaseForm from '../components/NewBaseForm.svelte';
+
+	let formData = $state({
+		transactionType: '',
+		company: ''
+	});
+
+	let companiesFieldType:FormFieldType = $state('company');
+
+	let dynamicFields: FormFieldDefinition[] = $derived([
+		{
+			name: 'name',
+			type: 'text',
+			label: 'Nome'
+		},
+		{
+			label: 'Tipo de Transação',
+			type: 'transactionType',
+			name: 'transactionType',
+			postKey: 'transactionTypeId',
+			size: 0.5,
+			required: true,
+			onChange: (e) => {
+				console.log(e, formData.company)
+				if (!formData.company) {
+					companiesFieldType = e == '666'?'date':'company'
+				} 
+			}
+		},
+		{
+			label: 'Valor',
+			type: 'value',
+			name: 'value',
+			size: 0.5,
+			required: true
+		},
+		{
+			label: 'Data',
+			type: 'date',
+			name: 'date',
+			size: 0.5,
+			required: true
+		},
+		{
+			label: 'Documento',
+			type: 'text',
+			name: 'document',
+			size: 0.5,
+			required: true
+		},
+		{
+			label: 'Empresa',
+			type: companiesFieldType,
+			name: 'company',
+			postKey: 'companyId',
+			size: 0.5,
+			required: true
+		},
+		{
+			label: 'Imóvel',
+			type: 'building',
+			name: 'building',
+			postKey: 'buildingId',
+			size: 0.5,
+			required: true
+		},
+		{
+			label: 'Observações',
+			type: 'obs',
+			name: 'obs',
+			size: 1
+		}
+	]);
+
+	const post = async (params: any) => {
+		console.log('Posting:', params);
+	};
+</script>
+
+<NewBaseForm bind:data={formData} fields={dynamicFields} {post} />

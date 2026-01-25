@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
 	import { api } from '$lib/api';
 	import type { Company } from '$lib/types/api'; 
 	import FormInput from '../components/FormInput.svelte';
@@ -34,4 +34,62 @@
 	<FormInput {formId} label="Inscrição Estadual" type="text" name="stateId" grow={0.5} />
 	<FormInput {formId} label="Inscrição Municipal" type="text" name="municipalityId" grow={0.5} />
 	<FormInput {formId} label="Observações" type="obs" name="obs" grow={1} />
-</BaseForm>
+</BaseForm> -->
+
+
+<!-- <script lang='ts'>
+	// import { api } from '$lib/api';
+	// api.companies.post
+	import type { Company } from '$lib/types/api';
+	import NewBaseForm from '../components/NewBaseForm.svelte';
+
+	
+	const post = async (params: Omit<Company, 'id'>) => {
+		console.log(params);
+	}
+
+</script>
+<NewBaseForm 
+	post={post}
+	fields={[
+	{
+		name: "name",
+		size: 1,
+		required: true,
+		type: "text",
+		label: "Nome"
+	},
+]}/> -->
+
+<script lang="ts">
+	import type { FormFieldDefinition } from '$lib/types/forms';
+    import NewBaseForm from '../components/NewBaseForm.svelte';
+
+    // 1. Create a reactive object for the form data
+    let formData = $state({ name: "", special_code: "" });
+
+    // 2. The fields now react to formData.name
+    let dynamicFields:FormFieldDefinition[] = $derived([
+        {
+            name: "name",
+            type: "text",
+            label: "Nome",
+        },
+        {
+            name: "special_code",
+            // This now triggers because formData.name is updated via binding
+            type: formData.name === "Google" ? "number" : "text",
+            label: formData.name === "Google" ? "ID Number" : "Notes"
+        }
+    ]);
+    
+    const post = async (params: any) => {
+        console.log("Posting:", params);
+    }
+</script>
+
+<NewBaseForm 
+    bind:data={formData}
+    fields={dynamicFields} 
+    post={post} 
+/>
