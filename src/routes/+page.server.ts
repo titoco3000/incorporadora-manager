@@ -22,6 +22,9 @@ export const load: PageServerLoad = async ({ url }) => {
     const startDate = startParam || getIsoDate(lastYear);
     const endDate = endParam || getIsoDate(new Date());
 
+    console.log(startDate, endDate);
+    
+
     // Fetch Pie Data: Sum by Expense Type
     const pieResults = await db
         .select({

@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { page } from '$app/state';
+	import { page, navigating } from '$app/state';
 	import DateRangeInput from '$lib/components/DateRangeInput.svelte';
+	import DynamicallyReloadedBlock from '$lib/components/DynamicallyReloadedBlock.svelte';
 	import BarGraph from '$lib/components/graphs/GraphKit/BarGraph.svelte';
 	import PieGraph from '$lib/components/graphs/GraphKit/PieGraph.svelte';
 	import type { DateString } from '$lib/types/DateString';
@@ -41,11 +42,11 @@
 		if (!mounted) return;
 
 		const url = new URL(page.url);
-		const urlStart = url.searchParams.get('start');
-		const urlEnd = url.searchParams.get('end');
+		const urlStart = url.searchParams.get('start') || defaultStart;
+		const urlEnd = url.searchParams.get('end') || defaultEnd;
 
 		// Only navigate if the state is different from the URL and not the default
-		if ((s !== urlStart && s !== defaultStart) || (e !== urlEnd && e != defaultEnd)) {
+		if (s !== urlStart || e !== urlEnd) {
 			url.searchParams.set('start', s);
 			url.searchParams.set('end', e);
 
@@ -78,13 +79,15 @@
 		<div class="panel-container column wide-column">
 			<div class="panel gastos-por-area">
 				<h3>Gastos por Área</h3>
-				<PieGraph data={data.pieData} />
+				<DynamicallyReloadedBlock loading={navigating.to!=null}>
+					<PieGraph data={data.pieData} />
+				</DynamicallyReloadedBlock>
 			</div>
 			<div class="panel volume-imoveis">
-				<h3>
-					Entradas e saidas por Imóvel
-				</h3>
-				<BarGraph data={data.barData} />
+				<h3>Entradas e saidas por Imóvel</h3>
+				<DynamicallyReloadedBlock loading={navigating.to!=null}>
+					<BarGraph data={data.barData} />
+				</DynamicallyReloadedBlock>
 			</div>
 		</div>
 		<div class="panel-container column thin-column">
