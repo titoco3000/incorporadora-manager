@@ -11,8 +11,6 @@
 		Math.max(...data.map((bar: Bar) => Math.max(bar.value, Math.abs(bar.negativeValue || 0.001))))
 	);
 
-	$effect(() => console.log('larg: ', largestValue));
-
 	const hasNegatives = $derived(data.some((bar: Bar) => bar.negativeValue));
 
 	const processedBars = $derived(
