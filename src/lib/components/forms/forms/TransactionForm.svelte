@@ -37,6 +37,7 @@
 </BaseForm> -->
 
 <script lang="ts">
+	import type { TransactionType } from '$lib/types/api';
 	import type { FormFieldDefinition, FormFieldType } from '$lib/types/forms';
 	import NewBaseForm from '../components/NewBaseForm.svelte';
 
@@ -45,13 +46,14 @@
 		company: ''
 	});
 
-	let companiesFieldType:FormFieldType = $state('company');
+	let companiesFieldType: FormFieldType = $state('company');
 
 	let dynamicFields: FormFieldDefinition[] = $derived([
 		{
 			name: 'name',
 			type: 'text',
-			label: 'Nome'
+			label: 'Nome',
+			required: true
 		},
 		{
 			label: 'Tipo de Transação',
@@ -60,11 +62,11 @@
 			postKey: 'transactionTypeId',
 			size: 0.5,
 			required: true,
-			onChange: (e) => {
-				console.log(e, formData.company)
-				if (!formData.company) {
-					companiesFieldType = e == '666'?'date':'company'
-				} 
+			onChange: (e:unknown) => {
+				if (!formData.company && e) {
+					const selection = e as TransactionType;
+        			companiesFieldType = selection.isExpense ? 'supplier' : 'company';
+				}
 			}
 		},
 		{

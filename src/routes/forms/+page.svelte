@@ -58,11 +58,6 @@
     </aside>
 
     <main class="content">
-        <!-- <header class="page-header">
-            <h1>Forms page</h1>
-            <p class="subtitle">{activeTab}</p>
-        </header> -->
-
         <section class="form-area">
             {#each navItems as item}
                 {#if activeTab === item.label}
@@ -71,7 +66,7 @@
                             <svelte:component this={item.component} />
                         {:else}
                             <p>Form for {item.label} is under construction.</p>
-                        {/if}
+                        {/if} 
                     </div>
                 {/if}
             {/each}
@@ -87,7 +82,6 @@
         color: var(--text-color-1);
     }
 
-    /* --- Sidebar Styles --- */
     .sidebar {
         width: 64px;
         background-color: var(--bg-color-2);
@@ -172,34 +166,14 @@
         cursor: pointer;
     }
 
-    /* --- Main Content Styles --- */
     .content {
         flex: 1;
         padding: 2rem;
-        overflow-y: auto;
+        overflow: auto hidden;
     }
-
-    /* .page-header {
-        margin-bottom: 2rem;
-        border-bottom: 1px solid var(--border-color-1);
-        padding-bottom: 1rem;
-    }
-
-    .page-header h1 {
-        margin: 0;
-        font-size: 1.5rem;
-        color: var(--text-color-1);
-    }
-
-    .subtitle {
-        margin: 0.25rem 0 0;
-        color: var(--text-color-2);
-        font-size: 0.9rem;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-    } */
 
     .form-area {
+        width: 100%;
         max-width: 900px;
     }
 

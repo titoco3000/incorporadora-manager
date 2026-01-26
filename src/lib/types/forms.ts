@@ -18,6 +18,7 @@ export type FormFieldDefinition = {
     type: FormFieldType,
     label?: string,
     size?: number,
+    minwidth?: number,
     required?: boolean,
     value?: FormFieldValue,
     postKey?: string,
