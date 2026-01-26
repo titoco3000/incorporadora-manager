@@ -4,7 +4,7 @@
 	import type { Company } from '$lib/types/api';
 
 	const post = async (params: Omit<Company, 'id'>) => {
-		api.companies.post({ ...params, isSupplier: false });
+		return await api.companies.post({ ...params, isSupplier: false });
 	};
 </script>
 

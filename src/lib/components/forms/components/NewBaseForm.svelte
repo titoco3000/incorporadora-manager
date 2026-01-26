@@ -1,4 +1,5 @@
 <script lang="ts" generics="T extends Record<string, any>">
+	import DynamicallyReloadedBlock from '$lib/components/DynamicallyReloadedBlock.svelte';
 	import type { FormFieldDefinition } from '$lib/types/forms';
 	import NewFormInput from './NewFormInput.svelte';
 
@@ -6,7 +7,6 @@
 		fields,
 		label = 'Form',
 		post,
-		// Add this to allow the parent to bind to the internal state
 		data = $bindable()
 	} = $props<{
 		fields: FormFieldDefinition[];
@@ -18,34 +18,52 @@
 	// Initialize data if it wasn't provided by the parent
 	if (!data) data = {} as T;
 
-	function handleInput(field: FormFieldDefinition, value: any) {
-		// This update will now propagate to the parent!
-		data![field.name as keyof T] = value;
-		if (field.onChange) field.onChange(value);
-	}
+	let isLoading = $state(false);
+    let feedback = $state<{ message: string; type: 'success' | 'error' } | null>(null);
 
 	async function handleSubmit(e: SubmitEvent) {
 		e.preventDefault();
+		isLoading = true;
+        feedback = null; 
 
-		await post(data as T);
+		try {
+            const result = await post(data as T);
+            feedback = { message: 'Sucesso!', type: 'success' };
+            data = {} as T;
+        } catch (err) {
+            feedback = { 
+                message: err instanceof Error ? err.message : 'An unexpected error occurred.', 
+                type: 'error' 
+            };
+        } finally {
+            isLoading = false;
+        }
 	}
 </script>
 
 <form onsubmit={handleSubmit}>
-	<h2 class="form-title">{label}</h2>
+	<DynamicallyReloadedBlock loading={false}>
+		<h2 class="form-title">{label}</h2>
+	
+		<div class="form-fields">
+			{#each fields as field}
+				<NewFormInput
+					field={field}
+					bind:value={data[field.name]}
+				/>
+			{/each}
+		</div>
 
-	<div class="form-fields">
-		{#each fields as field}
-			<NewFormInput
-				field={field}
-				bind:value={data[field.name]}
-			/>
-		{/each}
-	</div>
-
-	<div class="form-actions">
-		<button type="submit" class="submit-button"> Submit </button>
-	</div>
+		{#if feedback}
+            <p class="feedback {feedback.type}">
+                {feedback.message}
+            </p>
+        {/if}
+	
+		<div class="form-actions">
+			<button type="submit" class="submit-button"> Submit </button>
+		</div>
+	</DynamicallyReloadedBlock>
 </form>
 
 <style>
@@ -100,4 +118,28 @@
 	.submit-button:active {
 		background-color: #1d4ed8;
 	}
+
+	.feedback {
+        padding: 0.75rem;
+        border-radius: 0.375rem;
+        margin-bottom: 1rem;
+        font-size: 0.875rem;
+    }
+
+    .feedback.success {
+        background-color: #f0fdf4;
+        color: #166534;
+        border: 1px solid #bbf7d0;
+    }
+
+    .feedback.error {
+        background-color: #fef2f2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
+    }
+
+    .submit-button:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
 </style>
