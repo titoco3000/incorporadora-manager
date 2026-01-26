@@ -2,7 +2,7 @@
 	import { api } from '$lib/api';
 	import type { TransactionType } from '$lib/types/api';
 	import type { FormFieldDefinition, FormFieldType } from '$lib/types/forms';
-	import NewBaseForm from '../components/NewBaseForm.svelte';
+	import BaseForm from '../components/BaseForm.svelte';
 
 	let formData = $state({ company: '' });
 
@@ -69,7 +69,7 @@
 	]);
 </script>
 
-<NewBaseForm
+<BaseForm
 	label="Nova Transação"
 	bind:data={formData}
 	fields={dynamicFields}

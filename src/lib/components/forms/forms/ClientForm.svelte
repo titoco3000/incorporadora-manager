@@ -1,14 +1,15 @@
 <script lang="ts">
-	import NewBaseForm from '../components/NewBaseForm.svelte';
 	import { api } from '$lib/api';
 	import type { Company } from '$lib/types/api';
+	import BaseForm from '../components/BaseForm.svelte';
 
 	const post = async (params: Omit<Company, 'id'>) => {
 		return await api.companies.post({ ...params, isSupplier: false });
 	};
 </script>
 
-<NewBaseForm
+<BaseForm
+	label="Novo Cliente"
 	fields={[
 		{
 			name: 'name',
