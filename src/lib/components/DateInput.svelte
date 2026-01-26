@@ -1,127 +1,119 @@
 <script lang="ts">
-	import { untrack } from 'svelte';
+    import type { DateString } from '$lib/types/DateString';
+    import { untrack } from 'svelte';
 
-	interface Props {
-		initialDate?: Date | null;
-		onDateChange?: (date: Date | null) => void;
-	}
+    interface Props {
+        initialDate?: DateString | null;
+        onDateChange?: (date: DateString | null) => void;
+    }
 
-	let { initialDate, onDateChange }: Props = $props();
+    let { initialDate, onDateChange }: Props = $props();
 
-	let day = $state('');
-	let month = $state('');
-	let year = $state('');
+    let day = $state('');
+    let month = $state('');
+    let year = $state('');
 
-	$effect(() => {
-		const incoming = initialDate; 
+    // Sync internal state ONLY when initialDate changes from above
+    $effect(() => {
+        const incoming = initialDate;
+        untrack(() => {
+            if (incoming) {
+                const [y, m, d] = incoming.split('-');
+                day = d || '';
+                month = m || '';
+                year = y || '';
+            }
+        });
+    });
 
-		untrack(() => {
-			if (incoming instanceof Date && !isNaN(incoming.getTime())) {
-				const d = incoming.getDate().toString().padStart(2, '0');
-				const m = (incoming.getMonth() + 1).toString().padStart(2, '0');
-				const y = incoming.getFullYear().toString();
+    let dayRef = $state<HTMLInputElement | null>(null);
+    let monthRef = $state<HTMLInputElement | null>(null);
+    let yearRef = $state<HTMLInputElement | null>(null);
 
-				const currentParsed = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
-				if (incoming.getTime() !== currentParsed.getTime()) {
-					day = d;
-					month = m;
-					year = y;
-				}
-			}
-		});
-	});
+    // Validation logic
+    const validDateString = $derived.by((): DateString | null => {
+        if (!day || !month || year.length < 4) return null;
+        const d = parseInt(day);
+        const m = parseInt(month);
+        const y = parseInt(year);
+        const dateCheck = new Date(y, m - 1, d);
+        
+        const isValid = dateCheck.getFullYear() === y && 
+                        dateCheck.getMonth() === m - 1 && 
+                        dateCheck.getDate() === d;
 
-	let dayRef = $state<HTMLInputElement | null>(null);
-	let monthRef = $state<HTMLInputElement | null>(null);
-	let yearRef = $state<HTMLInputElement | null>(null);
+        if (!isValid) return null;
+        return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}` as DateString;
+    });
 
-	const validDate = $derived.by(() => {
-		const d = parseInt(day);
-		const m = parseInt(month) - 1; // JS months are 0-indexed
-		const y = parseInt(year);
+    // Notify parent ONLY when the user leaves the component
+    function handleBlur(e: FocusEvent) {
+        // Use relatedTarget to check if focus moved to another input in the SAME component
+        const container = e.currentTarget as HTMLElement;
+        setTimeout(() => {
+            if (!container.contains(document.activeElement)) {
+                // User has left the entire component
+                onDateChange?.(validDateString);
+            }
+        }, 0);
+    }
 
-		if (!day || !month || year.length < 4) return null;
+    function handleInput(e: Event, type: 'day' | 'month' | 'year') {
+        const target = e.target as HTMLInputElement;
+        const val = target.value.replace(/\D/g, '');
 
-		const date = new Date(y, m, d);
+        if (type === 'day') {
+            day = val;
+            if (day.length >= 2) monthRef?.focus();
+        } else if (type === 'month') {
+            month = val;
+            if (month.length >= 2) yearRef?.focus();
+        } else {
+            year = val;
+        }
+    }
 
-		const isValid = date.getFullYear() === y && date.getMonth() === m && date.getDate() === d;
-
-		return isValid ? date : null;
-	});
-
-	// notify only when validity changes
-	$effect(() => {
-		const currentValidDate = validDate;
-		untrack(() => {
-			onDateChange?.(currentValidDate);
-		});
-	});
-
-	// populate the starting value
-	$effect(() => {
-		if (initialDate instanceof Date && !isNaN(initialDate.getTime())) {
-			day = initialDate.getDate().toString().padStart(2, '0');
-			month = (initialDate.getMonth() + 1).toString().padStart(2, '0');
-			year = initialDate.getFullYear().toString();
-		}
-	});
-
-	function handleInput(e: Event, type: 'day' | 'month' | 'year') {
-		const target = e.target as HTMLInputElement;
-		const val = target.value.replace(/\D/g, '');
-
-		if (type === 'day') {
-			day = val;
-			if (day.length >= 2) monthRef?.focus();
-		} else if (type === 'month') {
-			month = val;
-			if (month.length >= 2) yearRef?.focus();
-		} else {
-			year = val;
-		}
-	}
-
-	function handleKeyDown(e: KeyboardEvent, type: 'month' | 'year') {
-		const target = e.target as HTMLInputElement;
-		if (e.key === 'Backspace' && !target.value) {
-			if (type === 'month') dayRef?.focus();
-			if (type === 'year') monthRef?.focus();
-		}
-	}
+    function handleKeyDown(e: KeyboardEvent, type: 'month' | 'year') {
+        const target = e.target as HTMLInputElement;
+        if (e.key === 'Backspace' && !target.value) {
+            if (type === 'month') dayRef?.focus();
+            if (type === 'year') monthRef?.focus();
+        }
+    }
 </script>
 
-<div class="date-container">
-	<input
-		bind:this={dayRef}
-		value={day}
-		oninput={(e) => handleInput(e, 'day')}
-		type="text"
-		inputmode="numeric"
-		placeholder="DD"
-		maxlength="2"
-	/>
-	<span class="sep" class:invalid={!validDate && year.length === 4}>/</span>
-	<input
-		bind:this={monthRef}
-		value={month}
-		oninput={(e) => handleInput(e, 'month')}
-		onkeydown={(e) => handleKeyDown(e, 'month')}
-		type="text"
-		inputmode="numeric"
-		placeholder="MM"
-		maxlength="2"
-	/>
-	<span class="sep" class:invalid={!validDate && year.length === 4}>/</span>
-	<input
-		bind:this={yearRef}
-		value={year}
-		oninput={(e) => handleInput(e, 'year')}
-		onkeydown={(e) => handleKeyDown(e, 'year')}
-		type="text"
-		inputmode="numeric"
-		placeholder="YYYY"
-		maxlength="4"
-	/>
+<div class="date-container" onfocusout={handleBlur}>
+    <input
+        bind:this={dayRef}
+        value={day}
+        oninput={(e) => handleInput(e, 'day')}
+        type="text"
+        inputmode="numeric"
+        placeholder="DD"
+        maxlength="2"
+    />
+    <span class="sep" class:invalid={!validDateString && year.length === 4}>/</span>
+    <input
+        bind:this={monthRef}
+        value={month}
+        oninput={(e) => handleInput(e, 'month')}
+        onkeydown={(e) => handleKeyDown(e, 'month')}
+        type="text"
+        inputmode="numeric"
+        placeholder="MM"
+        maxlength="2"
+    />
+    <span class="sep" class:invalid={!validDateString && year.length === 4}>/</span>
+    <input
+        bind:this={yearRef}
+        value={year}
+        oninput={(e) => handleInput(e, 'year')}
+        onkeydown={(e) => handleKeyDown(e, 'year')}
+        type="text"
+        inputmode="numeric"
+        placeholder="YYYY"
+        maxlength="4"
+    />
 </div>
 
 <style>

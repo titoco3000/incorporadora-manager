@@ -1,34 +1,30 @@
 <script lang="ts">
-	import DateInput from './DateInput.svelte';
+    import type { DateString } from '$lib/types/DateString';
+    import DateInput from './DateInput.svelte';
 
+    interface Props {
+        start: DateString;
+        end: DateString;
+    }
 
-  interface Props {
-		onChange?: ((start: Date, end:Date) => void)|null;
-	}
-
-	let { onChange }: Props = $props();
-
-  const yearAgo = new Date();
-  yearAgo.setFullYear(yearAgo.getFullYear() - 1);
-
-  let dateRange:Array<Date|null> = [yearAgo, new Date()]
-
-  $effect(() => {
-    if(dateRange[0] && dateRange[1] && onChange)
-      onChange(dateRange[0], dateRange[1]);
-  })
-
+    let { start = $bindable(), end = $bindable() }: Props = $props();
 </script>
 
 <main>
-	<label>
-		<h1>de</h1>
-    <DateInput onDateChange={d=>dateRange[0]=d} initialDate={yearAgo} />
-	</label>
-	<label>
-    <h1>até</h1>
-    <DateInput onDateChange={d=>dateRange[1]=d} initialDate={new Date()} />
-	</label>
+    <label>
+        <h1>de</h1>
+        <DateInput 
+            initialDate={start} 
+            onDateChange={(val) => val && (start = val)} 
+        />
+    </label>
+    <label>
+        <h1>até</h1>
+        <DateInput 
+            initialDate={end} 
+            onDateChange={(val) => val && (end = val)} 
+        />
+    </label>
 </main>
 
 <style>
@@ -38,19 +34,19 @@
 		min-height: 30px;
 		min-width: 100px;
 		border-radius: var(--border-radius);
-    display: flex;
+		display: flex;
 	}
-  label{
-    text-align: center;
-    cursor: pointer;
-  }
-  label:first-child{
-    border-right: 1px solid var(--border-color-1);
-  }
-  h1{
-    font-size: 0.8em;
-    font-weight: 100;
-    margin-top: 0.4em;
-    color: var(--text-color-3);
-  }
+	label {
+		text-align: center;
+		cursor: pointer;
+	}
+	label:first-child {
+		border-right: 1px solid var(--border-color-1);
+	}
+	h1 {
+		font-size: 0.8em;
+		font-weight: 100;
+		margin-top: 0.4em;
+		color: var(--text-color-3);
+	}
 </style>
