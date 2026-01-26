@@ -12,54 +12,63 @@
 		fields: FormFieldDefinition[];
 		label?: string;
 		post: (data: T) => Promise<any>;
-		data?: T;
+		data?: object;
 	}>();
 
 	// Initialize data if it wasn't provided by the parent
 	if (!data) data = {} as T;
 
 	let isLoading = $state(false);
-    let feedback = $state<{ message: string; type: 'success' | 'error' } | null>(null);
+	let feedback = $state<{ message: string; type: 'success' | 'error' } | null>(null);
 
 	async function handleSubmit(e: SubmitEvent) {
 		e.preventDefault();
 		isLoading = true;
-        feedback = null; 
+		feedback = null;
 
 		try {
-            const result = await post(data as T);
-            feedback = { message: 'Sucesso!', type: 'success' };
-            data = {} as T;
-        } catch (err) {
-            feedback = { 
-                message: err instanceof Error ? err.message : 'An unexpected error occurred.', 
-                type: 'error' 
-            };
-        } finally {
-            isLoading = false;
-        }
+			const payload: Record<string, any> = {};
+
+			fields.forEach((field: FormFieldDefinition) => {
+				const rawValue = data[field.name];
+				const value =
+					rawValue && typeof rawValue === 'object' && 'id' in rawValue ? rawValue.id : rawValue;
+				if (value) {
+					payload[field.postKey || field.name] = value;
+				}
+			});
+
+			await post(payload as T);
+
+			feedback = { message: 'Sucesso!', type: 'success' };
+			data = {} as T;
+		} catch (err) {
+			feedback = {
+				message: err instanceof Error ? err.message : 'An unexpected error occurred.',
+				type: 'error'
+			};
+		} finally {
+			isLoading = false;
+		}
 	}
 </script>
 
 <form onsubmit={handleSubmit}>
 	<DynamicallyReloadedBlock loading={false}>
 		<h2 class="form-title">{label}</h2>
-	
+
 		<div class="form-fields">
 			{#each fields as field}
-				<NewFormInput
-					field={field}
-					bind:value={data[field.name]}
-				/>
+				<NewFormInput {field} bind:value={data[field.name]} />
 			{/each}
 		</div>
 
 		{#if feedback}
-            <p class="feedback {feedback.type}">
-                {feedback.message}
-            </p>
-        {/if}
-	
+			<p class="feedback {feedback.type}">
+				{feedback.message}
+			</p>
+		{/if}
+
 		<div class="form-actions">
 			<button type="submit" class="submit-button"> Submit </button>
 		</div>
@@ -120,26 +129,22 @@
 	}
 
 	.feedback {
-        padding: 0.75rem;
-        border-radius: 0.375rem;
-        margin-bottom: 1rem;
-        font-size: 0.875rem;
-    }
+		padding: 0.75rem;
+		border-radius: 0.375rem;
+		margin-bottom: 1rem;
+		font-size: 0.875rem;
+	}
 
-    .feedback.success {
-        background-color: #f0fdf4;
-        color: #166534;
-        border: 1px solid #bbf7d0;
-    }
+	.feedback.success {
+		background-color: #134b24;
+	}
 
-    .feedback.error {
-        background-color: #fef2f2;
-        color: #991b1b;
-        border: 1px solid #fecaca;
-    }
+	.feedback.error {
+		background-color: #531818;
+	}
 
-    .submit-button:disabled {
-        opacity: 0.7;
-        cursor: not-allowed;
-    }
+	.submit-button:disabled {
+		opacity: 0.7;
+		cursor: not-allowed;
+	}
 </style>
