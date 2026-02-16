@@ -103,6 +103,41 @@
 
 		widthOverrides[colKey] = Math.max(40, Math.ceil(maxWidth) + 32);
 	}
+
+	let sortKey = $state<string | null>(null);
+	let sortDirection = $state<'asc' | 'desc'>('asc');
+
+	let sortedData = $derived.by(() => {
+		if (!sortKey) return data;
+
+		return [...data].sort((a, b) => {
+			const aVal = a[sortKey!];
+			const bVal = b[sortKey!];
+
+			if (aVal === bVal) return 0;
+			if (aVal == null) return 1; // Push nulls to the bottom
+			if (bVal == null) return -1;
+
+			let comparison = 0;
+			// Use localeCompare for nicer string sorting, fallback to standard operators
+			if (typeof aVal === 'string' && typeof bVal === 'string') {
+				comparison = (aVal as string).localeCompare(bVal);
+			} else {
+				comparison = aVal < bVal ? -1 : 1;
+			}
+
+			return sortDirection === 'asc' ? comparison : -comparison;
+		});
+	});
+
+	function toggleSort(colKey: string) {
+		if (sortKey === colKey) {
+			sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+		} else {
+			sortKey = colKey;
+			sortDirection = 'asc';
+		}
+	}
 </script>
 
 <div class="table-container">
@@ -112,7 +147,20 @@
 				{#each activeColumns as col, index}
 					<th style="width: {col.width}px">
 						<div class="header-content">
-							<span class="truncate">{col.label}</span>
+							{#if col.sortable}
+								<button class="header-main" onclick={() => toggleSort(col.key)}>
+									<span class="truncate">{col.label}</span>
+									{#if sortKey === col.key}
+										<span class="sort-indicator">
+											{sortDirection === 'asc' ? '↑' : '↓'}
+										</span>
+									{/if}
+								</button>
+							{:else}
+								<div class="header-main">
+									<span class="truncate">{col.label}</span>
+								</div>
+							{/if}
 							<button
 								class="resizer"
 								onmousedown={(e) => onMouseDown(index, e)}
@@ -125,7 +173,7 @@
 			</tr>
 		</thead>
 		<tbody>
-			{#each data as row}
+			{#each sortedData as row}
 				<tr>
 					{#each activeColumns as col}
 						<td>{row[col.key]}</td>
@@ -153,7 +201,6 @@
 	td {
 		border-bottom: 1px solid #e5e7eb;
 		border-right: 1px solid #e5e7eb;
-		padding: 8px 12px;
 		text-align: left;
 		white-space: nowrap;
 		box-sizing: border-box;
@@ -162,6 +209,7 @@
 	td {
 		overflow: hidden;
 		text-overflow: ellipsis;
+		padding: 8px 12px;
 	}
 
 	th {
@@ -178,11 +226,40 @@
 		height: 100%;
 	}
 
+	.header-main {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 6px;
+		width: 100%;
+		overflow: hidden;
+		background: transparent;
+		border: none;
+		font: inherit;
+		color: inherit;
+		text-align: left;
+		padding: 8px 12px;
+	}
+
+	button.header-main {
+		cursor: pointer;
+		padding-right: 0;
+	}
+
 	.truncate {
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
 		min-width: 0;
+		flex: 1 1 0%;
+	}
+
+	.sort-indicator {
+		font-size: 0.8em;
+		line-height: 1;
+		display: flex;
+		align-items: center;
+		flex-shrink: 0;
 	}
 
 	.resizer {

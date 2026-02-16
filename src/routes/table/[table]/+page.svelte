@@ -1,5 +1,5 @@
 <script>
-	import Table from '$lib/components/NewDataTable/Table.svelte';
+	import Table from '$lib/components/ResizeableTable/Table.svelte';
 	export let data;
 </script>
 

@@ -52,7 +52,8 @@ function autoGenerateColumns(model: Table, labelOverrides: ColumnOverrides = {})
 		const colDef: ColumnDef = {
 			key,
 			label: labelOverrides[key] || getDisplayName(key),
-			type
+			type,
+			sortable: true
 		};
 
 		columnDefs.push(colDef);
