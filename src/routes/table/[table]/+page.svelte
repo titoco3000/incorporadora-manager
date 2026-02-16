@@ -1,4 +1,5 @@
 <script lang="ts">
+	import MailLink from '$lib/components/NewDataTable/MailLink.svelte';
 	import Table from '$lib/components/ResizeableTable/Table.svelte';
 	import type { ColumnDef } from '$lib/components/ResizeableTable/types.js';
 	export let data;
@@ -14,7 +15,8 @@
 		{
 			key: 'email',
 			label: 'Email',
-			sortCompareFn: strCompare
+			sortCompareFn: strCompare,
+			renderer: MailLink
 		},
 		{
 			key: 'phone',
@@ -36,7 +38,13 @@
 
 <main>
 	<h1>{data.label}</h1>
-	<Table id={data.tableSlug} columns={columnsDef} data={data.rows} />
+	<Table id={data.tableSlug} columns={columnsDef} data={data.rows}>
+		<TableRow>
+			<TableCell>a</TableCell>
+			<TableCell>b</TableCell>
+			<TableCell>c</TableCell>
+		</TableRow>
+	</Table>
 </main>
 
 <style>

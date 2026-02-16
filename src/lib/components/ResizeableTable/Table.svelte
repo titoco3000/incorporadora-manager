@@ -175,7 +175,14 @@
 			{#each sortedData as row}
 				<tr>
 					{#each activeColumns as col}
-						<td>{row[col.key]}</td>
+						<td>
+							{#if col.renderer}
+								{@const Renderer = col.renderer}
+								<Renderer value={row[col.key]} {row} />
+							{:else}
+								{row[col.key]}
+							{/if}
+						</td>
 					{/each}
 				</tr>
 			{/each}
@@ -184,7 +191,6 @@
 </div>
 
 <style>
-	/* Styles remain exactly the same */
 	.table-container {
 		width: 100%;
 		overflow-x: auto;
