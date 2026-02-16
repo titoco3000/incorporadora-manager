@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import type { Company, Building, TransactionType } from '$lib/types/api';
 	import { api } from '$lib/api';
 	import type { FormFieldDefinition } from '$lib/types/forms';

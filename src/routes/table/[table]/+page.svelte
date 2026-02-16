@@ -1,12 +1,16 @@
 <script>
-  import DataTable from '$lib/components/DataTable.svelte';
-  export let data;
+	import DataTable from '$lib/components/DataTable.svelte';
+	import Table from '$lib/components/NewDataTable/Table.svelte';
+	export let data;
 </script>
 
-<h1>{data.label}</h1>
-<DataTable 
-  rows={data.rows} 
-  columns={data.columns} 
-  tableSlug={data.tableSlug}
-  referenceData={data.referenceData}
-/>
+<main>
+	<h1>{data.label}</h1>
+	<Table />
+</main>
+
+<style>
+	main {
+		padding: 10px;
+	}
+</style>
