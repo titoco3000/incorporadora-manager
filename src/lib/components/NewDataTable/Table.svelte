@@ -1,5 +1,5 @@
 <script lang="ts">
-	export interface Column {
+	export interface ColumnInfo {
 		key: string;
 		label: string;
 		width: number;
@@ -10,38 +10,51 @@
 	}
 
 	interface Props {
+		id: string;
+		columns: ColumnInfo[];
 		data?: RowData[];
 	}
 
-	let { data = [] }: Props = $props();
+	let { id, columns, data = [] }: Props = $props();
 
-	let columns = $state<Column[]>([
-		{ key: 'id', label: 'ID', width: 100 },
-		{ key: 'name', label: 'Name', width: 100 },
-		{ key: 'email', label: 'Email', width: 100 },
-		{ key: 'role', label: 'Role', width: 100 },
-		{ key: 'status', label: 'Status', width: 100 }
-	]);
+	function getSavedWidths(): Record<string, number> {
+		if (typeof window === 'undefined') return {};
+		try {
+			const saved = localStorage.getItem(`table_widths_${id}`);
+			return saved ? JSON.parse(saved) : {};
+		} catch {
+			return {};
+		}
+	}
 
-	const tableData: RowData[] = data.length
-		? data
-		: [
-				{ id: 1, name: 'Alice', email: 'alice@example.com', role: 'Admin', status: 'Active' },
-				{ id: 2, name: 'Bob', email: 'bob@example.com', role: 'User', status: 'Inactive' },
-				{ id: 3, name: 'Charlie', email: 'charlie@example.com', role: 'User', status: 'Active' }
-			];
+	let widthOverrides = $state<Record<string, number>>(getSavedWidths());
+
+	// If the parent mutates `columns`, override the saved values.
+	let activeColumns = $derived(
+		columns.map((col) => ({
+			...col,
+			width: widthOverrides[col.key] ?? col.width
+		}))
+	);
+
+	let tableWidth = $derived(activeColumns.reduce((sum, col) => sum + col.width, 0));
+
+	// Save to local storage whenever the widths change
+	$effect(() => {
+		if (typeof window !== 'undefined') {
+			localStorage.setItem(`table_widths_${id}`, JSON.stringify(widthOverrides));
+		}
+	});
 
 	let resizingIndex = $state<number>(-1);
 	let startX = $state<number>(0);
 	let startWidth = $state<number>(0);
-	let tableRef: HTMLTableElement; // Added ref to get font styles
-
-	let tableWidth = $derived(columns.reduce((sum, col) => sum + col.width, 0));
+	let tableRef: HTMLTableElement;
 
 	function onMouseDown(index: number, e: MouseEvent) {
 		resizingIndex = index;
 		startX = e.clientX;
-		startWidth = columns[index].width;
+		startWidth = activeColumns[index].width;
 
 		window.addEventListener('mousemove', onMouseMove);
 		window.addEventListener('mouseup', onMouseUp);
@@ -52,8 +65,9 @@
 
 		const currentX = e.clientX;
 		const diff = currentX - startX;
+		const colKey = activeColumns[resizingIndex].key;
 
-		columns[resizingIndex].width = Math.max(40, startWidth + diff);
+		widthOverrides[colKey] = Math.max(40, startWidth + diff);
 	}
 
 	function onMouseUp() {
@@ -65,17 +79,15 @@
 	function onDoubleClick(index: number) {
 		if (!tableRef) return;
 
-		const colKey = columns[index].key;
-		const headerText = columns[index].label;
-		const cellTexts = tableData.map((row) => String(row[colKey] ?? ''));
+		const colKey = activeColumns[index].key;
+		const headerText = activeColumns[index].label;
+		const cellTexts = data.map((row) => String(row[colKey] ?? ''));
 
-		// Create an off-screen span to measure text bounds accurately
 		const span = document.createElement('span');
 		span.style.visibility = 'hidden';
 		span.style.position = 'absolute';
 		span.style.whiteSpace = 'nowrap';
 
-		// Inherit base font styles from the table
 		const tableStyle = window.getComputedStyle(tableRef);
 		span.style.fontFamily = tableStyle.fontFamily;
 		span.style.fontSize = tableStyle.fontSize;
@@ -83,12 +95,12 @@
 
 		document.body.appendChild(span);
 
-		// Measure header (separated because of the bolder font-weight)
+		// Header
 		span.style.fontWeight = '600';
 		span.textContent = headerText;
 		let maxWidth = span.getBoundingClientRect().width;
 
-		// Measure all cells in the column
+		// Cells
 		span.style.fontWeight = tableStyle.fontWeight;
 		for (const text of cellTexts) {
 			span.textContent = text;
@@ -97,8 +109,7 @@
 
 		document.body.removeChild(span);
 
-		// Calculate final width: text width + 24px padding (12px * 2) + 8px breathing room
-		columns[index].width = Math.max(40, Math.ceil(maxWidth) + 32);
+		widthOverrides[colKey] = Math.max(40, Math.ceil(maxWidth) + 32);
 	}
 </script>
 
@@ -106,7 +117,7 @@
 	<table bind:this={tableRef} style="width: {tableWidth}px">
 		<thead>
 			<tr>
-				{#each columns as col, index}
+				{#each activeColumns as col, index}
 					<th style="width: {col.width}px">
 						<div class="header-content">
 							<span class="truncate">{col.label}</span>
@@ -122,9 +133,9 @@
 			</tr>
 		</thead>
 		<tbody>
-			{#each tableData as row}
+			{#each data as row}
 				<tr>
-					{#each columns as col}
+					{#each activeColumns as col}
 						<td>{row[col.key]}</td>
 					{/each}
 				</tr>
