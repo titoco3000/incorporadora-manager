@@ -38,13 +38,7 @@
 
 <main>
 	<h1>{data.label}</h1>
-	<Table id={data.tableSlug} columns={columnsDef} data={data.rows}>
-		<TableRow>
-			<TableCell>a</TableCell>
-			<TableCell>b</TableCell>
-			<TableCell>c</TableCell>
-		</TableRow>
-	</Table>
+	<Table id={data.tableSlug} columns={columnsDef} data={data.rows} />
 </main>
 
 <style>
