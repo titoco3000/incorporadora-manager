@@ -2,7 +2,7 @@
 	export interface ColumnInfo {
 		key: string;
 		label: string;
-		width: number;
+		width?: number;
 	}
 
 	export interface RowData {
@@ -33,7 +33,7 @@
 	let activeColumns = $derived(
 		columns.map((col) => ({
 			...col,
-			width: widthOverrides[col.key] ?? col.width
+			width: widthOverrides[col.key] ?? (col.width || 200)
 		}))
 	);
 
