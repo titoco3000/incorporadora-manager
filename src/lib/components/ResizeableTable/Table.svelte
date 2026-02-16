@@ -110,20 +110,19 @@
 	let sortedData = $derived.by(() => {
 		if (!sortKey) return data;
 
+		const sortColumn = activeColumns.find((c) => c.key === sortKey);
+
 		return [...data].sort((a, b) => {
 			const aVal = a[sortKey!];
 			const bVal = b[sortKey!];
 
-			if (aVal === bVal) return 0;
-			if (aVal == null) return 1; // Push nulls to the bottom
-			if (bVal == null) return -1;
-
 			let comparison = 0;
-			// Use localeCompare for nicer string sorting, fallback to standard operators
-			if (typeof aVal === 'string' && typeof bVal === 'string') {
-				comparison = (aVal as string).localeCompare(bVal);
+
+			// Use custom sort function if provided
+			if (sortColumn?.sortCompareFn) {
+				comparison = sortColumn.sortCompareFn(aVal as never, bVal as never);
 			} else {
-				comparison = aVal < bVal ? -1 : 1;
+				return 0;
 			}
 
 			return sortDirection === 'asc' ? comparison : -comparison;
@@ -147,7 +146,7 @@
 				{#each activeColumns as col, index}
 					<th style="width: {col.width}px">
 						<div class="header-content">
-							{#if col.sortable}
+							{#if col.sortCompareFn}
 								<button class="header-main" onclick={() => toggleSort(col.key)}>
 									<span class="truncate">{col.label}</span>
 									{#if sortKey === col.key}
@@ -185,6 +184,7 @@
 </div>
 
 <style>
+	/* Styles remain exactly the same */
 	.table-container {
 		width: 100%;
 		overflow-x: auto;
