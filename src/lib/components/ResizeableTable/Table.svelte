@@ -5,9 +5,11 @@
 		id: string;
 		columns: ColumnDef[];
 		data?: RowData[];
+		rowKey?: string;
+		onChange?: (rowID: string, columnKey: string, value: any) => void;
 	}
 
-	let { id, columns, data = [] }: Props = $props();
+	let { id, columns, data = [], rowKey, onChange }: Props = $props();
 
 	function getSavedWidths(): Record<string, number> {
 		if (typeof window === 'undefined') return {};
@@ -178,7 +180,11 @@
 						<td>
 							{#if col.renderer}
 								{@const Renderer = col.renderer}
-								<Renderer value={row[col.key]} {row} />
+								<Renderer
+									value={row[col.key]}
+									onChange={(newVal) =>
+										rowKey && onChange && onChange(row[rowKey], col.key, newVal)}
+								/>
 							{:else}
 								{row[col.key]}
 							{/if}

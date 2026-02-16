@@ -4,7 +4,7 @@ export interface ColumnDef {
 	key: string;
 	label: string;
 	width?: number;
-	renderer?: Component<any>;
+	renderer?: Component<{ value?: string; onChange?: (x: string) => void }>;
 	sortCompareFn?: (a: never, b: never) => number;
 }
 
