@@ -1,7 +1,7 @@
 // src/lib/table-config.ts
 import * as schema from '$lib/db/schema';
 import { getTableColumns, type Column, type Table } from 'drizzle-orm';
-import type { ColumnDef } from '$lib/types/table';
+import type { ColumnDef } from '$lib/components/ResizeableTable/types';
 
 // Map foreign keys to their table names (you may need to adjust based on your schema)
 const foreignKeyMap: Record<string, string> = {
@@ -54,13 +54,6 @@ function autoGenerateColumns(model: Table, labelOverrides: ColumnOverrides = {})
 			label: labelOverrides[key] || getDisplayName(key),
 			type
 		};
-
-		if (type === 'select' && foreignKeyMap[key]) {
-			colDef.reference = {
-				foreignTable: foreignKeyMap[key],
-				displayColumn: 'name'
-			};
-		}
 
 		columnDefs.push(colDef);
 	}
