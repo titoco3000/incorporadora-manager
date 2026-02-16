@@ -2,8 +2,15 @@
 	import MailLink from '$lib/components/NewDataTable/MailLink.svelte';
 	import SimpleInput from '$lib/components/NewDataTable/SimpleInput.svelte';
 	import Table from '$lib/components/ResizeableTable/Table.svelte';
-	import type { ColumnDef } from '$lib/components/ResizeableTable/types.js';
-	export let data;
+	import type { ColumnDef, RowData } from '$lib/components/ResizeableTable/types.js';
+
+	interface DataType {
+		rows: RowData[];
+		label: string;
+		tableSlug: string;
+	}
+
+	let { data } = $props<{ data: DataType }>();
 
 	const strCompare = (a: string, b: string) => a.localeCompare(b);
 
@@ -11,13 +18,14 @@
 		{
 			key: 'name',
 			label: 'Nome',
-			sortCompareFn: strCompare
+			sortCompareFn: strCompare,
+			renderer: SimpleInput
 		},
 		{
 			key: 'email',
 			label: 'Email',
 			sortCompareFn: strCompare,
-			renderer: MailLink
+			renderer: SimpleInput
 		},
 		{
 			key: 'phone',
@@ -28,12 +36,14 @@
 		{
 			key: 'role',
 			label: 'Cargo',
-			sortCompareFn: strCompare
+			sortCompareFn: strCompare,
+			renderer: SimpleInput
 		},
 		{
 			key: 'obs',
 			label: 'Observações',
-			sortCompareFn: strCompare
+			sortCompareFn: strCompare,
+			renderer: SimpleInput
 		}
 	];
 </script>

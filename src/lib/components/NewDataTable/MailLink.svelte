@@ -1,5 +1,5 @@
 <script lang="ts">
-	let { value } = $props<{ value: string; onChange: any }>();
+	let { value } = $props<{ value?: string; onChange?: (x: string) => void }>();
 </script>
 
 <a href="mailto:{value}" style="color: blue; text-decoration: underline;">
