@@ -12,9 +12,14 @@
 </script>
 
 <DataTable
-	type={data.tableSlug}
+	type={['suppliers', 'clients'].includes(data.tableSlug) ? 'companies' : data.tableSlug}
 	rows={data.rows}
 	label={data.label}
 	allowDelete={true}
 	allowEdit={true}
+	visibleColumns={data.tableSlug === 'suppliers'
+		? ['name', 'cnpj', 'transactionTypeId', 'obs']
+		: data.tableSlug === 'clients'
+			? ['name', 'cnpj', 'hqAddress', 'stateId', 'municipalityId', 'obs']
+			: undefined}
 />

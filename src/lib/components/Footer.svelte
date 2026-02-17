@@ -8,27 +8,27 @@
 <footer>
 	<nav>
 		<button disabled={isActive('/')} on:click={() => goto('/')}> Início </button>
-
 		<button disabled={isActive('/forms')} on:click={() => goto('/forms')}> Formulários </button>
-
 		<button disabled={isActive('/table/buildings')} on:click={() => goto('/table/buildings')}>
 			Imóveis
 		</button>
-
-		<button disabled={isActive('/table/companies')} on:click={() => goto('/table/companies')}>
-			Empresas
+		<button disabled={isActive('/table/suppliers')} on:click={() => goto('/table/suppliers')}>
+			Fornecedores
 		</button>
-
+		<button disabled={isActive('/table/clients')} on:click={() => goto('/table/clients')}>
+			Clientes
+		</button>
 		<button disabled={isActive('/table/contracts')} on:click={() => goto('/table/contracts')}>
 			Contratos
 		</button>
-
 		<button disabled={isActive('/table/contacts')} on:click={() => goto('/table/contacts')}>
 			Contatos
 		</button>
-
 		<button disabled={isActive('/table/transactions')} on:click={() => goto('/table/transactions')}>
 			Transações
+		</button>
+		<button disabled={isActive('/table/companies')} on:click={() => goto('/table/companies')}>
+			Empresas (todas)
 		</button>
 	</nav>
 </footer>
