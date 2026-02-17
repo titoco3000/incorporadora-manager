@@ -23,10 +23,13 @@
 		| 'contacts'
 		| 'transactions';
 
-	let { type, rows, label } = $props<{
+	let { type, rows, label, visibleColumns, allowDelete, allowEdit } = $props<{
 		type: TableType;
 		rows: RowData[];
 		label: string;
+		visibleColumns?: string[];
+		allowDelete?: boolean;
+		allowEdit?: boolean;
 	}>();
 
 	const col = (key: string, label: string, sortCompareFn: any, type: string) =>
@@ -102,6 +105,7 @@
 
 	function handleEdit(rowID: number, columnKey: string, value: any) {
 		if (columnKey == 'actions') return handleDelete(rowID);
+		if (!allowEdit) return;
 
 		const row = rows.find((r: RowData) => r.id === rowID);
 		if (row && row[columnKey] == value) return;
@@ -116,6 +120,7 @@
 	}
 
 	function handleDelete(rowID: number) {
+		if (!allowDelete) return;
 		if (!confirm('Tem certeza que deseja excluir este registro?')) return;
 
 		const apiClient = apiMap[type];
@@ -127,14 +132,20 @@
 			.catch((e: any) => console.error('Delete failed:', e));
 	}
 
-	// append the delete button to the final column
+	// Filter columns by visibleColumns (if provided), then append the delete button
 	let activeColumns = $derived([
-		...(baseColumnsDefs[type] || []),
-		{
-			key: 'actions',
-			label: 'Ações',
-			renderer: RowDeleteButton
-		} as unknown as ColumnDef
+		...(baseColumnsDefs[type] || []).filter(
+			(col) => !visibleColumns || visibleColumns.length === 0 || visibleColumns.includes(col.key)
+		),
+		...(allowDelete && allowEdit
+			? [
+					{
+						key: 'actions',
+						label: 'Ações',
+						renderer: RowDeleteButton
+					} as unknown as ColumnDef
+				]
+			: [])
 	]);
 </script>
 

@@ -11,4 +11,10 @@
 	let { data } = $props<{ data: DataType }>();
 </script>
 
-<DataTable type={data.tableSlug} rows={data.rows} label={data.label} />
+<DataTable
+	type={data.tableSlug}
+	rows={data.rows}
+	label={data.label}
+	allowDelete={true}
+	allowEdit={true}
+/>
