@@ -1,6 +1,7 @@
 export type CustomInputType =
 	| 'text'
 	| 'obs'
+	| 'bool'
 	| 'value'
 	| 'number'
 	| 'email'

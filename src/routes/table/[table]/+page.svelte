@@ -36,7 +36,7 @@
 				label: 'É Despesa',
 				sortCompareFn: boolCompare,
 				renderer: EventDrivenInput,
-				rendererParameters: { type: 'checkbox' }
+				rendererParameters: { type: 'bool' }
 			} as unknown as ColumnDef
 		],
 
@@ -154,7 +154,7 @@
 				label: 'É Fornecedor',
 				sortCompareFn: boolCompare,
 				renderer: EventDrivenInput,
-				rendererParameters: { type: 'checkbox' }
+				rendererParameters: { type: 'bool' }
 			} as unknown as ColumnDef,
 			{
 				key: 'obs',

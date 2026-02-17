@@ -102,6 +102,18 @@
 			</option>
 		{/each}
 	</select>
+{:else if type == 'bool'}
+	<input
+		{id}
+		{disabled}
+		{required}
+		{placeholder}
+		{style}
+		{...rest}
+		bind:checked={value}
+		type="checkbox"
+		oninput={handleInput}
+	/>
 {:else}
 	<input
 		{id}
