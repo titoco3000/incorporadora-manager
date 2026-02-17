@@ -1,10 +1,11 @@
 import type { Component } from 'svelte';
 
-export interface ColumnDef {
+export interface ColumnDef<Props extends Record<string, unknown> = Record<string, unknown>> {
 	key: string;
 	label: string;
 	width?: number;
-	renderer?: Component<{ value?: string; onChange?: (x: string) => void }>;
+	renderer?: Component<Props>;
+	rendererParameters?: Omit<Props, 'value' | 'onChange'>;
 	sortCompareFn?: (a: never, b: never) => number;
 }
 

@@ -181,12 +181,15 @@
 							{#if col.renderer}
 								{@const Renderer = col.renderer}
 								<Renderer
+									{...col.rendererParameters}
 									value={row[col.key]}
-									onChange={(newVal) =>
+									onChange={(newVal: any) =>
 										rowKey && onChange && onChange(row[rowKey], col.key, newVal)}
 								/>
 							{:else}
-								{row[col.key]}
+								<div class="spacer">
+									{row[col.key]}
+								</div>
 							{/if}
 						</td>
 					{/each}
@@ -221,7 +224,7 @@
 	td {
 		overflow: hidden;
 		text-overflow: ellipsis;
-		padding: 8px 12px;
+		height: 1px; /* Truque para ter descententes com 100% de altura */
 	}
 
 	th {
@@ -229,6 +232,9 @@
 		position: relative;
 		user-select: none;
 		overflow: visible;
+	}
+	.spacer {
+		padding: 8px 12px;
 	}
 
 	.header-content {
