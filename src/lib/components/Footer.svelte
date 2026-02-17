@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
-	import { tableRegistry } from '$lib/table-config';
 
 	const isActive = (href: string) => page.url.pathname === href;
 </script>
@@ -13,23 +12,23 @@
 		<button disabled={isActive('/forms')} on:click={() => goto('/forms')}> Formulários </button>
 
 		<button disabled={isActive('/table/buildings')} on:click={() => goto('/table/buildings')}>
-			{tableRegistry.buildings.label}
+			Imóveis
 		</button>
 
 		<button disabled={isActive('/table/companies')} on:click={() => goto('/table/companies')}>
-			{tableRegistry.companies.label}
+			Empresas
 		</button>
 
 		<button disabled={isActive('/table/contracts')} on:click={() => goto('/table/contracts')}>
-			{tableRegistry.contracts.label}
+			Contratos
 		</button>
 
 		<button disabled={isActive('/table/contacts')} on:click={() => goto('/table/contacts')}>
-			{tableRegistry.contacts.label}
+			Contatos
 		</button>
 
 		<button disabled={isActive('/table/transactions')} on:click={() => goto('/table/transactions')}>
-			{tableRegistry.transactions.label}
+			Transações
 		</button>
 	</nav>
 </footer>

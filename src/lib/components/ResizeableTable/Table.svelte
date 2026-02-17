@@ -175,7 +175,7 @@
 		</thead>
 		<tbody>
 			{#each sortedData as row}
-				<tr>
+				<tr id={rowKey ? `row-${row[rowKey]}` : ''}>
 					{#each activeColumns as col}
 						<td>
 							{#if col.renderer}
