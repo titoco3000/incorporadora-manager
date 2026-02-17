@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { invalidateAll } from '$app/navigation';
+	import { api } from '$lib/api';
 	import EventDrivenInput from '$lib/components/NewDataTable/EventDrivenInput.svelte';
 	import Table from '$lib/components/ResizeableTable/Table.svelte';
 	import type { ColumnDef, RowData } from '$lib/components/ResizeableTable/types.js';
@@ -20,7 +22,7 @@
 
 	let { data } = $props<{ data: DataType }>();
 
-	export const columnsDefs: Record<string, ColumnDef[]> = {
+	const columnsDefs: Record<string, ColumnDef[]> = {
 		'transaction-types': [
 			{
 				key: 'name',
@@ -168,7 +170,7 @@
 				key: 'startDate',
 				label: 'Data de Início',
 				sortCompareFn: dateCompare,
-				// renderer: EventDrivenInput,
+				renderer: EventDrivenInput,
 				rendererParameters: { type: 'date' }
 			} as unknown as ColumnDef,
 			{
@@ -305,6 +307,36 @@
 			} as unknown as ColumnDef
 		]
 	};
+
+	const apiMap: Record<string, any> = {
+		'transaction-types': api.transactionTypes,
+		buildings: api.buildings,
+		companies: api.companies,
+		contacts: api.contacts,
+		contracts: api.contracts,
+		transactions: api.transactions
+	};
+
+	function handleEdit(rowID: string, columnKey: string, value: any) {
+		const row = data.rows.find((row: RowData) => row.id === rowID);
+
+		if (row[columnKey] == value) {
+			return;
+		}
+
+		const apiClient = apiMap[data.tableSlug];
+		if (!apiClient) {
+			console.error(`No API client found for table: ${data.tableSlug}`);
+			return;
+		}
+
+		apiClient
+			.patch(rowID, { [columnKey]: value })
+			.then(() => {
+				invalidateAll();
+			})
+			.catch((e: any) => console.error('Save failed:', e));
+	}
 </script>
 
 <main>
@@ -314,7 +346,7 @@
 		columns={columnsDefs[data.tableSlug]}
 		data={data.rows}
 		rowKey="id"
-		onChange={(rowID, columnKey, value) => console.log(rowID, columnKey, value)}
+		onChange={handleEdit}
 	/>
 </main>
 

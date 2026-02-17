@@ -21,7 +21,17 @@
 		draftValue = value;
 	});
 
-	const handleFocusOut = () => draftValue !== value && onChange?.(draftValue);
+	$effect(
+		() =>
+			['supplier', 'company', 'building', 'transactionType'].includes(type) &&
+			draftValue !== value &&
+			onChange?.(draftValue)
+	);
+
+	const handleFocusOut = () =>
+		!['supplier', 'company', 'building', 'transactionType'].includes(type) &&
+		draftValue !== value &&
+		onChange?.(draftValue);
 </script>
 
 <CustomInput {type} bind:value={draftValue} {...rest} onfocusout={handleFocusOut} />
