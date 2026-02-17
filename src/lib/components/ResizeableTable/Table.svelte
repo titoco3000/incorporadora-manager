@@ -6,7 +6,7 @@
 		columns: ColumnDef[];
 		data?: RowData[];
 		rowKey?: string;
-		onChange?: (rowID: string, columnKey: string, value: any) => void;
+		onChange?: (rowID: any, columnKey: string, value: any) => void;
 	}
 
 	let { id, columns, data = [], rowKey, onChange }: Props = $props();

@@ -317,7 +317,7 @@
 		transactions: api.transactions
 	};
 
-	function handleEdit(rowID: string, columnKey: string, value: any) {
+	function handleEdit(rowID: number, columnKey: string, value: any) {
 		const row = data.rows.find((row: RowData) => row.id === rowID);
 
 		if (row[columnKey] == value) {
@@ -336,6 +336,15 @@
 				invalidateAll();
 			})
 			.catch((e: any) => console.error('Save failed:', e));
+	}
+
+	function handleDelete(rowID: number) {
+		const apiClient = apiMap[data.tableSlug];
+		if (!apiClient) {
+			console.error(`No API client found for table: ${data.tableSlug}`);
+			return;
+		}
+		apiClient.delete(rowID);
 	}
 </script>
 
