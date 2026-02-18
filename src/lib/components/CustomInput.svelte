@@ -94,12 +94,14 @@
 
 	function handleInput(e: Event) {
 		const target = e.target as HTMLInputElement | HTMLTextAreaElement;
-		let rawValue = target.value;
+
+		let rawValue: string | boolean = target.value;
 
 		if (type === 'cnpj') {
 			rawValue = formatCnpj(rawValue);
 			target.value = rawValue;
 		}
+		if (type == 'bool') rawValue = target.value === 'on';
 
 		value = rawValue;
 	}

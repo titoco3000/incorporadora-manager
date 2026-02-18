@@ -30,6 +30,12 @@
 		<button disabled={isActive('/table/companies')} on:click={() => goto('/table/companies')}>
 			Empresas (todas)
 		</button>
+		<button
+			disabled={isActive('/table/transaction-types')}
+			on:click={() => goto('/table/transaction-types')}
+		>
+			Tipos de Transação
+		</button>
 	</nav>
 </footer>
 
