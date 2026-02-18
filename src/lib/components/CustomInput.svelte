@@ -127,6 +127,7 @@
 		{...rest}
 		bind:value
 		type={type === 'value' || type === 'number' ? 'number' : type === 'date' ? 'date' : 'text'}
+		step={type === 'value' ? 0.01 : type === 'number' ? 0.1 : undefined}
 		oninput={handleInput}
 	/>
 {/if}

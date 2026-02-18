@@ -150,6 +150,7 @@
 					: field.type === 'date'
 						? 'date'
 						: 'text'}
+				step={field.type === 'value' ? 0.01 : field.type === 'number' ? 0.1 : undefined}
 				class="field-input"
 				{disabled}
 				required={field.required}
