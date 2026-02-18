@@ -61,10 +61,7 @@
 
 <main>
 	<header>
-		<div class="title-block">
-			<h2>Incorporadora</h2>
-			<h1>Costa Leste</h1>
-		</div>
+		<div class="title-block"></div>
 		<div class="header-controls">
 			<DateRangeInput bind:start bind:end />
 		</div>
@@ -79,13 +76,13 @@
 		<div class="panel-container column wide-column">
 			<div class="panel gastos-por-area">
 				<h3>Gastos por Área</h3>
-				<DynamicallyReloadedBlock loading={navigating.to!=null}>
+				<DynamicallyReloadedBlock loading={navigating.to != null}>
 					<PieGraph data={data.pieData} />
 				</DynamicallyReloadedBlock>
 			</div>
 			<div class="panel volume-imoveis">
 				<h3>Entradas e saidas por Imóvel</h3>
-				<DynamicallyReloadedBlock loading={navigating.to!=null}>
+				<DynamicallyReloadedBlock loading={navigating.to != null}>
 					<BarGraph data={data.barData} />
 				</DynamicallyReloadedBlock>
 			</div>
@@ -106,11 +103,6 @@
 		justify-content: space-between;
 		flex-wrap: wrap;
 		margin: 30px 0;
-	}
-	h2 {
-		color: var(--text-color-1);
-		font-size: 1em;
-		font-weight: 100;
 	}
 	.panels {
 		display: flex;
