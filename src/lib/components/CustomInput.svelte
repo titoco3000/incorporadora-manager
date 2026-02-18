@@ -90,6 +90,7 @@
 		{required}
 		{placeholder}
 		{style}
+		autocomplete="off"
 		{...rest}
 		bind:value
 		oninput={handleInput}
@@ -109,6 +110,7 @@
 		{required}
 		{placeholder}
 		{style}
+		autocomplete="off"
 		{...rest}
 		bind:checked={value}
 		type="checkbox"
@@ -121,6 +123,7 @@
 		{required}
 		{placeholder}
 		{style}
+		autocomplete="off"
 		{...rest}
 		bind:value
 		type={type === 'value' || type === 'number' ? 'number' : type === 'date' ? 'date' : 'text'}

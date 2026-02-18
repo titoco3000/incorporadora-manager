@@ -115,6 +115,7 @@
 				bind:value
 				oninput={handleInput}
 				placeholder={field.label}
+				autocomplete="off"
 			></textarea>
 		{:else if ['supplier', 'company', 'building', 'transactionType'].includes(field.type)}
 			<select
@@ -153,6 +154,7 @@
 				{disabled}
 				required={field.required}
 				value={value ?? ''}
+				autocomplete="off"
 				oninput={handleInput}
 				placeholder={field.type === 'cnpj' ? '00.000.000/0000-00' : ''}
 			/>
