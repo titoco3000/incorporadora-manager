@@ -169,7 +169,7 @@
 
 			const selected = baseOptions.find((o) => o.id === value);
 			filterText = selected?.name || '';
-		}, 100);
+		}, 300);
 	}
 </script>
 
