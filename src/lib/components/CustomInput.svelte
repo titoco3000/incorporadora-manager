@@ -9,6 +9,7 @@
 		disabled = false,
 		placeholder = '',
 		required = false,
+		emptyLabel = '--',
 		id,
 		style,
 		optionStyle,
@@ -19,22 +20,61 @@
 		disabled?: boolean;
 		placeholder?: string;
 		required?: boolean;
+		emptyLabel?: string;
 		id?: string;
 		style?: string;
 		optionStyle?: string;
 		[key: string]: any;
 	}>();
 
+	let dropdownContainerRef = $state<HTMLDivElement>();
+
 	let companies = $state<Company[]>([]);
 	let suppliers = $state<Company[]>([]);
 	let buildings = $state<Building[]>([]);
 	let transactionTypes = $state<TransactionType[]>([]);
+
+	let isDropdownOpen = $state(false);
+	let filterText = $state('');
+	let dropdownRef = $state<HTMLDivElement>();
 
 	$effect(() => {
 		if (['supplier', 'company', 'building', 'transactionType'].includes(type)) {
 			fetchOptions(type);
 		}
 	});
+
+	function floatDropdown(node: HTMLElement, referenceNode: HTMLElement | undefined) {
+		if (!referenceNode) return;
+
+		document.body.appendChild(node);
+
+		function updatePosition() {
+			if (!referenceNode) return;
+			const rect = referenceNode.getBoundingClientRect();
+
+			node.style.position = 'fixed';
+			node.style.top = `${rect.bottom}px`;
+			node.style.left = `${rect.left}px`;
+			node.style.width = `${rect.width}px`;
+			node.style.zIndex = '9999';
+		}
+
+		updatePosition();
+
+		window.addEventListener('scroll', updatePosition, true);
+		window.addEventListener('resize', updatePosition);
+
+		return {
+			destroy() {
+				window.removeEventListener('scroll', updatePosition, true);
+				window.removeEventListener('resize', updatePosition);
+				if (node.parentNode) {
+					node.parentNode.removeChild(node);
+				}
+			}
+		};
+	}
 
 	const fetchOptions = async (type: string) => {
 		try {
@@ -73,14 +113,64 @@
 			.replace(/(\d{4})(\d)/, '$1-$2');
 	}
 
-	// Helper to get correct option array based on type
-	const getOptions = () => {
-		if (type === 'supplier') return suppliers;
-		if (type === 'company') return companies;
-		if (type === 'building') return buildings;
-		if (type === 'transactionType') return transactionTypes;
-		return [];
-	};
+	let baseOptions = $derived(
+		type === 'supplier'
+			? suppliers
+			: type === 'company'
+				? companies
+				: type === 'building'
+					? buildings
+					: type === 'transactionType'
+						? transactionTypes
+						: []
+	);
+
+	let filteredOptions = $derived(
+		baseOptions.filter((opt) => {
+			const text = (opt.name || opt.id).toString().toLowerCase();
+			return text.includes(filterText.toLowerCase());
+		})
+	);
+
+	$effect(() => {
+		if (!isDropdownOpen) {
+			const selected = baseOptions.find((o) => o.id === value);
+			if (selected) {
+				filterText = selected.name;
+			} else if (!value) {
+				filterText = '';
+			}
+		}
+	});
+
+	$effect(() => {
+		function handleClickOutside(event: MouseEvent) {
+			if (dropdownRef && !dropdownRef.contains(event.target as Node)) {
+				isDropdownOpen = false;
+
+				// Revert filter text to currently selected value if they click away
+				const selected = baseOptions.find((o) => o.id === value);
+				filterText = selected?.name || '';
+			}
+		}
+		document.addEventListener('mousedown', handleClickOutside);
+		return () => document.removeEventListener('mousedown', handleClickOutside);
+	});
+
+	function selectOption(optValue: any, optName: string) {
+		value = optValue;
+		filterText = optName;
+		isDropdownOpen = false;
+	}
+
+	function handleBlur() {
+		setTimeout(() => {
+			isDropdownOpen = false;
+
+			const selected = baseOptions.find((o) => o.id === value);
+			filterText = selected?.name || '';
+		}, 100);
+	}
 </script>
 
 {#if type === 'obs'}
@@ -96,13 +186,43 @@
 		oninput={handleInput}
 	></textarea>
 {:else if ['supplier', 'company', 'building', 'transactionType'].includes(type)}
-	<select {id} {disabled} {required} {placeholder} {style} {...rest} bind:value>
-		{#each getOptions() as option}
-			<option value={option.id} style={optionStyle}>
-				{option.name || option.id}
-			</option>
-		{/each}
-	</select>
+	<div class="dropdown-container" bind:this={dropdownContainerRef}>
+		<input
+			{id}
+			{disabled}
+			{required}
+			{placeholder}
+			{style}
+			autocomplete="off"
+			bind:value={filterText}
+			onfocus={() => (isDropdownOpen = true)}
+			oninput={() => (isDropdownOpen = true)}
+			onblur={handleBlur}
+			{...rest}
+		/>
+
+		{#if isDropdownOpen}
+			<div class="dropdown-list" use:floatDropdown={dropdownContainerRef}>
+				{#if !required}
+					<button onclick={() => selectOption(null, '')} style={optionStyle} class="empty-option">
+						{emptyLabel || ''}
+					</button>
+				{/if}
+				{#each filteredOptions as option}
+					<button
+						onclick={() => selectOption(option.id, option.name)}
+						style={optionStyle}
+						class:selected={value === option.id}
+					>
+						{option.name || option.id}
+					</button>
+				{/each}
+				{#if filteredOptions.length === 0}
+					<li class="no-options">No options found</li>
+				{/if}
+			</div>
+		{/if}
+	</div>
 {:else if type == 'bool'}
 	<input
 		{id}
@@ -134,17 +254,66 @@
 
 <style>
 	textarea,
-	input,
-	select {
+	input {
 		display: block;
-		height: 100%; /* Fallback for older browsers */
-		height: -moz-available; /* Firefox */
-		height: -webkit-fill-available; /* Chrome, Safari, Edge */
-		height: stretch; /* Modern standard */
+		height: 100%;
 		width: 100%;
 		min-width: 0;
 		background-color: transparent;
 		border: none;
 		outline: none;
+	}
+
+	.dropdown-container {
+		position: relative;
+		height: 100%;
+		width: 100%;
+	}
+
+	.dropdown-list {
+		position: absolute;
+		top: 100%;
+		left: 0;
+		width: 100%;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		background: Canvas;
+		color: CanvasText;
+		border-top: none;
+		max-height: 200px;
+		z-index: 100;
+		overflow: hidden auto;
+	}
+
+	.dropdown-list button {
+		padding: 6px 8px;
+		width: 100%;
+		text-align: left;
+		text-wrap: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	.dropdown-list button:hover {
+		background: Highlight;
+		color: HighlightText;
+	}
+
+	.dropdown-list button.selected {
+		opacity: 0.5;
+	}
+
+	.no-options {
+		color: GrayText;
+		cursor: default !important;
+	}
+
+	.dropdown-list button.empty-option {
+		font-style: italic;
+		color: GrayText;
+	}
+	.dropdown-list button.empty-option:hover {
+		color: HighlightText;
 	}
 </style>

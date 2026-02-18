@@ -32,23 +32,29 @@
 		allowEdit?: boolean;
 	}>();
 
-	const col = (key: string, label: string, sortCompareFn: any, type: string) =>
+	const col = (
+		key: string,
+		label: string,
+		sortCompareFn: any,
+		type: string,
+		required: boolean = false
+	) =>
 		({
 			key,
 			label,
 			sortCompareFn,
 			renderer: EventDrivenInput,
-			rendererParameters: { type }
+			rendererParameters: { type, required }
 		}) as unknown as ColumnDef;
 
 	const baseColumnsDefs: Record<string, ColumnDef[]> = {
 		'transaction-types': [
-			col('name', 'Nome', strCompare, 'text'),
-			col('isExpense', 'É Despesa', boolCompare, 'bool')
+			col('name', 'Nome', strCompare, 'text', true),
+			col('isExpense', 'É Despesa', boolCompare, 'bool', true)
 		],
 		buildings: [
-			col('name', 'Nome', strCompare, 'text'),
-			col('address', 'Endereço', strCompare, 'text'),
+			col('name', 'Nome', strCompare, 'text', true),
+			col('address', 'Endereço', strCompare, 'text', true),
 			col('iptuId', 'Nº IPTU', strCompare, 'text'),
 			col('terrainArea', 'Área do Terreno (m²)', numCompare, 'number'),
 			col('builtArea', 'Área Construída (m²)', numCompare, 'number'),
@@ -58,36 +64,36 @@
 			col('obs', 'Observações', strCompare, 'obs')
 		],
 		companies: [
-			col('name', 'Nome', strCompare, 'text'),
+			col('name', 'Nome', strCompare, 'text', true),
 			col('cnpj', 'CNPJ', strCompare, 'text'),
 			col('hqAddress', 'Endereço da Sede', strCompare, 'text'),
 			col('stateId', 'Inscrição Estadual', strCompare, 'text'),
 			col('municipalityId', 'Inscrição Municipal', strCompare, 'text'),
 			col('transactionTypeId', 'Tipo de Transação', transactionTypeCompare, 'transactionType'),
-			col('isSupplier', 'É Fornecedor', boolCompare, 'bool'),
+			col('isSupplier', 'É Fornecedor', boolCompare, 'bool', true),
 			col('obs', 'Observações', strCompare, 'obs')
 		],
 		contracts: [
-			col('startDate', 'Data de Início', dateCompare, 'date'),
-			col('buildingId', 'Imóvel', buildingCompare, 'building'),
-			col('companyId', 'Empresa', companyCompare, 'company'),
+			col('startDate', 'Data de Início', dateCompare, 'date', true),
+			col('buildingId', 'Imóvel', buildingCompare, 'building', true),
+			col('companyId', 'Empresa', companyCompare, 'company', true),
 			col('startValue', 'Valor Inicial', numCompare, 'number'),
 			col('expirationDate', 'Data de Vencimento', dateCompare, 'date'),
 			col('obs', 'Observações', strCompare, 'obs')
 		],
 		contacts: [
-			col('name', 'Nome', strCompare, 'text'),
+			col('name', 'Nome', strCompare, 'text', true),
 			col('email', 'E-mail', strCompare, 'text'),
 			col('phone', 'Telefone', strCompare, 'text'),
 			col('role', 'Cargo', strCompare, 'text'),
-			col('companyId', 'Empresa', companyCompare, 'company'),
+			col('companyId', 'Empresa', companyCompare, 'company', true),
 			col('obs', 'Observações', strCompare, 'obs')
 		],
 		transactions: [
-			col('transactionTypeId', 'Tipo', transactionTypeCompare, 'transactionType'),
-			col('value', 'Valor', numCompare, 'value'),
-			col('companyId', 'Empresa', companyCompare, 'company'),
-			col('date', 'Data', dateCompare, 'date'),
+			col('transactionTypeId', 'Tipo', transactionTypeCompare, 'transactionType', true),
+			col('value', 'Valor', numCompare, 'value', true),
+			col('companyId', 'Empresa', companyCompare, 'company', true),
+			col('date', 'Data', dateCompare, 'date', true),
 			col('buildingId', 'Imóvel', buildingCompare, 'building'),
 			col('document', 'Documento', strCompare, 'text'),
 			col('obs', 'Observações', strCompare, 'obs')
