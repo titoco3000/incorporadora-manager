@@ -41,8 +41,7 @@
 			label: 'Documento',
 			type: 'text',
 			name: 'document',
-			size: 0.5,
-			required: true
+			size: 0.5
 		},
 		{
 			label: 'Empresa',
@@ -57,8 +56,7 @@
 			type: 'building',
 			name: 'building',
 			postKey: 'buildingId',
-			size: 0.5,
-			required: true
+			size: 0.5
 		},
 		{
 			label: 'Observações',
