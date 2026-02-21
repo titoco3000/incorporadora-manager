@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Component, Snippet } from 'svelte';
+	import type { Component, ComponentType, Snippet } from 'svelte';
 	import { page } from '$app/state';
 
 	let {
@@ -9,7 +9,7 @@
 		children
 	} = $props<{
 		href: string;
-		icon?: Component;
+		icon?: Component<any> | ComponentType;
 		size?: number;
 		children?: Snippet;
 	}>();
