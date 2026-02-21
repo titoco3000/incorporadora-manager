@@ -2,6 +2,7 @@
 	import type { CustomInputType } from './../types/CustomInput.ts';
 	import type { Company, Building, TransactionType } from '$lib/types/api';
 	import { api } from '$lib/api';
+	import ValueInput from './ValueInput.svelte';
 
 	let {
 		type,
@@ -100,8 +101,7 @@
 		if (type === 'cnpj') {
 			rawValue = formatCnpj(rawValue);
 			target.value = rawValue;
-		}
-		if (type == 'bool') rawValue = target.value === 'on';
+		} else if (type == 'bool') rawValue = target.value === 'on';
 
 		value = rawValue;
 	}
@@ -236,6 +236,18 @@
 		{...rest}
 		bind:checked={value}
 		type="checkbox"
+		oninput={handleInput}
+	/>
+{:else if type == 'value'}
+	<ValueInput
+		{id}
+		{disabled}
+		{required}
+		{placeholder}
+		{style}
+		autocomplete="off"
+		{...rest}
+		bind:value
 		oninput={handleInput}
 	/>
 {:else}
