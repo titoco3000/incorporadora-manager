@@ -37,14 +37,8 @@ Ao mudar dados no schema:
 
 ## TODO
 
-- Melhorar navegação
-- Melhorar estilos
-- Ao preencher o fornecedor de uma transação, se ele tiver um tipo de transação e a transação do form estiver vazia, preencher ela
-- Permitir redimensionar colunas das tabelas
-- Criar reports
-    - Lista de Transações filtradas por periodo, area, empresa, tipo
-- Fazer dashboard de inicio
-    - pie chart de gasto por imovel
-    - pie chart de ganho por imovel
-    - Grafico de barras horizontais (eixo central) com gastos de um lado e ganhos do outro por imovel
-    - Pensar que outros relatorios que podem ser uteis
+- Form de transacao
+    - mover empresa para o inicio
+    - Ao preencher empresa, preencher tipo e imovel se estiverem vazios
+    - Preenher com data de hoje
+

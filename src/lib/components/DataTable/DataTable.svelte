@@ -56,11 +56,8 @@
 			col('name', 'Nome', strCompare, 'text', true),
 			col('address', 'Endereço', strCompare, 'text', true),
 			col('iptuId', 'Nº IPTU', strCompare, 'text'),
-			col('terrainArea', 'Área do Terreno (m²)', numCompare, 'number'),
-			col('builtArea', 'Área Construída (m²)', numCompare, 'number'),
 			col('insuranceInfo', 'Informações do Seguro', strCompare, 'text'),
-			col('height', 'Altura (m)', numCompare, 'number'),
-			col('floorWeightCapacity', 'Capacidade do Piso (ton/m²)', numCompare, 'number'),
+			col('characteristics', 'Características', strCompare, 'obs'),
 			col('obs', 'Observações', strCompare, 'obs')
 		],
 		company: [

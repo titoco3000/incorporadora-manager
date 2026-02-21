@@ -1,6 +1,4 @@
 <script lang="ts">
-	import DataTable from '$lib/components/DataTable/DataTable.svelte';
-	import type { RowData } from '$lib/components/ResizeableTable/types.js';
 	import BuildingForm from '$lib/components/forms/forms/BuildingForm.svelte';
 	import ClientForm from '$lib/components/forms/forms/ClientForm.svelte';
 	import ContactForm from '$lib/components/forms/forms/ContactForm.svelte';

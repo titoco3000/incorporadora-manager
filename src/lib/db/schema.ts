@@ -1,14 +1,5 @@
 //src/lib/db/schema.ts
-import {
-	pgTable,
-	serial,
-	text,
-	doublePrecision,
-	boolean,
-	integer,
-	date,
-	numeric
-} from 'drizzle-orm/pg-core';
+import { pgTable, serial, text, boolean, integer, date, numeric } from 'drizzle-orm/pg-core';
 
 export const transactionType = pgTable('transaction_type', {
 	id: serial('id').primaryKey(),
@@ -21,11 +12,8 @@ export const building = pgTable('building', {
 	name: text('name').notNull().unique(),
 	address: text('address').notNull(),
 	iptuId: text('iptu_id'),
-	terrainArea: doublePrecision('terrain_area'),
-	builtArea: doublePrecision('built_area'),
 	insuranceInfo: text('insurance_info'),
-	floorWeightCapacity: doublePrecision('floor_weight_capacity'),
-	height: doublePrecision('height'),
+	characteristics: text('characteristics'),
 	obs: text('obs')
 });
 

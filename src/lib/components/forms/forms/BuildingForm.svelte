@@ -11,7 +11,13 @@
 			type: 'text',
 			label: 'Nome',
 			required: true,
-			size: 1
+			size: 0.5
+		},
+		{
+			label: 'Código de IPTU',
+			type: 'text',
+			name: 'iptuId',
+			size: 0.5
 		},
 		{
 			label: 'Endereço',
@@ -21,39 +27,15 @@
 			required: true
 		},
 		{
-			label: 'Código de IPTU',
-			type: 'text',
-			name: 'iptuId',
-			size: 1
-		},
-		{
-			label: 'Área do Terreno (m²)',
-			type: 'number',
-			name: 'terrainArea',
-			size: 0.5
-		},
-		{
-			label: 'Área Construída (m²)',
-			type: 'number',
-			name: 'builtArea',
-			size: 0.5
-		},
-		{
-			label: 'Altura (m)',
-			type: 'number',
-			name: 'height',
-			size: 0.5
-		},
-		{
-			label: 'Capacidade do Piso (ton/m²)',
-			type: 'number',
-			name: 'floorWeightCapacity',
-			size: 0.5
-		},
-		{
 			label: 'Informações do Seguro',
 			type: 'obs',
 			name: 'insuranceInfo',
+			size: 1
+		},
+		{
+			label: 'Características',
+			type: 'obs',
+			name: 'characteristics',
 			size: 1
 		},
 		{
