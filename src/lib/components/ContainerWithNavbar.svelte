@@ -3,18 +3,10 @@
 	import type { Snippet } from 'svelte';
 	import SidebarItem from './SidebarItem.svelte';
 
-	import {
-		HandCoins,
-		Truck,
-		Contact,
-		Users,
-		FileText,
-		Building2,
-		Menu,
-		Pilcrow
-	} from 'lucide-svelte';
+	import { HandCoins, Truck, Contact, Users, FileText, Building2, Pilcrow } from 'lucide-svelte';
 
 	import PageButton from './PageButton.svelte';
+	import CompanyHeader from './CompanyHeader.svelte';
 
 	let { children } = $props<{
 		children?: Snippet;
@@ -24,8 +16,7 @@
 <ContainerWithMenu width={240}>
 	{#snippet menuHeader()}
 		<a class="header" href="/">
-			<h2>Incorporadora</h2>
-			<h1>Costa Leste</h1>
+			<CompanyHeader />
 		</a>
 	{/snippet}
 	{#snippet menuContent()}
@@ -56,10 +47,5 @@
 		margin: 20px;
 		display: block;
 		text-decoration: none;
-	}
-	h2 {
-		color: var(--text-color-1);
-		font-size: 1em;
-		font-weight: 100;
 	}
 </style>

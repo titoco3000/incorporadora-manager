@@ -16,12 +16,12 @@
 	} from '$lib/sortComparators';
 
 	export type TableType =
-		| 'transaction-types'
-		| 'buildings'
-		| 'companies'
-		| 'contracts'
-		| 'contacts'
-		| 'transactions';
+		| 'transaction-type'
+		| 'building'
+		| 'company'
+		| 'contract'
+		| 'contact'
+		| 'transaction';
 
 	let { type, rows, label, visibleColumns, allowDelete, allowEdit } = $props<{
 		type: TableType;
@@ -48,11 +48,11 @@
 		}) as unknown as ColumnDef;
 
 	const baseColumnsDefs: Record<string, ColumnDef[]> = {
-		'transaction-types': [
+		'transaction-type': [
 			col('name', 'Nome', strCompare, 'text', true),
 			col('isExpense', 'É Despesa', boolCompare, 'bool', true)
 		],
-		buildings: [
+		building: [
 			col('name', 'Nome', strCompare, 'text', true),
 			col('address', 'Endereço', strCompare, 'text', true),
 			col('iptuId', 'Nº IPTU', strCompare, 'text'),
@@ -63,7 +63,7 @@
 			col('floorWeightCapacity', 'Capacidade do Piso (ton/m²)', numCompare, 'number'),
 			col('obs', 'Observações', strCompare, 'obs')
 		],
-		companies: [
+		company: [
 			col('name', 'Nome', strCompare, 'text', true),
 			col('cnpj', 'CNPJ', strCompare, 'text'),
 			col('hqAddress', 'Endereço da Sede', strCompare, 'text'),
@@ -73,7 +73,7 @@
 			col('isSupplier', 'É Fornecedor', boolCompare, 'bool', true),
 			col('obs', 'Observações', strCompare, 'obs')
 		],
-		contracts: [
+		contract: [
 			col('startDate', 'Data de Início', dateCompare, 'date', true),
 			col('buildingId', 'Imóvel', buildingCompare, 'building', true),
 			col('companyId', 'Empresa', companyCompare, 'company', true),
@@ -81,7 +81,7 @@
 			col('expirationDate', 'Data de Vencimento', dateCompare, 'date'),
 			col('obs', 'Observações', strCompare, 'obs')
 		],
-		contacts: [
+		contact: [
 			col('name', 'Nome', strCompare, 'text', true),
 			col('email', 'E-mail', strCompare, 'text'),
 			col('phone', 'Telefone', strCompare, 'text'),
@@ -89,7 +89,7 @@
 			col('companyId', 'Empresa', companyCompare, 'company', true),
 			col('obs', 'Observações', strCompare, 'obs')
 		],
-		transactions: [
+		transaction: [
 			col('transactionTypeId', 'Tipo', transactionTypeCompare, 'transactionType', true),
 			col('value', 'Valor', numCompare, 'value', true),
 			col('companyId', 'Empresa', companyCompare, 'company', true),
@@ -101,12 +101,12 @@
 	};
 
 	const apiMap: Record<string, any> = {
-		'transaction-types': api.transactionTypes,
-		buildings: api.buildings,
-		companies: api.companies,
-		contacts: api.contacts,
-		contracts: api.contracts,
-		transactions: api.transactions
+		'transaction-type': api.transactionTypes,
+		building: api.buildings,
+		company: api.companies,
+		contact: api.contacts,
+		contract: api.contracts,
+		transaction: api.transactions
 	};
 
 	function handleEdit(rowID: number, columnKey: string, value: any) {

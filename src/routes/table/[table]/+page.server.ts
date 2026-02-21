@@ -5,14 +5,14 @@ import * as schema from '$lib/db/schema';
 import { eq, or, isNotNull } from 'drizzle-orm';
 
 const schemaMap = {
-	'transaction-types': schema.transactionType,
-	buildings: schema.building,
-	companies: schema.company,
-	contracts: schema.contract,
-	contacts: schema.contact,
-	transactions: schema.transaction,
-	suppliers: schema.company,
-	clients: schema.company
+	'transaction-type': schema.transactionType,
+	building: schema.building,
+	company: schema.company,
+	contract: schema.contract,
+	contact: schema.contact,
+	transaction: schema.transaction,
+	supplier: schema.company,
+	client: schema.company
 } as const;
 
 type TableKey = keyof typeof schemaMap;
@@ -25,9 +25,9 @@ export const load = async ({ params }) => {
 
 	let rows;
 
-	if (tableParam === 'suppliers') {
+	if (tableParam === 'supplier') {
 		rows = await db.select().from(schema.company).where(eq(schema.company.isSupplier, true));
-	} else if (tableParam === 'clients') {
+	} else if (tableParam === 'client') {
 		rows = await db
 			.select()
 			.from(schema.company)

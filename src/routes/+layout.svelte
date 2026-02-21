@@ -1,10 +1,12 @@
 <script lang="ts">
 	import '../app.css';
 	import favicon from '$lib/assets/favicon.svg';
-	import Footer from '$lib/components/Footer.svelte';
 	import ContainerWithNavbar from '$lib/components/ContainerWithNavbar.svelte';
+	import LoginScreen from '$lib/components/LoginScreen.svelte';
 
 	let { children } = $props();
+
+	const userAuthenticated = true;
 </script>
 
 <svelte:head>
@@ -12,9 +14,13 @@
 </svelte:head>
 
 <main>
-	<ContainerWithNavbar>
-		{@render children()}
-	</ContainerWithNavbar>
+	{#if userAuthenticated}
+		<ContainerWithNavbar>
+			{@render children()}
+		</ContainerWithNavbar>
+	{:else}
+		<LoginScreen />
+	{/if}
 </main>
 
 <style>
