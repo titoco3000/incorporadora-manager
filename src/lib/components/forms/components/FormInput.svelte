@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { FormFieldDefinition } from '$lib/types/forms';
 	import CustomInput from '$lib/components/CustomInput.svelte';
+	import { untrack } from 'svelte';
 
 	let {
 		field,
@@ -11,6 +12,14 @@
 		value: any;
 		disabled?: boolean;
 	}>();
+
+	$effect(() => {
+		const currentValue = value;
+
+		untrack(() => {
+			if (field.onChange) field.onChange(currentValue);
+		});
+	});
 </script>
 
 <div

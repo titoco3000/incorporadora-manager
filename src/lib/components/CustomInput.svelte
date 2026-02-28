@@ -134,11 +134,21 @@
 		})
 	);
 
+	const getSelectedId = () => {
+		return value !== null && typeof value === 'object' && 'id' in value ? value.id : value;
+	};
+
 	$effect(() => {
-		if (!isDropdownOpen) {
-			const selected = baseOptions.find((o) => o.id === value);
+		if (!isDropdownOpen && baseOptions.length > 0) {
+			const searchId = getSelectedId();
+			const selected = baseOptions.find((o) => o.id === searchId);
+
 			if (selected) {
 				filterText = selected.name;
+				// [svelte] state_proxy_equality_mismatchReactive `$state(...)` proxies and the values they proxy have different identities. Because of this, comparisons with `!==` will produce unexpected results
+				if (value !== selected) {
+					value = selected;
+				}
 			} else if (!value) {
 				filterText = '';
 			}
@@ -151,7 +161,8 @@
 				isDropdownOpen = false;
 
 				// Revert filter text to currently selected value if they click away
-				const selected = baseOptions.find((o) => o.id === value);
+				const searchId = getSelectedId();
+				const selected = baseOptions.find((o) => o.id === searchId);
 				filterText = selected?.name || '';
 			}
 		}
@@ -159,8 +170,8 @@
 		return () => document.removeEventListener('mousedown', handleClickOutside);
 	});
 
-	function selectOption(optValue: any, optName: string) {
-		value = optValue;
+	function selectOption(opt: any, optName: string) {
+		value = opt;
 		filterText = optName;
 		isDropdownOpen = false;
 	}
@@ -169,7 +180,8 @@
 		setTimeout(() => {
 			isDropdownOpen = false;
 
-			const selected = baseOptions.find((o) => o.id === value);
+			const searchId = getSelectedId();
+			const selected = baseOptions.find((o) => o.id === searchId);
 			filterText = selected?.name || '';
 		}, 300);
 	}
@@ -212,9 +224,9 @@
 				{/if}
 				{#each filteredOptions as option}
 					<button
-						onclick={() => selectOption(option.id, option.name)}
+						onclick={() => selectOption(option, option.name)}
 						style={optionStyle}
-						class:selected={value === option.id}
+						class:selected={getSelectedId() === option.id}
 					>
 						{option.name || option.id}
 					</button>

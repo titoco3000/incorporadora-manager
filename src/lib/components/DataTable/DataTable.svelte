@@ -116,10 +116,12 @@
 		const apiClient = apiMap[type];
 		if (!apiClient) return;
 
-		apiClient
-			.patch(rowID, { [columnKey]: value })
-			.then(() => invalidateAll())
-			.catch((e: any) => console.error('Save failed:', e));
+		// avoid changing object to object of the same id
+		if (!value || !value.id || value.id != row[columnKey])
+			apiClient
+				.patch(rowID, { [columnKey]: value && value.id ? value.id : value })
+				.then(() => invalidateAll())
+				.catch((e: any) => console.error('Save failed:', e));
 	}
 
 	function handleDelete(rowID: number) {
