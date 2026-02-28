@@ -145,8 +145,10 @@
 
 			if (selected) {
 				filterText = selected.name;
-				// [svelte] state_proxy_equality_mismatchReactive `$state(...)` proxies and the values they proxy have different identities. Because of this, comparisons with `!==` will produce unexpected results
-				if (value !== selected) {
+
+				const isPrimitiveOrNull = typeof value !== 'object' || value === null;
+
+				if (isPrimitiveOrNull || value.id !== selected.id) {
 					value = selected;
 				}
 			} else if (!value) {
