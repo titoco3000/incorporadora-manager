@@ -127,12 +127,35 @@
 						: []
 	);
 
-	let filteredOptions = $derived(
-		baseOptions.filter((opt) => {
-			const text = (opt.name || opt.id).toString().toLowerCase();
-			return text.includes(filterText.toLowerCase());
-		})
-	);
+	let sortedOptions = $derived.by(() => {
+		if (!filterText) return baseOptions;
+
+		const query = filterText.toLowerCase();
+
+		return [...baseOptions].sort((a, b) => {
+			const textA = (a.name || a.id).toString().toLowerCase();
+			const textB = (b.name || b.id).toString().toLowerCase();
+
+			// Assign a score based on how close the match is
+			const getScore = (text: string) => {
+				if (text === query) return 3; // Exact match
+				if (text.startsWith(query)) return 2; // Starts with the typed text
+				if (text.includes(query)) return 1; // Contains the typed text somewhere
+				return 0; // Doesn't match at all
+			};
+
+			const scoreA = getScore(textA);
+			const scoreB = getScore(textB);
+
+			// Sort by score descending (highest score first)
+			if (scoreA !== scoreB) {
+				return scoreB - scoreA;
+			}
+
+			// If the scores are tied, fall back to alphabetical sorting
+			return textA.localeCompare(textB);
+		});
+	});
 
 	const getSelectedId = () => {
 		return value !== null && typeof value === 'object' && 'id' in value ? value.id : value;
@@ -224,7 +247,7 @@
 						{emptyLabel || ''}
 					</button>
 				{/if}
-				{#each filteredOptions as option}
+				{#each sortedOptions as option}
 					<button
 						onclick={() => selectOption(option, option.name)}
 						style={optionStyle}
@@ -233,7 +256,8 @@
 						{option.name || option.id}
 					</button>
 				{/each}
-				{#if filteredOptions.length === 0}
+
+				{#if sortedOptions.length === 0}
 					<li class="no-options">No options found</li>
 				{/if}
 			</div>
