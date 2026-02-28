@@ -6,10 +6,11 @@
 		columns: ColumnDef[];
 		data?: RowData[];
 		rowKey?: string;
+		borderColor?: string;
 		onChange?: (rowID: any, columnKey: string, value: any) => void;
 	}
 
-	let { id, columns, data = [], rowKey, onChange }: Props = $props();
+	let { id, columns, data = [], rowKey, onChange, borderColor = '#e5e7eb' }: Props = $props();
 
 	function getSavedWidths(): Record<string, number> {
 		if (typeof window === 'undefined') return {};
@@ -141,7 +142,7 @@
 	}
 </script>
 
-<div class="table-container">
+<div class="table-container" style="--borderColor:{borderColor}">
 	<table bind:this={tableRef} style="width: {tableWidth}px">
 		<thead>
 			<tr>
@@ -201,9 +202,10 @@
 
 <style>
 	.table-container {
+		height: 100%;
 		width: 100%;
 		overflow-x: auto;
-		border: 1px solid #e5e7eb;
+		border: 1px solid var(--borderColor);
 	}
 
 	table {
@@ -214,8 +216,8 @@
 
 	th,
 	td {
-		border-bottom: 1px solid #e5e7eb;
-		border-right: 1px solid #e5e7eb;
+		border-bottom: 1px solid var(--borderColor);
+		border-right: 1px solid var(--borderColor);
 		text-align: left;
 		white-space: nowrap;
 		box-sizing: border-box;
@@ -307,6 +309,6 @@
 
 	.resizer:hover::after,
 	.resizer:active::after {
-		background-color: white;
+		background-color: var(--borderColor);
 	}
 </style>

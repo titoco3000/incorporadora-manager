@@ -23,10 +23,9 @@
 		| 'contact'
 		| 'transaction';
 
-	let { type, rows, label, visibleColumns, allowDelete, allowEdit } = $props<{
+	let { type, rows, visibleColumns, allowDelete, allowEdit } = $props<{
 		type: TableType;
 		rows: RowData[];
-		label: string;
 		visibleColumns?: string[];
 		allowDelete?: boolean;
 		allowEdit?: boolean;
@@ -154,13 +153,11 @@
 	]);
 </script>
 
-<main>
-	<h1>{label}</h1>
-	<Table id={type} columns={activeColumns} data={rows} rowKey="id" onChange={handleEdit} />
-</main>
-
-<style>
-	main {
-		padding: 10px;
-	}
-</style>
+<Table
+	id={type}
+	columns={activeColumns}
+	data={rows}
+	rowKey="id"
+	onChange={handleEdit}
+	borderColor="var(--border-color-2)"
+/>

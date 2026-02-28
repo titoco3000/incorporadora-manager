@@ -2,12 +2,14 @@ body{
     --bg-color: #171413;
 	--bg-color-2: #181615;
     --bg-color-3: #1a1a1a;
+    --bg-color-4: #303030;
     
     --text-color-1: #aaa7a5;
     --text-color-2: #ffffff;
     --error-text-color-1: #ef4444;
 
     --border-color-1: #202020;
+    --border-color-2: #555555;
 
     --border-radius: 10px;
 
@@ -37,4 +39,25 @@ p{
 
 h1, h2, h3, h4, h5{
     color: var(--text-color-2);
+}
+
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+  background-color: transparent;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 2px var(--border-color-1);
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: var(--bg-color-4);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
