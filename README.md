@@ -37,8 +37,5 @@ Ao mudar dados no schema:
 
 ## TODO
 
-- Form de transacao
-    - mover empresa para o inicio
-    - Ao preencher empresa, preencher tipo e imovel se estiverem vazios
-    - Preenher com data de hoje
+- Ao preencher empresa, preencher tipo e imovel se estiverem vazios
 
