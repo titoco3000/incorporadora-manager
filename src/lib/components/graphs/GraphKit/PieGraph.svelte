@@ -1,28 +1,25 @@
 <script lang="ts">
-	import defaultGraphColors from "./defaultGraphColors";
+	import defaultGraphColors from './defaultGraphColors';
 
 	interface Slice {
-        label: string;
-        value: number;
-        color?: string;
-    }
+		label: string;
+		value: number;
+		color?: string;
+	}
 
-    let { 
-        colors = defaultGraphColors,
-        data = []
-    } = $props<{ colors?: string[], data?: Slice[] }>();
+	let { colors = defaultGraphColors, data = [] } = $props<{ colors?: string[]; data?: Slice[] }>();
 
 	// state to track which label is currently hovered
 	let hoveredItem = $state<number | null>(null);
 
-	const total = $derived(data.reduce((sum:number, s:Slice) => sum + s.value, 0));
+	const total = $derived(data.reduce((sum: number, s: Slice) => sum + s.value, 0));
 	let width = $state(0);
 
 	const processedSlices = $derived.by(() => {
 		let currentAngle = 0;
 		const radius = width * 0.5;
 
-		return data.map((slice:Slice, i:number) => {
+		return data.map((slice: Slice, i: number) => {
 			const finalColor = slice.color || colors[i % colors.length];
 
 			const startAngle = currentAngle;
@@ -52,7 +49,7 @@
 	// as a fallback, draw the slices as bg of the pie
 	const conicGradient = $derived.by(() => {
 		let currentPercent = 0;
-		const parts = data.map((slice:Slice) => {
+		const parts = data.map((slice: Slice) => {
 			const start = currentPercent;
 			const end = start + (slice.value / total) * 100;
 			currentPercent = end;
@@ -115,7 +112,6 @@
 	.slice {
 		position: absolute;
 		inset: 0;
-		cursor: pointer;
 		transition:
 			filter 0.2s,
 			transform 0.2s;

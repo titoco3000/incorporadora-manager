@@ -71,7 +71,7 @@
 		right: 0px;
 		top: 0;
 		transition: right 0.3s;
-		overflow-x: auto;
+		overflow: visible;
 	}
 	.toggle-btn {
 		background-color: var(--bg-color-2);
@@ -104,6 +104,7 @@
 	main {
 		flex-grow: 1;
 		width: 100%;
+		overflow: auto;
 	}
 	.content {
 		min-width: 0;
