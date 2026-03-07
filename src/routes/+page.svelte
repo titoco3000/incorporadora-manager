@@ -137,4 +137,9 @@
 	.thin-column {
 		min-width: 40%;
 	}
+	h3 {
+		padding: 0.5em;
+		text-align: center;
+		color: var(--text-color-1);
+	}
 </style>

@@ -7,6 +7,8 @@
 
 	let { colors = ['red', 'blue'], data = [] } = $props<{ colors?: string[]; data?: Bar[] }>();
 
+	$effect(() => console.log(data));
+
 	const largestValue = $derived(
 		Math.max(...data.map((bar: Bar) => Math.max(bar.value, Math.abs(bar.negativeValue || 0.001))))
 	);

@@ -55,8 +55,8 @@ async function loadTransactionVolumesPerBuilding(startDate: string, endDate: str
 			} else {
 				entry.value += row.total;
 			}
-			return Array.from(barMap.values());
 		});
+		return Array.from(barMap.values());
 	} catch {
 		return [];
 	}
