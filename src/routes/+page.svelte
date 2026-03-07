@@ -35,7 +35,6 @@
 	});
 
 	$effect(() => {
-		// Access start and end to register them as dependencies
 		const s = start;
 		const e = end;
 
@@ -57,6 +56,14 @@
 			});
 		}
 	});
+
+	const moneyFormatter = new Intl.NumberFormat('pt-BR', {
+		style: 'currency',
+		currency: 'BRL',
+		trailingZeroDisplay: 'stripIfInteger'
+	}).format;
+
+	let receitaGlobal = $derived(data.barData.find((i) => !i.label));
 </script>
 
 <main>
@@ -68,8 +75,14 @@
 	</header>
 	<div class="panels">
 		<div class="panel-container top-row">
-			<div class="panel simple-data-panel"></div>
-			<div class="panel simple-data-panel"></div>
+			<div class="panel simple-data-panel">
+				<h3>Gastos Globais</h3>
+				<p>{moneyFormatter(receitaGlobal?.negativeValue || 0)}</p>
+			</div>
+			<div class="panel simple-data-panel">
+				<h3>Entradas Globais</h3>
+				<p>{moneyFormatter(receitaGlobal?.value || 0)}</p>
+			</div>
 			<div class="panel simple-data-panel"></div>
 			<div class="panel simple-data-panel"></div>
 		</div>
@@ -83,7 +96,10 @@
 			<div class="panel volume-imoveis">
 				<h3>Entradas e saidas por Imóvel</h3>
 				<DynamicallyReloadedBlock loading={navigating.to != null}>
-					<BarGraph data={data.barData} />
+					<BarGraph
+						data={data.barData.filter((item) => item.label)}
+						valueTransformFunc={moneyFormatter}
+					/>
 				</DynamicallyReloadedBlock>
 			</div>
 		</div>
@@ -119,6 +135,7 @@
 		border: 1px solid var(--border-color-1);
 		border-radius: var(--border-radius);
 		flex-grow: 1;
+		padding: 0.5em;
 	}
 	.top-row {
 		width: 100%;
@@ -138,7 +155,6 @@
 		min-width: 40%;
 	}
 	h3 {
-		padding: 0.5em;
 		text-align: center;
 		color: var(--text-color-1);
 	}

@@ -5,7 +5,15 @@
 		negativeValue?: number;
 	}
 
-	let { colors = ['red', 'blue'], data = [] } = $props<{ colors?: string[]; data?: Bar[] }>();
+	let {
+		colors = ['red', 'blue'],
+		data = [],
+		valueTransformFunc
+	} = $props<{
+		colors?: string[];
+		data?: Bar[];
+		valueTransformFunc?: (v: number) => string;
+	}>();
 
 	$effect(() => console.log(data));
 
@@ -51,10 +59,14 @@
 				</div>
 				<div class="label" class:hasNegatives>
 					{#if hasNegatives}
-						<div class="left-label">{bar.negative}</div>
+						<div class="left-label">
+							{valueTransformFunc ? valueTransformFunc(bar.negative) : bar.negative}
+						</div>
 					{/if}
 					<div class="main-label">{bar.label}</div>
-					<div class="right-label">{bar.positive}</div>
+					<div class="right-label">
+						{valueTransformFunc ? valueTransformFunc(bar.positive) : bar.positive}
+					</div>
 				</div>
 			</div>
 		{/each}

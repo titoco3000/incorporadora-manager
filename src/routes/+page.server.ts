@@ -44,7 +44,7 @@ async function loadTransactionVolumesPerBuilding(startDate: string, endDate: str
 		const barMap = new Map<string, { label: string; value: number; negativeValue: number }>();
 
 		barResultsRaw.forEach((row) => {
-			const displayLabel = row.label || 'Geral';
+			const displayLabel = row.label || '';
 
 			if (!barMap.has(displayLabel)) {
 				barMap.set(displayLabel, { label: displayLabel, value: 0, negativeValue: 0 });
