@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
+	import collapse from 'svelte-collapse';
 
 	let {
 		label,
@@ -22,9 +23,11 @@
 		<span class="arrow" aria-hidden="true">{isOpen ? '▲' : '▼'}</span>
 	</button>
 
-	{#if isOpen && children}
-		<div class="content">
-			{@render children()}
+	{#if children}
+		<div use:collapse={{ open: isOpen, duration: 0.4, easing: 'ease' }}>
+			<div class="content">
+				{@render children()}
+			</div>
 		</div>
 	{/if}
 </div>
@@ -46,20 +49,10 @@
 		cursor: pointer;
 		text-align: left;
 		font-size: 1rem;
+		border-bottom: 1px solid var(--border-color-1);
 	}
 	.content {
 		padding: 1rem;
-		border-top: 1px solid var(--border-color-1);
-		animation: fadeIn 0.3s ease-out;
-	}
-	@keyframes fadeIn {
-		from {
-			opacity: 0;
-			transform: translateY(-10px);
-		}
-		to {
-			opacity: 1;
-			transform: translateY(0);
-		}
+		border-bottom: 1px solid var(--border-color-1);
 	}
 </style>
