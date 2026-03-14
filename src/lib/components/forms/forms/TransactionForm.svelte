@@ -21,7 +21,7 @@
 
 	let dynamicFields: FormFieldDefinition[] = $derived([
 		{
-			label: 'Empresa',
+			label: formData.transactionType ? (formData.transactionType.isExpense ? 'Fornecedor' : 'Cliente') : 'Empresa',
 			type: companiesFieldType,
 			name: 'company',
 			postKey: 'companyId',
@@ -70,10 +70,11 @@
 			required: true
 		},
 		{
-			label: 'Documento',
+			label: 'Nº Documento',
 			type: 'text',
 			name: 'document',
-			size: 0.5
+			size: 0.5,
+			required: true	
 		},
 		{
 			label: 'Observações',
