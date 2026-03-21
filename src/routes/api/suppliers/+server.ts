@@ -1,4 +1,4 @@
-// src/routes/api/companies/+server.ts
+// src/routes/api/suppliers/+server.ts
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { db } from '$lib/db';
@@ -6,23 +6,16 @@ import { company } from '$lib/db/schema';
 import { eq, like, or, and } from 'drizzle-orm';
 
 export const GET: RequestHandler = async ({ url }) => {
+	console.log('GET suppliers');
+
 	try {
 		const search = url.searchParams.get('search');
-		const isSupplier = url.searchParams.get('isSupplier');
-		const isClient = url.searchParams.get('isClient');
 		const transactionTypeId = url.searchParams.get('transactionTypeId');
 
-		const conditions = [];
+		const conditions = [eq(company.isSupplier, true)];
 
 		if (search) {
-			conditions.push(or(like(company.name, `%${search}%`), like(company.cnpj, `%${search}%`)));
-		}
-
-		if (isSupplier !== null) {
-			conditions.push(eq(company.isSupplier, isSupplier === 'true'));
-		}
-		if (isClient !== null) {
-			conditions.push(eq(company.isClient, isClient === 'true'));
+			conditions.push(or(like(company.name, `%${search}%`), like(company.cnpj, `%${search}%`))!);
 		}
 
 		if (transactionTypeId) {

@@ -37,7 +37,6 @@ Ao mudar dados no schema:
 
 ## TODO
 
-- Corrigir listagem de fornecedores
 - Separar formularios entradas e saídas
 - Mais destaque para campo selecionado nos formulários
 

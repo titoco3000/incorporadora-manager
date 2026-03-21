@@ -116,6 +116,8 @@
 		'transaction-type': api.transactionTypes,
 		building: api.buildings,
 		company: api.companies,
+		client: api.clients,
+		supplier: api.suppliers,
 		contact: api.contacts,
 		contract: api.contracts,
 		transaction: api.transactions

@@ -2,7 +2,7 @@
 import { db } from '$lib/db';
 import { error } from '@sveltejs/kit';
 import * as schema from '$lib/db/schema';
-import { eq, or, isNotNull } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 
 const schemaMap = {
 	'transaction-type': schema.transactionType,
@@ -28,10 +28,7 @@ export const load = async ({ params }) => {
 	if (tableParam === 'supplier') {
 		rows = await db.select().from(schema.company).where(eq(schema.company.isSupplier, true));
 	} else if (tableParam === 'client') {
-		rows = await db
-			.select()
-			.from(schema.company)
-			.where(or(eq(schema.company.isSupplier, false), isNotNull(schema.company.transactionTypeId)));
+		rows = await db.select().from(schema.company).where(eq(schema.company.isClient, true));
 	} else {
 		rows = await db.select().from(config);
 	}

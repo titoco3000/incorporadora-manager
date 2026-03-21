@@ -61,6 +61,7 @@ export const api = {
 	companies: {
 		get: (filters?: {
 			isSupplier?: boolean;
+			isClient?: boolean;
 			transactionTypeId?: number;
 			search?: string;
 		}): Promise<Company[]> => {
@@ -71,6 +72,26 @@ export const api = {
 		patch: (id: number, data: Partial<Omit<Company, 'id'>>) =>
 			apiFetch('/api/companies', 'PATCH', { id, ...data }),
 		delete: (id: number) => apiFetch('/api/companies', 'DELETE', { id })
+	},
+	clients: {
+		get: (filters?: { transactionTypeId?: number; search?: string }): Promise<Company[]> => {
+			const params = new URLSearchParams(filters as any).toString();
+			return apiFetch(`/api/clients${params ? `?${params}` : ''}`);
+		},
+		post: (data: Omit<Company, 'id'>) => apiFetch('/api/clients', 'POST', data),
+		patch: (id: number, data: Partial<Omit<Company, 'id'>>) =>
+			apiFetch('/api/clients', 'PATCH', { id, ...data }),
+		delete: (id: number) => apiFetch('/api/clients', 'DELETE', { id })
+	},
+	suppliers: {
+		get: (filters?: { transactionTypeId?: number; search?: string }): Promise<Company[]> => {
+			const params = new URLSearchParams(filters as any).toString();
+			return apiFetch(`/api/suppliers${params ? `?${params}` : ''}`);
+		},
+		post: (data: Omit<Company, 'id'>) => apiFetch('/api/suppliers', 'POST', data),
+		patch: (id: number, data: Partial<Omit<Company, 'id'>>) =>
+			apiFetch('/api/suppliers', 'PATCH', { id, ...data }),
+		delete: (id: number) => apiFetch('/api/suppliers', 'DELETE', { id })
 	},
 	contacts: {
 		get: (filters?: { companyId?: number; search?: string }): Promise<Contact[]> => {
