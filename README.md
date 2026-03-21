@@ -37,8 +37,8 @@ Ao mudar dados no schema:
 
 ## TODO
 
-- Separar formularios entradas e saídas
 - Mais destaque para campo selecionado nos formulários
+- Auto-preencher tipo de transação ao preenher fornecedor
 
 - Relatórios
     - despesas por imovel
