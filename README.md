@@ -37,5 +37,27 @@ Ao mudar dados no schema:
 
 ## TODO
 
-- Ao preencher empresa, preencher tipo e imovel se estiverem vazios
-- login
+- Adicionar bool para marcar empresa como cliente
+- Data de hoje ao limpar form de transacao
+- Esvaziar Valor ao enviar transação
+- Corrigir listagem de fornecedores
+- Separar formularios entradas e saídas
+- Mais destaque para campo selecionado nos formulários
+
+- Relatórios
+    - despesas por imovel
+    - despesas por fornecedor
+    - despesas por tipo
+    - despesas por tipo
+    - receita por imovel
+    - despesa por imovel
+    - listagem de despesas
+    - Receita total
+    - Despesa total
+    - Lucro no período
+
+- Mudar data para xx/xx/xx
+
+
+
+
