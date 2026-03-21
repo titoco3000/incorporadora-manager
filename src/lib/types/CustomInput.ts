@@ -7,8 +7,11 @@ export type CustomInputType =
 	| 'email'
 	| 'phone'
 	| 'supplier'
+	| 'client'
 	| 'company'
 	| 'date'
 	| 'building'
 	| 'cnpj'
-	| 'transactionType';
+	| 'transactionType'
+	| 'incomeTransactionType'
+	| 'expenseTransactionType';

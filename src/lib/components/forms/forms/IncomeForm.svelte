@@ -17,16 +17,10 @@
 		date: new Date().toISOString().split('T')[0] as DateString
 	});
 
-	let companiesFieldType: FormFieldType = $state('company');
-
 	let dynamicFields: FormFieldDefinition[] = $derived([
 		{
-			label: formData.transactionType
-				? formData.transactionType.isExpense
-					? 'Fornecedor'
-					: 'Cliente'
-				: 'Empresa',
-			type: companiesFieldType,
+			label: 'Cliente',
+			type: 'client',
 			name: 'company',
 			postKey: 'companyId',
 			size: 0.5,
@@ -47,17 +41,11 @@
 		},
 		{
 			label: 'Tipo de Transação',
-			type: 'transactionType',
+			type: 'incomeTransactionType',
 			name: 'transactionType',
 			postKey: 'transactionTypeId',
 			size: 0.5,
-			required: true,
-			onChange: (e: unknown) => {
-				if (!formData.company && e) {
-					const selection = e as TransactionType;
-					companiesFieldType = selection.isExpense ? 'supplier' : 'company';
-				}
-			}
+			required: true
 		},
 		{
 			label: 'Valor',
@@ -90,7 +78,7 @@
 </script>
 
 <BaseForm
-	label="Nova Transação"
+	label="Nova Entrada"
 	bind:data={formData}
 	fields={dynamicFields}
 	post={api.transactions.post}

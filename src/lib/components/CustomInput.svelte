@@ -32,6 +32,7 @@
 
 	let companies = $state<Company[]>([]);
 	let suppliers = $state<Company[]>([]);
+	let clients = $state<Company[]>([]);
 	let buildings = $state<Building[]>([]);
 	let transactionTypes = $state<TransactionType[]>([]);
 
@@ -40,7 +41,17 @@
 	let dropdownRef = $state<HTMLDivElement>();
 
 	$effect(() => {
-		if (['supplier', 'company', 'building', 'transactionType'].includes(type)) {
+		if (
+			[
+				'supplier',
+				'company',
+				'client',
+				'building',
+				'transactionType',
+				'expenseTransactionType',
+				'incomeTransactionType'
+			].includes(type)
+		) {
 			fetchOptions(type);
 		}
 	});
@@ -81,11 +92,15 @@
 		try {
 			if (type === 'supplier') {
 				suppliers = await api.companies.get({ isSupplier: true });
+			} else if (type === 'client') {
+				clients = await api.clients.get();
 			} else if (type === 'company') {
 				companies = await api.companies.get();
 			} else if (type === 'building') {
 				buildings = await api.buildings.get();
-			} else if (type === 'transactionType') {
+			} else if (
+				['transactionType', 'expenseTransactionType', 'incomeTransactionType'].includes(type)
+			) {
 				transactionTypes = await api.transactionTypes.get();
 			}
 		} catch (e) {
@@ -116,15 +131,21 @@
 	}
 
 	let baseOptions = $derived(
-		type === 'supplier'
-			? suppliers
-			: type === 'company'
-				? companies
-				: type === 'building'
-					? buildings
-					: type === 'transactionType'
-						? transactionTypes
-						: []
+		type === 'client'
+			? clients
+			: type === 'supplier'
+				? suppliers
+				: type === 'company'
+					? companies
+					: type === 'building'
+						? buildings
+						: type === 'incomeTransactionType'
+							? transactionTypes.filter((i) => !i.isExpense)
+							: type === 'expenseTransactionType'
+								? transactionTypes.filter((i) => i.isExpense)
+								: type === 'transactionType'
+									? transactionTypes
+									: []
 	);
 
 	let sortedOptions = $derived.by(() => {
@@ -224,7 +245,7 @@
 		bind:value
 		oninput={handleInput}
 	></textarea>
-{:else if ['supplier', 'company', 'building', 'transactionType'].includes(type)}
+{:else if ['supplier', 'company', 'building', 'transactionType', 'incomeTransactionType', 'expenseTransactionType', 'client'].includes(type)}
 	<div class="dropdown-container" bind:this={dropdownContainerRef}>
 		<input
 			{id}

@@ -7,11 +7,14 @@ export type FormFieldType =
 	| 'email'
 	| 'phone'
 	| 'supplier'
+	| 'client'
 	| 'company'
 	| 'date'
 	| 'building'
 	| 'cnpj'
-	| 'transactionType';
+	| 'transactionType'
+	| 'incomeTransactionType'
+	| 'expenseTransactionType';
 
 export type FormFieldValue = string | object;
 

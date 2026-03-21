@@ -3,9 +3,10 @@
 	import ClientForm from '$lib/components/forms/forms/ClientForm.svelte';
 	import ContactForm from '$lib/components/forms/forms/ContactForm.svelte';
 	import SupplierForm from '$lib/components/forms/forms/SupplierForm.svelte';
-	import TransactionForm from '$lib/components/forms/forms/TransactionForm.svelte';
+	import ExpenseForm from '$lib/components/forms/forms/ExpenseForm.svelte';
 	import ContractForm from '$lib/components/forms/forms/ContractForm.svelte';
 	import TransactionTypeForm from '$lib/components/forms/forms/TransactionTypeForm.svelte';
+	import IncomeForm from '$lib/components/forms/forms/IncomeForm.svelte';
 
 	const formMap = {
 		'transaction-type': TransactionTypeForm,
@@ -14,7 +15,8 @@
 		building: BuildingForm,
 		client: ClientForm,
 		contract: ContractForm,
-		transaction: TransactionForm
+		income: IncomeForm,
+		expense: ExpenseForm
 	} as const;
 
 	interface DataType {

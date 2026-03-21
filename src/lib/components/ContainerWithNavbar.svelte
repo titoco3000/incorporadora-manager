@@ -3,7 +3,16 @@
 	import type { Snippet } from 'svelte';
 	import SidebarItem from './SidebarItem.svelte';
 
-	import { HandCoins, Truck, Contact, Users, FileText, Building2, Pilcrow } from 'lucide-svelte';
+	import {
+		HandCoins,
+		Truck,
+		Contact,
+		Users,
+		FileText,
+		Building2,
+		Pilcrow,
+		BanknoteArrowUp
+	} from 'lucide-svelte';
 
 	import PageButton from './PageButton.svelte';
 	import CompanyHeader from './CompanyHeader.svelte';
@@ -21,7 +30,8 @@
 	{/snippet}
 	{#snippet menuContent()}
 		<SidebarItem isOpen={true} label="Registrar">
-			<PageButton href="/form/transaction" icon={HandCoins}>Transação</PageButton>
+			<PageButton href="/form/income" icon={HandCoins}>Entrada</PageButton>
+			<PageButton href="/form/expense" icon={BanknoteArrowUp}>Saída</PageButton>
 			<PageButton href="/form/supplier" icon={Truck}>Fornecedor</PageButton>
 			<PageButton href="/form/contact" icon={Contact}>Contato</PageButton>
 			<PageButton href="/form/client" icon={Users}>Cliente</PageButton>
