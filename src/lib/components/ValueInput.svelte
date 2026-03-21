@@ -320,7 +320,12 @@
 
 	// Initialize display from value prop
 	$effect(() => {
-		if (value !== null && value !== undefined && document.activeElement !== inputEl) {
+		// Don't format while the user is actively typing
+		if (document.activeElement === inputEl) return;
+
+		if (value === null || value === undefined) {
+			displayValue = '';
+		} else {
 			const str = value.toString();
 			const dotIdx = str.indexOf('.');
 			if (dotIdx === -1) {

@@ -21,7 +21,11 @@
 
 	let dynamicFields: FormFieldDefinition[] = $derived([
 		{
-			label: formData.transactionType ? (formData.transactionType.isExpense ? 'Fornecedor' : 'Cliente') : 'Empresa',
+			label: formData.transactionType
+				? formData.transactionType.isExpense
+					? 'Fornecedor'
+					: 'Cliente'
+				: 'Empresa',
 			type: companiesFieldType,
 			name: 'company',
 			postKey: 'companyId',
@@ -74,7 +78,7 @@
 			type: 'text',
 			name: 'document',
 			size: 0.5,
-			required: true	
+			required: true
 		},
 		{
 			label: 'Observações',
@@ -90,4 +94,7 @@
 	bind:data={formData}
 	fields={dynamicFields}
 	post={api.transactions.post}
+	onClear={() => {
+		formData.date = new Date().toISOString().split('T')[0] as DateString;
+	}}
 />

@@ -37,8 +37,6 @@ Ao mudar dados no schema:
 
 ## TODO
 
-- Data de hoje ao limpar form de transacao
-- Esvaziar Valor ao enviar transação
 - Corrigir listagem de fornecedores
 - Separar formularios entradas e saídas
 - Mais destaque para campo selecionado nos formulários

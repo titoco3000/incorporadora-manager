@@ -7,12 +7,14 @@
 		fields,
 		label = 'Form',
 		post,
-		data = $bindable()
+		data = $bindable(),
+		onClear
 	} = $props<{
 		fields: FormFieldDefinition[];
 		label?: string;
 		post: (data: T) => Promise<any>;
 		data?: object;
+		onClear?: () => void;
 	}>();
 
 	// Initialize data if it wasn't provided by the parent
@@ -42,6 +44,9 @@
 
 			feedback = { message: 'Sucesso!', type: 'success' };
 			data = {} as T;
+			if (onClear) {
+				onClear();
+			}
 		} catch (err) {
 			feedback = {
 				message: err instanceof Error ? err.message : 'An unexpected error occurred.',
