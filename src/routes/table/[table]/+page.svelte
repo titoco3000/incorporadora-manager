@@ -12,9 +12,8 @@
 </script>
 
 <DataTable
-	type={['supplier', 'client'].includes(data.tableSlug) ? 'company' : data.tableSlug}
+	type={data.tableSlug}
 	rows={data.rows}
-	label={data.label}
 	allowDelete={true}
 	allowEdit={true}
 	visibleColumns={data.tableSlug === 'supplier'

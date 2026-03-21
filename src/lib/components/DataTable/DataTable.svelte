@@ -18,7 +18,8 @@
 	export type TableType =
 		| 'transaction-type'
 		| 'building'
-		| 'company'
+		| 'client'
+		| 'supplier'
 		| 'contract'
 		| 'contact'
 		| 'transaction';
@@ -59,6 +60,20 @@
 			col('characteristics', 'Características', strCompare, 'obs'),
 			col('obs', 'Observações', strCompare, 'obs')
 		],
+		client: [
+			col('name', 'Nome', strCompare, 'text', true),
+			col('cnpj', 'CNPJ', strCompare, 'text'),
+			col('hqAddress', 'Endereço da Sede', strCompare, 'text'),
+			col('stateId', 'Inscrição Estadual', strCompare, 'text'),
+			col('municipalityId', 'Inscrição Municipal', strCompare, 'text'),
+			col('obs', 'Observações', strCompare, 'obs')
+		],
+		supplier: [
+			col('name', 'Nome', strCompare, 'text', true),
+			col('cnpj', 'CNPJ', strCompare, 'text'),
+			col('transactionTypeId', 'Tipo de Transação', transactionTypeCompare, 'transactionType'),
+			col('obs', 'Observações', strCompare, 'obs')
+		],
 		company: [
 			col('name', 'Nome', strCompare, 'text', true),
 			col('cnpj', 'CNPJ', strCompare, 'text'),
@@ -67,6 +82,7 @@
 			col('municipalityId', 'Inscrição Municipal', strCompare, 'text'),
 			col('transactionTypeId', 'Tipo de Transação', transactionTypeCompare, 'transactionType'),
 			col('isSupplier', 'É Fornecedor', boolCompare, 'bool', true),
+			col('isClient', 'É Cliente', boolCompare, 'bool', true),
 			col('obs', 'Observações', strCompare, 'obs')
 		],
 		contract: [

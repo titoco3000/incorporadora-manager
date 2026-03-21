@@ -37,7 +37,6 @@ Ao mudar dados no schema:
 
 ## TODO
 
-- Adicionar bool para marcar empresa como cliente
 - Data de hoje ao limpar form de transacao
 - Esvaziar Valor ao enviar transação
 - Corrigir listagem de fornecedores

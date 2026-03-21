@@ -26,6 +26,7 @@ export const company = pgTable('company', {
 	municipalityId: text('municipality_id'),
 	transactionTypeId: integer('transaction_type_id').references(() => transactionType.id),
 	isSupplier: boolean('is_supplier').default(false).notNull(),
+	isClient: boolean('is_client').default(false).notNull(),
 	obs: text('obs')
 });
 
