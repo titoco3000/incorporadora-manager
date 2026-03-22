@@ -41,13 +41,9 @@ Ao mudar dados no schema:
     - despesas por imovel
     - despesas por fornecedor
     - despesas por tipo
-    - despesas por tipo
     - receita por imovel
     - despesa por imovel
     - listagem de despesas
-    - Receita total
-    - Despesa total
-    - Lucro no período
 
 - Mudar data para xx/xx/xx
 

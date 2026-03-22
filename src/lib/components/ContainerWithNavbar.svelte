@@ -11,7 +11,8 @@
 		FileText,
 		Building2,
 		Pilcrow,
-		BanknoteArrowUp
+		BanknoteArrowUp,
+		Blinds
 	} from 'lucide-svelte';
 
 	import PageButton from './PageButton.svelte';
@@ -38,6 +39,19 @@
 			<PageButton href="/form/contract" icon={FileText}>Contrato</PageButton>
 			<PageButton href="/form/building" icon={Building2}>Imóvel</PageButton>
 			<PageButton href="/form/transaction-type" icon={Pilcrow}>Tipo de Transação</PageButton>
+		</SidebarItem>
+		<SidebarItem isOpen={true} label="Relatórios">
+			<PageButton href="/report/expenses-per-building" icon={Blinds}>
+				Despesas por imóvel
+			</PageButton>
+			<PageButton href="/report/expenses-per-supplier" icon={Blinds}>
+				Despesas por fornecedor
+			</PageButton>
+			<PageButton href="/report/expenses-per-supplier" icon={Blinds}>Despesas por tipo</PageButton>
+			<PageButton href="/report/income-per-building" icon={Blinds}>Receita por imóvel</PageButton>
+			<PageButton href="/report/expense-per-building" icon={Blinds}>Despesa por imóvel</PageButton>
+			<PageButton href="/report/income" icon={Blinds}>Entradas</PageButton>
+			<PageButton href="/report/expense" icon={Blinds}>Despesas</PageButton>
 		</SidebarItem>
 		<SidebarItem isOpen={true} label="Planilhas">
 			<PageButton href="/table/transaction" icon={HandCoins}>Transações</PageButton>

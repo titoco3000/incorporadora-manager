@@ -63,7 +63,16 @@
 		trailingZeroDisplay: 'stripIfInteger'
 	}).format;
 
-	let receitaGlobal = $derived(data.barData.find((i) => !i.label));
+	let receita = $derived(
+		data.transactionVolumesPerBuilding.reduce(
+			(acc, curr) => ({
+				label: '',
+				value: acc.value + curr.value,
+				negativeValue: acc.negativeValue + curr.negativeValue
+			}),
+			{ label: '', value: 0, negativeValue: 0 }
+		)
+	);
 </script>
 
 <main>
@@ -76,14 +85,17 @@
 	<div class="panels">
 		<div class="panel-container top-row">
 			<div class="panel simple-data-panel">
-				<h3>Despesas Globais</h3>
-				<p>{moneyFormatter(receitaGlobal?.negativeValue || 0)}</p>
+				<h3>Entradas</h3>
+				<p>{moneyFormatter(receita?.value || 0)}</p>
 			</div>
 			<div class="panel simple-data-panel">
-				<h3>Entradas Globais</h3>
-				<p>{moneyFormatter(receitaGlobal?.value || 0)}</p>
+				<h3>Despesas</h3>
+				<p>{moneyFormatter(receita?.negativeValue || 0)}</p>
 			</div>
-			<div class="panel simple-data-panel"></div>
+			<div class="panel simple-data-panel">
+				<h3>{(receita?.value || 0) - (receita?.negativeValue || 0) > 0 ? 'Lucro' : 'Déficit'}</h3>
+				<p>{moneyFormatter(Math.abs((receita?.value || 0) - (receita?.negativeValue || 0)))}</p>
+			</div>
 			<div class="panel simple-data-panel"></div>
 		</div>
 		<div class="panel-container column wide-column">
@@ -97,7 +109,7 @@
 				<h3>Entradas e saidas por Imóvel</h3>
 				<DynamicallyReloadedBlock loading={navigating.to != null}>
 					<BarGraph
-						data={data.barData.filter((item) => item.label)}
+						data={data.transactionVolumesPerBuilding.filter((item) => item.label)}
 						valueTransformFunc={moneyFormatter}
 					/>
 				</DynamicallyReloadedBlock>

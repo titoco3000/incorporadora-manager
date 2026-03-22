@@ -28,7 +28,7 @@ async function sumPerExpenseType(startDate: string, endDate: string) {
 
 async function loadTransactionVolumesPerBuilding(startDate: string, endDate: string) {
 	try {
-		const barResultsRaw = await db
+		const transactionVolumesPerBuildingRaw = await db
 			.select({
 				label: building.name,
 				isExpense: transactionType.isExpense,
@@ -41,22 +41,29 @@ async function loadTransactionVolumesPerBuilding(startDate: string, endDate: str
 			.groupBy(building.name, transactionType.isExpense);
 
 		// Transform raw bar data into the expected format
-		const barMap = new Map<string, { label: string; value: number; negativeValue: number }>();
+		const transactionVolumesPerBuilding = new Map<
+			string,
+			{ label: string; value: number; negativeValue: number }
+		>();
 
-		barResultsRaw.forEach((row) => {
+		transactionVolumesPerBuildingRaw.forEach((row) => {
 			const displayLabel = row.label || '';
 
-			if (!barMap.has(displayLabel)) {
-				barMap.set(displayLabel, { label: displayLabel, value: 0, negativeValue: 0 });
+			if (!transactionVolumesPerBuilding.has(displayLabel)) {
+				transactionVolumesPerBuilding.set(displayLabel, {
+					label: displayLabel,
+					value: 0,
+					negativeValue: 0
+				});
 			}
-			const entry = barMap.get(displayLabel)!;
+			const entry = transactionVolumesPerBuilding.get(displayLabel)!;
 			if (row.isExpense) {
 				entry.negativeValue += row.total;
 			} else {
 				entry.value += row.total;
 			}
 		});
-		return Array.from(barMap.values());
+		return Array.from(transactionVolumesPerBuilding.values());
 	} catch {
 		return [];
 	}
@@ -81,7 +88,7 @@ export const load: PageServerLoad = async ({ url }) => {
 
 	return {
 		pieData: await sumPerExpenseType(startDate, endDate),
-		barData: await loadTransactionVolumesPerBuilding(startDate, endDate),
+		transactionVolumesPerBuilding: await loadTransactionVolumesPerBuilding(startDate, endDate),
 		startDate: startDate,
 		endDate: endDate
 	};
