@@ -78,7 +78,7 @@
 </script>
 
 <BaseForm
-	label="Novo Gasto"
+	label="Nova Despesa"
 	bind:data={formData}
 	fields={dynamicFields}
 	post={api.transactions.post}

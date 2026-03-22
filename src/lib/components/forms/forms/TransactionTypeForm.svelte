@@ -17,7 +17,7 @@
 			required: true
 		},
 		{
-			label: 'É um Gasto',
+			label: 'É uma Despesa',
 			type: 'bool',
 			name: 'is_expense',
 			size: 0.5,

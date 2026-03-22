@@ -76,7 +76,7 @@
 	<div class="panels">
 		<div class="panel-container top-row">
 			<div class="panel simple-data-panel">
-				<h3>Gastos Globais</h3>
+				<h3>Despesas Globais</h3>
 				<p>{moneyFormatter(receitaGlobal?.negativeValue || 0)}</p>
 			</div>
 			<div class="panel simple-data-panel">
@@ -88,7 +88,7 @@
 		</div>
 		<div class="panel-container column wide-column">
 			<div class="panel gastos-por-area">
-				<h3>Gastos por Área</h3>
+				<h3>Despesas por Área</h3>
 				<DynamicallyReloadedBlock loading={navigating.to != null}>
 					<PieGraph data={data.pieData} />
 				</DynamicallyReloadedBlock>
