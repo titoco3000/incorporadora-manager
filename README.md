@@ -37,7 +37,6 @@ Ao mudar dados no schema:
 
 ## TODO
 
-- Mais destaque para campo selecionado nos formulários
 - Auto-preencher tipo de transação ao preenher fornecedor
 
 - Relatórios

@@ -337,6 +337,13 @@
 		outline: none;
 	}
 
+	textarea:focus,
+	input:focus {
+		outline: 2px solid yellow;
+		border-radius: 5px;
+		background-color: var(--bg-color-4);
+	}
+
 	.dropdown-container {
 		position: relative;
 		height: 100%;
