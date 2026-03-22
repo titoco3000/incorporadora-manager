@@ -17,6 +17,8 @@
 		date: new Date().toISOString().split('T')[0] as DateString
 	});
 
+	let isCompanyEmpty = $state(true);
+
 	let dynamicFields: FormFieldDefinition[] = $derived([
 		{
 			label: 'Fornecedor',
@@ -28,8 +30,11 @@
 			onChange: async (e: any) => {
 				if (e) {
 					const ttypes = await api.transactionTypes.get();
-					formData.transactionType = formData.transactionType || ttypes[e.transactionTypeId];
+					const newType = ttypes[e.transactionTypeId];
+					if (newType && (!formData.transactionType || !isCompanyEmpty))
+						formData.transactionType = ttypes[e.transactionTypeId];
 				}
+				isCompanyEmpty = !e;
 			}
 		},
 		{

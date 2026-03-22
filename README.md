@@ -37,8 +37,6 @@ Ao mudar dados no schema:
 
 ## TODO
 
-- Auto-preencher tipo de transação ao preenher fornecedor
-
 - Relatórios
     - despesas por imovel
     - despesas por fornecedor
