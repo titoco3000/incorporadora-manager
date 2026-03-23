@@ -22,45 +22,55 @@
 	}
 
 	const filters = {
-		get buildingId() {
-			const id = data.activeFilters.buildingId;
+		get building() {
+			const id = data.activeFilters.building;
 			return id ? { id } : null;
 		},
-		set buildingId(val: any) {
-			updateFilter('buildingId', val?.id ? String(val.id) : '');
+		set building(val: any) {
+			updateFilter('building', val?.id ? String(val.id) : '');
 		},
 
-		get companyId() {
-			const id = data.activeFilters.companyId;
+		get company() {
+			const id = data.activeFilters.company;
 			return id ? { id } : null;
 		},
-		set companyId(val: any) {
-			updateFilter('companyId', val?.id ? String(val.id) : '');
+		set company(val: any) {
+			updateFilter('company', val?.id ? String(val.id) : '');
 		},
 
-		get transactionTypeId() {
-			const id = data.activeFilters.transactionTypeId;
+		get transactionType() {
+			const id = data.activeFilters.transactionType;
 			return id ? { id } : null;
 		},
-		set transactionTypeId(val: any) {
-			updateFilter('transactionTypeId', val?.id ? String(val.id) : '');
+		set transactionType(val: any) {
+			updateFilter('transactionType', val?.id ? String(val.id) : '');
+		},
+
+		get supplier() {
+			const id = data.activeFilters.supplier;
+			return id ? { id } : null;
+		},
+		set supplier(val: any) {
+			updateFilter('supplier', val?.id ? String(val.id) : '');
+		},
+
+		get client() {
+			const id = data.activeFilters.client;
+			return id ? { id } : null;
+		},
+		set client(val: any) {
+			updateFilter('client', val?.id ? String(val.id) : '');
 		}
 	};
 
-	type FilterKey = 'buildingId' | 'companyId' | 'transactionTypeId';
-	const filterConfig: Record<FilterKey, { type: string; placeholder: string }> = {
-		buildingId: {
-			type: 'building',
-			placeholder: 'Imóvel'
-		},
-		companyId: {
-			type: 'supplier',
-			placeholder: 'Fornecedor'
-		},
-		transactionTypeId: {
-			type: 'transactionType',
-			placeholder: 'Tipo'
-		}
+	type FilterKey = 'building' | 'company' | 'transactionType' | 'supplier' | 'client';
+
+	const filterConfig: Record<FilterKey, { placeholder: string }> = {
+		building: { placeholder: 'Imóvel' },
+		company: { placeholder: 'Empresa' },
+		transactionType: { placeholder: 'Tipo' },
+		supplier: { placeholder: 'Fornecedor' },
+		client: { placeholder: 'Cliente' }
 	};
 
 	const allColumns = [
@@ -73,8 +83,28 @@
 		'obs'
 	];
 
+	// Map the table columns to their corresponding new filter keys
+	const columnToFiltersMap: Record<string, FilterKey[]> = {
+		buildingId: ['building'],
+		transactionTypeId: ['transactionType'],
+		// companyId will hide if ANY of these three filters are active
+		companyId: ['company', 'supplier', 'client']
+	};
+
 	let visibleColumns = $derived(
-		allColumns.filter((col) => !data.allowedFilters.includes(col) || !data.activeFilters[col])
+		allColumns.filter((col) => {
+			const relatedFilters = columnToFiltersMap[col];
+
+			if (!relatedFilters) return true;
+
+			// If it's a filtered column, check if any of its mapped filters are active.
+			// If active, we hide the column.
+			const isFilterActive = relatedFilters.some(
+				(filterKey) => data.allowedFilters.includes(filterKey) && data.activeFilters[filterKey]
+			);
+
+			return !isFilterActive;
+		})
 	);
 </script>
 
@@ -84,7 +114,7 @@
 		{#if config}
 			<div style="flex: 1; max-width: 300px; padding: 0.5rem 0.75rem;">
 				<CustomInput
-					type={config.type as CustomInputType}
+					type={filterKey as CustomInputType}
 					bind:value={filters[filterKey as FilterKey]}
 					placeholder={config.placeholder}
 					style="border:1px solid var(--border-color-2); border-radius: var(--border-radius); padding: 0.5rem 0.75rem;"

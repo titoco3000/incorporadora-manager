@@ -7,38 +7,41 @@ import type { PageServerLoad } from './$types';
 export const load: PageServerLoad = async ({ params, url }) => {
 	const routeType = params.type;
 
-	const filtersPerPage = {
-		a: ['buildingId', 'companyId'],
-		'expenses-per-building': ['buildingId'],
-		'expenses-per-supplier': ['companyId'],
-		'expenses-per-type': ['transactionTypeId']
+	const filtersPerPage: Record<string, string[]> = {
+		a: ['building', 'company'],
+		'expenses-per-building': ['building'],
+		'expenses-per-supplier': ['supplier'],
+		'expenses-per-type': ['transactionType']
 	};
 
 	const allowedFilters: string[] = filtersPerPage[routeType] || [];
 
-	// 2. Extract current filter values from URL and build Drizzle WHERE conditions
+	// Extract current filter values from URL and build Drizzle WHERE conditions
 	const activeFilters: Record<string, string> = {};
 	const conditions = [];
 
-	if (allowedFilters.includes('buildingId') && url.searchParams.has('buildingId')) {
-		const val = url.searchParams.get('buildingId')!;
-		activeFilters.buildingId = val;
+	if (allowedFilters.includes('building') && url.searchParams.has('building')) {
+		const val = url.searchParams.get('building')!;
+		activeFilters.building = val;
 		conditions.push(eq(schema.transaction.buildingId, parseInt(val)));
 	}
 
-	if (allowedFilters.includes('companyId') && url.searchParams.has('companyId')) {
-		const val = url.searchParams.get('companyId')!;
-		activeFilters.companyId = val;
-		conditions.push(eq(schema.transaction.companyId, parseInt(val)));
-	}
-
-	if (allowedFilters.includes('transactionTypeId') && url.searchParams.has('transactionTypeId')) {
-		const val = url.searchParams.get('transactionTypeId')!;
-		activeFilters.transactionTypeId = val;
+	if (allowedFilters.includes('transactionType') && url.searchParams.has('transactionType')) {
+		const val = url.searchParams.get('transactionType')!;
+		activeFilters.transactionType = val;
 		conditions.push(eq(schema.transaction.transactionTypeId, parseInt(val)));
 	}
 
-	// 3. Fetch the filtered rows
+	const companyAliases = ['company', 'supplier', 'client'];
+	for (const alias of companyAliases) {
+		if (allowedFilters.includes(alias) && url.searchParams.has(alias)) {
+			const val = url.searchParams.get(alias)!;
+			activeFilters[alias] = val; // Pass the active alias back to the frontend
+			conditions.push(eq(schema.transaction.companyId, parseInt(val)));
+		}
+	}
+
+	// Fetch the filtered rows
 	const rows = await db
 		.select()
 		.from(schema.transaction)
