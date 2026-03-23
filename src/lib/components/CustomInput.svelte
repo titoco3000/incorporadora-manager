@@ -185,14 +185,14 @@
 	$effect(() => {
 		if (!isDropdownOpen && baseOptions.length > 0) {
 			const searchId = getSelectedId();
-			const selected = baseOptions.find((o) => o.id === searchId);
+			const selected = baseOptions.find((o) => String(o.id) === searchId);
 
 			if (selected) {
 				filterText = selected.name;
 
 				const isPrimitiveOrNull = typeof value !== 'object' || value === null;
 
-				if (isPrimitiveOrNull || value.id !== selected.id) {
+				if (isPrimitiveOrNull || String(value.id) !== String(selected.id)) {
 					value = selected;
 				}
 			} else if (!value) {
@@ -206,9 +206,8 @@
 			if (dropdownRef && !dropdownRef.contains(event.target as Node)) {
 				isDropdownOpen = false;
 
-				// Revert filter text to currently selected value if they click away
 				const searchId = getSelectedId();
-				const selected = baseOptions.find((o) => o.id === searchId);
+				const selected = baseOptions.find((o) => String(o.id) === searchId);
 				filterText = selected?.name || '';
 			}
 		}
@@ -227,7 +226,7 @@
 			isDropdownOpen = false;
 
 			const searchId = getSelectedId();
-			const selected = baseOptions.find((o) => o.id === searchId);
+			const selected = baseOptions.find((o) => String(o.id) === searchId);
 			filterText = selected?.name || '';
 		}, 300);
 	}
@@ -272,7 +271,7 @@
 					<button
 						onclick={() => selectOption(option, option.name)}
 						style={optionStyle}
-						class:selected={getSelectedId() === option.id}
+						class:selected={getSelectedId() === String(option.id)}
 					>
 						{option.name || option.id}
 					</button>

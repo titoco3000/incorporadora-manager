@@ -49,21 +49,23 @@
 		</SidebarItem>
 
 		<SidebarItem isOpen={true} label="Relatórios">
-			<PageButton href="/report/expenses-per-building" icon={Building2}>
+			<PageButton href="/report/transactions/expenses-per-building" icon={Building2}>
 				Despesas por imóvel
 			</PageButton>
-			<PageButton href="/report/expenses-per-supplier" icon={Truck}>
+			<PageButton href="/report/transactions/expenses-per-supplier" icon={Truck}>
 				Despesas por fornecedor
 			</PageButton>
-			<PageButton href="/report/expenses-per-type" icon={Pilcrow}>Despesas por tipo</PageButton>
-			<PageButton href="/report/income-per-building" icon={Building2}>
+			<PageButton href="/report/transactions/expenses-per-type" icon={Pilcrow}
+				>Despesas por tipo</PageButton
+			>
+			<PageButton href="/report/transactions/income-per-building" icon={Building2}>
 				Receita por imóvel
 			</PageButton>
-			<PageButton href="/report/expense-per-building" icon={Building2}>
+			<PageButton href="/report/transactions/expense-per-building" icon={Building2}>
 				Despesa por imóvel
 			</PageButton>
-			<PageButton href="/report/income" icon={TrendingUp}>Entradas</PageButton>
-			<PageButton href="/report/expense" icon={TrendingDown}>Despesas</PageButton>
+			<PageButton href="/report/transactions/income" icon={TrendingUp}>Entradas</PageButton>
+			<PageButton href="/report/transactions/expense" icon={TrendingDown}>Despesas</PageButton>
 		</SidebarItem>
 
 		<SidebarItem isOpen={true} label="Planilhas">
