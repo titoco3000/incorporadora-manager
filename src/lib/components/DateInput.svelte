@@ -16,12 +16,15 @@
 	// Sync internal state ONLY when initialDate changes from above
 	$effect(() => {
 		const incoming = initialDate;
+		console.log(incoming);
+
 		untrack(() => {
 			if (incoming) {
 				const [y, m, d] = incoming.split('-');
 				day = d || '';
 				month = m || '';
-				year = y || '';
+				// Slice the YYYY string down to YY for the input display
+				year = y ? y.slice(-2) : '';
 			}
 		});
 	});
@@ -32,17 +35,26 @@
 
 	// Validation logic
 	const validDateString = $derived.by((): DateString | null => {
-		if (!day || !month || year.length < 4) return null;
+		if (!day || !month || year.length < 2) return null;
 		const d = parseInt(day);
 		const m = parseInt(month);
 		const y = parseInt(year);
-		const dateCheck = new Date(y, m - 1, d);
+
+		// Pivot year logic: treats 00-50 as 2000s, and 51-99 as 1900s.
+		// Adjust the "50" threshold if your use case requires it.
+		const fullYear = y <= 50 ? 2000 + y : 1900 + y;
+
+		const dateCheck = new Date(fullYear, m - 1, d);
 
 		const isValid =
-			dateCheck.getFullYear() === y && dateCheck.getMonth() === m - 1 && dateCheck.getDate() === d;
+			dateCheck.getFullYear() === fullYear &&
+			dateCheck.getMonth() === m - 1 &&
+			dateCheck.getDate() === d;
 
 		if (!isValid) return null;
-		return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}` as DateString;
+
+		// Emits a standard YYYY-MM-DD string
+		return `${fullYear}-${month.padStart(2, '0')}-${day.padStart(2, '0')}` as DateString;
 	});
 
 	// Notify parent ONLY when the user leaves the component
@@ -91,7 +103,7 @@
 		placeholder="DD"
 		maxlength="2"
 	/>
-	<span class="sep" class:invalid={!validDateString && year.length === 4}>/</span>
+	<span class="sep" class:invalid={!validDateString && year.length === 2}>/</span>
 	<input
 		bind:this={monthRef}
 		value={month}
@@ -102,7 +114,7 @@
 		placeholder="MM"
 		maxlength="2"
 	/>
-	<span class="sep" class:invalid={!validDateString && year.length === 4}>/</span>
+	<span class="sep" class:invalid={!validDateString && year.length === 2}>/</span>
 	<input
 		bind:this={yearRef}
 		value={year}
@@ -110,8 +122,8 @@
 		onkeydown={(e) => handleKeyDown(e, 'year')}
 		type="text"
 		inputmode="numeric"
-		placeholder="YYYY"
-		maxlength="4"
+		placeholder="YY"
+		maxlength="2"
 	/>
 </div>
 
@@ -131,14 +143,11 @@
 		background-color: transparent;
 	}
 
-	input[placeholder='YYYY'] {
-		width: 55px;
-	}
-
 	.sep {
 		color: var(--text-color-2);
 		font-weight: bold;
 	}
+
 	.invalid {
 		color: var(--error-text-color-1);
 	}

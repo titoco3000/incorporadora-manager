@@ -3,6 +3,7 @@
 	import type { Company, Building, TransactionType } from '$lib/types/api';
 	import { api } from '$lib/api';
 	import ValueInput from './ValueInput.svelte';
+	import DateInput from './DateInput.svelte';
 
 	let {
 		type,
@@ -309,6 +310,8 @@
 		bind:value
 		oninput={handleInput}
 	/>
+{:else if type === 'date'}
+	<DateInput initialDate={value} onDateChange={(newDate) => (value = newDate)} />
 {:else}
 	<input
 		{id}
@@ -319,8 +322,8 @@
 		autocomplete="off"
 		{...rest}
 		bind:value
-		type={type === 'value' || type === 'number' ? 'number' : type === 'date' ? 'date' : 'text'}
-		step={type === 'value' ? 0.01 : type === 'number' ? 0.1 : undefined}
+		type={type === 'number' ? 'number' : 'text'}
+		step={type === 'number' ? 0.1 : undefined}
 		oninput={handleInput}
 	/>
 {/if}
