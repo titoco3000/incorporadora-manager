@@ -1,6 +1,7 @@
 <script lang="ts">
 	import CustomInput from '$lib/components/CustomInput.svelte';
 	import type { CustomInputType } from '$lib/types/CustomInput';
+	import { untrack } from 'svelte';
 
 	let {
 		value = '',
@@ -15,7 +16,7 @@
 		[key: string]: any;
 	}>();
 
-	let draftValue = $state(() => value);
+	let draftValue = $state(untrack(() => value));
 
 	$effect(() => {
 		draftValue = value;

@@ -16,8 +16,6 @@
 	// Sync internal state ONLY when initialDate changes from above
 	$effect(() => {
 		const incoming = initialDate;
-		console.log(incoming);
-
 		untrack(() => {
 			if (incoming) {
 				const [y, m, d] = incoming.split('-');
