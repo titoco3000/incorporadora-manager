@@ -4,6 +4,7 @@
 	import { api } from '$lib/api';
 	import ValueInput from './ValueInput.svelte';
 	import DateInput from './DateInput.svelte';
+	import type { DateString } from '$lib/types/DateString';
 
 	let {
 		type,
@@ -109,17 +110,21 @@
 		}
 	};
 
-	function handleInput(e: Event) {
-		const target = e.target as HTMLInputElement | HTMLTextAreaElement;
+	function handleInput(e: Event | DateString | null) {
+		if (e instanceof Event) {
+			const target = e.target as HTMLInputElement | HTMLTextAreaElement;
 
-		let rawValue: string | boolean = target.value;
+			let rawValue: string | boolean = target.value;
 
-		if (type === 'cnpj') {
-			rawValue = formatCnpj(rawValue);
-			target.value = rawValue;
-		} else if (type == 'bool') rawValue = target.value === 'on';
+			if (type === 'cnpj') {
+				rawValue = formatCnpj(rawValue);
+				target.value = rawValue;
+			} else if (type == 'bool') rawValue = target.value === 'on';
 
-		value = rawValue;
+			value = rawValue;
+		} else {
+			value = e;
+		}
 	}
 
 	function formatCnpj(val: string): string {
@@ -311,7 +316,16 @@
 		oninput={handleInput}
 	/>
 {:else if type === 'date'}
-	<DateInput initialDate={value} onDateChange={(newDate) => (value = newDate)} />
+	<DateInput
+		{id}
+		{disabled}
+		{required}
+		{placeholder}
+		{style}
+		{...rest}
+		initialDate={value}
+		onDateChange={handleInput}
+	/>
 {:else}
 	<input
 		{id}

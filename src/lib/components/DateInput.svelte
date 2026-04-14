@@ -5,9 +5,10 @@
 	interface Props {
 		initialDate?: DateString | null;
 		onDateChange?: (date: DateString | null) => void;
+		onfocusout?: (e: FocusEvent) => void;
 	}
 
-	let { initialDate, onDateChange }: Props = $props();
+	let { initialDate, onDateChange, onfocusout }: Props = $props();
 
 	let day = $state('');
 	let month = $state('');
@@ -63,6 +64,7 @@
 			if (!container.contains(document.activeElement)) {
 				// User has left the entire component
 				onDateChange?.(validDateString);
+				onfocusout?.(e);
 			}
 		}, 0);
 	}
