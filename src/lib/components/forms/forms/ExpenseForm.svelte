@@ -84,6 +84,7 @@
 	fields={dynamicFields}
 	post={api.transactions.post}
 	onClear={() => {
+		formData.value = ''; // unnecessary, doing this to ensure.
 		formData.date = new Date().toISOString().split('T')[0] as DateString;
 	}}
 />

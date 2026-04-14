@@ -67,7 +67,9 @@ export const POST: RequestHandler = async ({ request }) => {
 		}
 
 		return json(newTransaction, { status: 201 });
-	} catch {
+	} catch (error) {
+		console.log(error);
+
 		return json({ error: 'Failed to create transaction' }, { status: 500 });
 	}
 };

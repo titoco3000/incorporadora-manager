@@ -318,21 +318,23 @@
 		// If already 2 digits, nothing to do
 	}
 
-	// Initialize display from value prop
 	$effect(() => {
-		// Don't format while the user is actively typing
+		// 1. Prioritize clearing the visual value, regardless of focus
+		if (value === null || value === undefined || value === '') {
+			displayValue = '';
+			return;
+		}
+
+		// 2. Now prevent formatting while the user is actively typing
 		if (document.activeElement === inputEl) return;
 
-		if (value === null || value === undefined) {
-			displayValue = '';
+		// 3. Format the incoming data
+		const str = value.toString();
+		const dotIdx = str.indexOf('.');
+		if (dotIdx === -1) {
+			displayValue = formatNumber(str, null);
 		} else {
-			const str = value.toString();
-			const dotIdx = str.indexOf('.');
-			if (dotIdx === -1) {
-				displayValue = formatNumber(str, null);
-			} else {
-				displayValue = formatNumber(str.slice(0, dotIdx), str.slice(dotIdx + 1, dotIdx + 3));
-			}
+			displayValue = formatNumber(str.slice(0, dotIdx), str.slice(dotIdx + 1, dotIdx + 3));
 		}
 	});
 </script>
