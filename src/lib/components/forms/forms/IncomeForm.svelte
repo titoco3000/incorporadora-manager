@@ -17,9 +17,7 @@
 		date: new Date().toISOString().split('T')[0] as DateString
 	});
 
-	let isCompanyEmpty = $state(true);
-
-	let dynamicFields: FormFieldDefinition[] = $derived([
+	let dynamicFields: FormFieldDefinition[] = [
 		{
 			label: 'Cliente',
 			type: 'client',
@@ -28,13 +26,12 @@
 			size: 0.5,
 			required: true,
 			onChange: async (e: any) => {
-				if (e) {
-					const ttypes = await api.transactionTypes.get();
-					const newType = ttypes[e.transactionTypeId];
-					if (newType && (!formData.transactionType || !isCompanyEmpty))
-						formData.transactionType = ttypes[e.transactionTypeId];
-				}
-				isCompanyEmpty = !e;
+				if (!e) return;
+				const ttypes = await api.transactionTypes.get();
+				const newType = ttypes.find((i) => i.id == e.transactionTypeId);
+
+				if (newType && formData.transactionType?.id !== newType?.id)
+					formData = { ...formData, transactionType: newType };
 			}
 		},
 		{
@@ -79,7 +76,7 @@
 			name: 'obs',
 			size: 1
 		}
-	]);
+	];
 </script>
 
 <BaseForm
