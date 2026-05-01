@@ -3,14 +3,13 @@
 	import { page } from '$app/state';
 	import CustomInput from '$lib/components/CustomInput.svelte';
 	import DataTable from '$lib/components/DataTable/DataTable.svelte';
+	import SummaryTable from '$lib/components/SummaryTable.svelte';
 	import type { CustomInputType } from '$lib/types/CustomInput.js';
 
 	let { data } = $props();
 
 	function updateFilter(paramKey: string, paramValue: string) {
 		const url = new URL(page.url);
-
-		console.log(`updateFilter(${paramKey}, ${paramValue})`);
 
 		if (paramValue) {
 			if (url.searchParams.get(paramKey) != paramValue) url.searchParams.set(paramKey, paramValue);
@@ -83,32 +82,25 @@
 		'obs'
 	];
 
-	// Map the table columns to their corresponding new filter keys
 	const columnToFiltersMap: Record<string, FilterKey[]> = {
 		buildingId: ['building'],
 		transactionTypeId: ['transactionType'],
-		// companyId will hide if ANY of these three filters are active
 		companyId: ['company', 'supplier', 'client']
 	};
 
 	let visibleColumns = $derived(
 		allColumns.filter((col) => {
 			const relatedFilters = columnToFiltersMap[col];
-
 			if (!relatedFilters) return true;
-
-			// If it's a filtered column, check if any of its mapped filters are active.
-			// If active, we hide the column.
 			const isFilterActive = relatedFilters.some(
 				(filterKey) => data.allowedFilters.includes(filterKey) && data.activeFilters[filterKey]
 			);
-
 			return !isFilterActive;
 		})
 	);
 </script>
 
-<div class="filters-bar" style="display: flex; gap: 1.5rem; min-height: 40px; ">
+<div class="filters-bar" style="display: flex; gap: 1.5rem; min-height: 40px;">
 	{#each data.allowedFilters as filterKey}
 		{@const config = filterConfig[filterKey as FilterKey]}
 		{#if config}
@@ -124,4 +116,8 @@
 	{/each}
 </div>
 
-<DataTable type="transaction" rows={data.rows as any} {visibleColumns} />
+{#if data.summaryVariant}
+	<SummaryTable rows={data.rows as any} tableId={page.params.type} variant={data.summaryVariant} />
+{:else}
+	<DataTable type="transaction" rows={data.rows as any} {visibleColumns} />
+{/if}

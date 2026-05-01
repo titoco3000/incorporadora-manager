@@ -55,17 +55,12 @@
 			<PageButton href="/report/transactions/expenses-per-supplier" icon={Truck}>
 				Despesas de fornecedor
 			</PageButton>
-			<PageButton href="/report/transactions/expenses-per-type" icon={Pilcrow}
-				>Despesas de tipo</PageButton
-			>
-			<!-- <PageButton href="/report/transactions/income-per-building" icon={Building2}>
-				Receita por imóvel
+			<PageButton href="/report/transactions/expenses-per-type" icon={Pilcrow}>
+				Despesas de tipo
 			</PageButton>
-			<PageButton href="/report/transactions/expense-per-building" icon={Building2}>
-				Despesa por imóvel
+			<PageButton href="/report/transactions/totals-per-building" icon={BarChart3}>
+				Totais por imóvel
 			</PageButton>
-			<PageButton href="/report/transactions/income" icon={TrendingUp}>Entradas</PageButton>
-			<PageButton href="/report/transactions/expense" icon={TrendingDown}>Despesas</PageButton> -->
 		</SidebarItem>
 
 		<SidebarItem isOpen={true} label="Planilhas">
