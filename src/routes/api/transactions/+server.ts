@@ -50,6 +50,8 @@ export const GET: RequestHandler = async ({ url }) => {
 };
 
 export const POST: RequestHandler = async ({ request }) => {
+	console.log('Creating a new transaction: ', request);
+
 	try {
 		const body = await request.json();
 

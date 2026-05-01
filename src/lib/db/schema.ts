@@ -1,5 +1,14 @@
 //src/lib/db/schema.ts
-import { pgTable, serial, text, boolean, integer, date, numeric } from 'drizzle-orm/pg-core';
+import {
+	pgTable,
+	serial,
+	text,
+	boolean,
+	integer,
+	date,
+	numeric,
+	unique
+} from 'drizzle-orm/pg-core';
 
 export const transactionType = pgTable('transaction_type', {
 	id: serial('id').primaryKey(),
@@ -56,17 +65,24 @@ export const contact = pgTable('contact', {
 	obs: text('obs')
 });
 
-export const transaction = pgTable('transaction', {
-	id: serial('id').primaryKey(),
-	transactionTypeId: integer('transaction_type_id')
-		.references(() => transactionType.id)
-		.notNull(),
-	value: numeric('value', { precision: 12, scale: 2 }).notNull(),
-	companyId: integer('company_id')
-		.references(() => company.id)
-		.notNull(),
-	date: date('date').notNull(),
-	buildingId: integer('building_id').references(() => building.id),
-	document: text('document'),
-	obs: text('obs')
-});
+export const transaction = pgTable(
+	'transaction',
+	{
+		id: serial('id').primaryKey(),
+		transactionTypeId: integer('transaction_type_id')
+			.references(() => transactionType.id)
+			.notNull(),
+		value: numeric('value', { precision: 12, scale: 2 }).notNull(),
+		companyId: integer('company_id')
+			.references(() => company.id)
+			.notNull(),
+		date: date('date').notNull(),
+		buildingId: integer('building_id').references(() => building.id),
+		document: text('document'),
+		obs: text('obs')
+	},
+	(t) => ({
+		// Define the multi-column unique constraint here
+		unq: unique('document_company_unique').on(t.document, t.companyId)
+	})
+);

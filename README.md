@@ -37,6 +37,10 @@ Ao mudar dados no schema:
 
 ## TODO
 
+- gerar alerta  em caso de lançamento duplicado
+- Data copiavel
+- Data selecionavel
+
 - Relatórios
     - despesas por imovel
     - despesas por fornecedor
@@ -44,8 +48,6 @@ Ao mudar dados no schema:
     - receita por imovel
     - despesa por imovel
     - listagem de despesas
-
-- Mudar data para xx/xx/xx
 
 
 
