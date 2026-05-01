@@ -316,16 +316,7 @@
 		oninput={handleInput}
 	/>
 {:else if type === 'date'}
-	<DateInput
-		{id}
-		{disabled}
-		{required}
-		{placeholder}
-		{style}
-		{...rest}
-		initialDate={value}
-		onDateChange={handleInput}
-	/>
+	<DateInput bind:value {id} {disabled} {required} {placeholder} {style} {...rest} />
 {:else}
 	<input
 		{id}

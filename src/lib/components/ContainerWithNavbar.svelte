@@ -12,14 +12,9 @@
 		FileText,
 		Building2,
 		Pilcrow,
-		BanknoteArrowUp,
 		BarChart3,
-		PieChart,
-		LineChart,
 		TrendingUp,
-		TrendingDown,
-		Receipt,
-		Blinds
+		TrendingDown
 	} from 'lucide-svelte';
 
 	import PageButton from './PageButton.svelte';

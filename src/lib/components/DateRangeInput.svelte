@@ -1,30 +1,24 @@
 <script lang="ts">
-    import type { DateString } from '$lib/types/DateString';
-    import DateInput from './DateInput.svelte';
+	import type { DateString } from '$lib/types/DateString';
+	import DateInput from './DateInput.svelte';
 
-    interface Props {
-        start: DateString;
-        end: DateString;
-    }
+	interface Props {
+		start: DateString;
+		end: DateString;
+	}
 
-    let { start = $bindable(), end = $bindable() }: Props = $props();
+	let { start = $bindable(), end = $bindable() }: Props = $props();
 </script>
 
 <main>
-    <label>
-        <h1>de</h1>
-        <DateInput 
-            initialDate={start} 
-            onDateChange={(val) => val && (start = val)} 
-        />
-    </label>
-    <label>
-        <h1>até</h1>
-        <DateInput 
-            initialDate={end} 
-            onDateChange={(val) => val && (end = val)} 
-        />
-    </label>
+	<label>
+		<h1>de</h1>
+		<DateInput bind:value={start} />
+	</label>
+	<label>
+		<h1>até</h1>
+		<DateInput bind:value={end} />
+	</label>
 </main>
 
 <style>
