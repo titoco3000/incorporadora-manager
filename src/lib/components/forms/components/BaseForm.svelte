@@ -145,7 +145,8 @@
 	}
 
 	.feedback.error {
-		background-color: #531818;
+		background-color: var(--bg-color-error-panel);
+		color: var(--text-color-error-panel);
 	}
 
 	.submit-button:disabled {

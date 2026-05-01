@@ -26,7 +26,13 @@ async function apiFetch(path: string, method = 'GET', body?: any) {
 
 		if (!res.ok) {
 			if (isCacheableGet) cache.delete(path);
-			throw new Error(await res.text());
+			const text = await res.text();
+			let message = text;
+			try {
+				const body = JSON.parse(text);
+				if (body.error) message = body.error;
+			} catch { /* not JSON */ }
+			throw new Error(message);
 		}
 
 		if (res.status === 204) return null;

@@ -3,9 +3,11 @@ body{
 	  --bg-color-2: #181615;
     --bg-color-3: #1a1a1a;
     --bg-color-4: #303030;
+    --bg-color-error-panel: #531818;
     
     --text-color-1: #aaa7a5;
     --text-color-2: #ffffff;
+    --text-color-error-panel: #ffffff;
     --error-text-color-1: #ef4444;
 
     --border-color-1: #2a2a2a;

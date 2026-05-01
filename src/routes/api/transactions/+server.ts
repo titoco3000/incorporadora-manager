@@ -4,6 +4,7 @@ import type { RequestHandler } from './$types';
 import { db } from '$lib/db';
 import { transaction, company } from '$lib/db/schema';
 import { eq, gte, lte, and } from 'drizzle-orm';
+import { getDbErrorMessage } from '$lib/db/errors';
 
 export const GET: RequestHandler = async ({ url }) => {
 	try {
@@ -71,7 +72,9 @@ export const POST: RequestHandler = async ({ request }) => {
 		return json(newTransaction, { status: 201 });
 	} catch (error) {
 		console.log(error);
+		const msg = getDbErrorMessage(error);
 
+		if (msg) return json({ error: msg }, { status: 409 });
 		return json({ error: 'Failed to create transaction' }, { status: 500 });
 	}
 };
@@ -125,7 +128,9 @@ export const PATCH: RequestHandler = async ({ request }) => {
 		}
 
 		return json(updated);
-	} catch {
+	} catch (error) {
+		const msg = getDbErrorMessage(error);
+		if (msg) return json({ error: msg }, { status: 409 });
 		return json({ error: 'Failed to update transaction' }, { status: 500 });
 	}
 };

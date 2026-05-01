@@ -138,7 +138,10 @@
 			apiClient
 				.patch(rowID, { [columnKey]: value && value.id ? value.id : value })
 				.then(() => invalidateAll())
-				.catch((e: any) => console.error('Save failed:', e));
+				.catch((e: any) => {
+					showError(e.message ?? 'Erro ao salvar alteração.');
+					invalidateAll();
+				});
 	}
 
 	function handleDelete(rowID: number) {
@@ -150,11 +153,20 @@
 
 		apiClient
 			.delete(rowID)
-			.then(() => invalidateAll()) // Refresh data after successful delete
-			.catch((e: any) => console.error('Delete failed:', e));
+			.then(() => invalidateAll())
+			.catch((e: any) => showError(e.message ?? 'Erro ao excluir registro.'));
 	}
 
 	// Filter columns by visibleColumns (if provided), then append the delete button
+	let tableError = $state<string | null>(null);
+	let errorTimeout: ReturnType<typeof setTimeout>;
+
+	function showError(message: string) {
+		clearTimeout(errorTimeout);
+		tableError = message;
+		errorTimeout = setTimeout(() => (tableError = null), 5000);
+	}
+
 	let activeColumns = $derived([
 		...(baseColumnsDefs[type] || []).filter(
 			(col) => !visibleColumns || visibleColumns.length === 0 || visibleColumns.includes(col.key)
@@ -171,6 +183,10 @@
 	]);
 </script>
 
+{#if tableError}
+	<p class="table-error">{tableError}</p>
+{/if}
+
 <Table
 	id={type}
 	columns={activeColumns}
@@ -179,3 +195,14 @@
 	onChange={handleEdit}
 	borderColor="var(--border-color-2)"
 />
+
+<style>
+	.table-error {
+		padding: 0.6rem 0.875rem;
+		margin-bottom: 0.5rem;
+		border-radius: 0.375rem;
+		font-size: 0.875rem;
+		background-color: var(--bg-color-error-panel);
+		color: var(--text-color-error-panel);
+	}
+</style>

@@ -3,6 +3,7 @@ import { json } from '@sveltejs/kit';
 import { db } from '$lib/db';
 import { eq } from 'drizzle-orm';
 import * as schema from '$lib/db/schema';
+import { getDbErrorMessage } from '$lib/db/errors';
 
 const schemaMap = {
 	'transaction-types': schema.transactionType,
@@ -26,7 +27,8 @@ export const PATCH = async ({ params, request }) => {
 
 		return json({ success: true });
 	} catch (err) {
-		return json({ success: false, error: (err as Error).message }, { status: 400 });
+		const msg = getDbErrorMessage(err) ?? (err as Error).message;
+		return json({ success: false, error: msg }, { status: 409 });
 	}
 };
 
@@ -54,6 +56,7 @@ export const POST = async ({ params, request }) => {
 
 		return json({ success: true, data: result[0] });
 	} catch (err) {
-		return json({ success: false, error: (err as Error).message }, { status: 400 });
+		const msg = getDbErrorMessage(err) ?? (err as Error).message;
+		return json({ success: false, error: msg }, { status: 409 });
 	}
 };
