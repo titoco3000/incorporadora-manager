@@ -5,10 +5,18 @@ import type {
 	Company,
 	Contract,
 	Contact,
-	Transaction
+	Transaction,
+	WhitelistEntry
 } from '$lib/types/api';
 
 const cache = new Map<string, Promise<any>>();
+
+function authHeaders(): Record<string, string> {
+	const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+	const token = typeof localStorage !== 'undefined' ? localStorage.getItem('token') : null;
+	if (token) headers['Authorization'] = `Bearer ${token}`;
+	return headers;
+}
 
 async function apiFetch(path: string, method = 'GET', body?: any) {
 	const isCacheableGet = method === 'GET' && !path.includes('?');
@@ -20,18 +28,24 @@ async function apiFetch(path: string, method = 'GET', body?: any) {
 	const requestPromise = (async () => {
 		const res = await fetch(path, {
 			method,
-			headers: { 'Content-Type': 'application/json' },
+			headers: authHeaders(),
 			body: body ? JSON.stringify(body) : undefined
 		});
 
 		if (!res.ok) {
 			if (isCacheableGet) cache.delete(path);
+			if (res.status === 401 && typeof window !== 'undefined') {
+				localStorage.removeItem('token');
+				window.location.reload();
+			}
 			const text = await res.text();
 			let message = text;
 			try {
 				const body = JSON.parse(text);
 				if (body.error) message = body.error;
-			} catch { /* not JSON */ }
+			} catch {
+				/* not JSON */
+			}
 			throw new Error(message);
 		}
 
@@ -125,5 +139,10 @@ export const api = {
 		patch: (id: number, data: Partial<Omit<Transaction, 'id'>>) =>
 			apiFetch('/api/transactions', 'PATCH', { id, ...data }),
 		delete: (id: number) => apiFetch('/api/transactions', 'DELETE', { id })
+	},
+	whitelist: {
+		get: (): Promise<WhitelistEntry[]> => apiFetch('/api/auth/whitelist'),
+		post: (data: { email: string }) => apiFetch('/api/auth/whitelist', 'POST', data),
+		delete: (id: number) => apiFetch('/api/auth/whitelist', 'DELETE', { id })
 	}
 };

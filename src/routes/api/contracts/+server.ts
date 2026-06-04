@@ -6,68 +6,61 @@ import { contract } from '$lib/db/schema';
 import { eq } from 'drizzle-orm';
 
 export const GET: RequestHandler = async () => {
-  try {
-    const contracts = await db.select().from(contract);
-    return json(contracts);
-  } catch (error) {
-    return json({ error: 'Failed to fetch contracts' }, { status: 500 });
-  }
+	try {
+		const contracts = await db.select().from(contract);
+		return json(contracts);
+	} catch (error) {
+		return json({ error: 'Failed to fetch contracts' }, { status: 500 });
+	}
 };
 
 export const POST: RequestHandler = async ({ request }) => {
-  try {
-    const body = await request.json();
-    const [newContract] = await db.insert(contract).values(body).returning();
-    return json(newContract, { status: 201 });
-  } catch (error) {
-    return json({ error: 'Failed to create contract' }, { status: 500 });
-  }
+	try {
+		const body = await request.json();
+		const [newContract] = await db.insert(contract).values(body).returning();
+		return json(newContract, { status: 201 });
+	} catch (error) {
+		return json({ error: 'Failed to create contract' }, { status: 500 });
+	}
 };
 
 export const PATCH: RequestHandler = async ({ request }) => {
-  try {
-    const body = await request.json();
-    const { id, ...data } = body;
-    
-    if (!id) {
-      return json({ error: 'ID is required' }, { status: 400 });
-    }
+	try {
+		const body = await request.json();
+		const { id, ...data } = body;
 
-    const [updated] = await db
-      .update(contract)
-      .set(data)
-      .where(eq(contract.id, id))
-      .returning();
+		if (!id) {
+			return json({ error: 'ID is required' }, { status: 400 });
+		}
 
-    if (!updated) {
-      return json({ error: 'Contract not found' }, { status: 404 });
-    }
+		const [updated] = await db.update(contract).set(data).where(eq(contract.id, id)).returning();
 
-    return json(updated);
-  } catch (error) {
-    return json({ error: 'Failed to update contract' }, { status: 500 });
-  }
+		if (!updated) {
+			return json({ error: 'Contract not found' }, { status: 404 });
+		}
+
+		return json(updated);
+	} catch (error) {
+		return json({ error: 'Failed to update contract' }, { status: 500 });
+	}
 };
 
 export const DELETE: RequestHandler = async ({ request }) => {
-  try {
-    const { id } = await request.json();
-    
-    if (!id) {
-      return json({ error: 'ID is required' }, { status: 400 });
-    }
+	try {
+		const { id } = await request.json();
 
-    const [deleted] = await db
-      .delete(contract)
-      .where(eq(contract.id, id))
-      .returning();
+		if (!id) {
+			return json({ error: 'ID is required' }, { status: 400 });
+		}
 
-    if (!deleted) {
-      return json({ error: 'Contract not found' }, { status: 404 });
-    }
+		const [deleted] = await db.delete(contract).where(eq(contract.id, id)).returning();
 
-    return json({ success: true });
-  } catch (error) {
-    return json({ error: 'Failed to delete contract' }, { status: 500 });
-  }
+		if (!deleted) {
+			return json({ error: 'Contract not found' }, { status: 404 });
+		}
+
+		return json({ success: true });
+	} catch (error) {
+		return json({ error: 'Failed to delete contract' }, { status: 500 });
+	}
 };

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { invalidateAll } from '$app/navigation';
 	import ContainerWithMenu from './ContainerWithMenu.svelte';
 	import type { Snippet } from 'svelte';
 	import SidebarItem from './SidebarItem.svelte';
@@ -14,7 +15,9 @@
 		Pilcrow,
 		BarChart3,
 		TrendingUp,
-		TrendingDown
+		TrendingDown,
+		Shield,
+		LogOut
 	} from 'lucide-svelte';
 
 	import PageButton from './PageButton.svelte';
@@ -23,6 +26,12 @@
 	let { children } = $props<{
 		children?: Snippet;
 	}>();
+
+	async function handleLogout() {
+		await fetch('/api/auth/logout', { method: 'POST' });
+		localStorage.removeItem('token');
+		await invalidateAll();
+	}
 </script>
 
 <ContainerWithMenu width={240}>
@@ -67,6 +76,19 @@
 			<PageButton href="/table/building" icon={Building2}>Imóveis</PageButton>
 			<PageButton href="/table/transaction-type" icon={Pilcrow}>Tipos de Transação</PageButton>
 		</SidebarItem>
+
+		<SidebarItem isOpen={true} label="Administração">
+			<PageButton href="/whitelist" icon={Shield}>Whitelist</PageButton>
+		</SidebarItem>
+
+		<div class="spacer"></div>
+
+		<SidebarItem isOpen={true} label="">
+			<button class="logout-button" onclick={handleLogout}>
+				<LogOut size={18} />
+				Sair
+			</button>
+		</SidebarItem>
 	{/snippet}
 	{@render children?.()}
 </ContainerWithMenu>
@@ -76,5 +98,26 @@
 		margin: 20px;
 		display: block;
 		text-decoration: none;
+	}
+	.spacer {
+		flex: 1;
+	}
+	.logout-button {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.5rem 1rem;
+		width: 100%;
+		border: none;
+		background: none;
+		color: var(--text-color-1);
+		cursor: pointer;
+		font-size: 0.9rem;
+		border-radius: 0.375rem;
+		transition: background 0.15s;
+	}
+	.logout-button:hover {
+		background: var(--bg-color-4);
+		color: var(--error-text-color-1);
 	}
 </style>
