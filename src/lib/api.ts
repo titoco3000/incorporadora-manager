@@ -57,13 +57,7 @@ async function apiFetch(path: string, method = 'GET', body?: any) {
 	if (isCacheableGet) {
 		cache.set(path, requestPromise);
 	} else if (method !== 'GET') {
-		console.log('Invalidate cache on mutations');
-		cache.delete(path.split('?')[0]);
-		for (const key of cache.keys()) {
-			if (path.startsWith(key)) {
-				cache.delete(key);
-			}
-		}
+		cache.clear();
 	}
 
 	return requestPromise;
