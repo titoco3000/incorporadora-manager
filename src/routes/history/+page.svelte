@@ -1,25 +1,30 @@
 <script lang="ts">
 	import { api } from '$lib/api';
-	import { Clock, RotateCcw, Check, X } from 'lucide-svelte';
+	import { ChevronLeft, ChevronRight, Clock, RotateCcw, Check } from 'lucide-svelte';
 
-	let entries = $state<Awaited<ReturnType<typeof api.history.get>>>([]);
+	let data = $state<Awaited<ReturnType<typeof api.history.get>> | null>(null);
 	let loading = $state(true);
 	let error = $state('');
 	let undoingId = $state<number | null>(null);
+	let redoingId = $state<number | null>(null);
+	let page = $state(1);
+	const limit = 50;
 
-	async function loadHistory() {
+	let entries = $derived(data?.entries ?? []);
+	let totalPages = $derived(data?.totalPages ?? 0);
+
+	async function loadHistory(p?: number) {
+		if (p !== undefined) page = p;
 		loading = true;
 		error = '';
 		try {
-			entries = await api.history.get();
+			data = await api.history.get(page, limit);
 		} catch (e: unknown) {
 			error = (e as Error).message;
 		} finally {
 			loading = false;
 		}
 	}
-
-	let redoingId = $state<number | null>(null);
 
 	async function handleUndo(id: number) {
 		const entry = entries.find((e) => e.id === id);
@@ -171,6 +176,18 @@
 					</div>
 				</div>
 			{/each}
+		</div>
+
+		<div class="pagination">
+			<button class="page-btn" onclick={() => loadHistory(page - 1)} disabled={page <= 1}>
+				<ChevronLeft size={16} />
+				Anterior
+			</button>
+			<span class="page-info">Página {page} de {totalPages}</span>
+			<button class="page-btn" onclick={() => loadHistory(page + 1)} disabled={page >= totalPages}>
+				Próximo
+				<ChevronRight size={16} />
+			</button>
 		</div>
 	{/if}
 </div>
@@ -335,5 +352,39 @@
 		gap: 0.35rem;
 		font-size: 0.8rem;
 		color: #4ade80;
+	}
+	.pagination {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 1rem;
+		margin-top: 2rem;
+		padding-top: 1rem;
+		border-top: 1px solid var(--border-color-1);
+	}
+	.page-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.35rem;
+		padding: 0.5rem 1rem;
+		border: 1px solid var(--border-color-1);
+		border-radius: 0.375rem;
+		background: var(--bg-color-3);
+		color: var(--text-color-1);
+		cursor: pointer;
+		font-size: 0.85rem;
+		transition: background 0.15s;
+	}
+	.page-btn:hover:not(:disabled) {
+		background: var(--bg-color-4);
+		border-color: #60a5fa;
+	}
+	.page-btn:disabled {
+		opacity: 0.4;
+		cursor: not-allowed;
+	}
+	.page-info {
+		font-size: 0.85rem;
+		color: var(--text-color-2);
 	}
 </style>

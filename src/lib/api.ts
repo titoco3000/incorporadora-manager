@@ -146,8 +146,16 @@ export const api = {
 		delete: (id: number) => apiFetch('/api/auth/whitelist', 'DELETE', { id })
 	},
 	history: {
-		get: (): Promise<(HistoryEntry & { userName: string | null; userEmail: string })[]> =>
-			apiFetch('/api/history'),
+		get: (
+			page = 1,
+			limit = 50
+		): Promise<{
+			entries: (HistoryEntry & { userName: string | null; userEmail: string })[];
+			total: number;
+			page: number;
+			limit: number;
+			totalPages: number;
+		}> => apiFetch(`/api/history?page=${page}&limit=${limit}`),
 		undo: (id: number) => apiFetch(`/api/history/${id}/undo`, 'POST')
 	}
 };

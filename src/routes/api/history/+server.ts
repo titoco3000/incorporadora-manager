@@ -2,10 +2,17 @@ import { json } from '@sveltejs/kit';
 import type { RequestEvent } from '@sveltejs/kit';
 import { db } from '$lib/db';
 import { historyEntry, user } from '$lib/db/schema';
-import { desc, eq } from 'drizzle-orm';
+import { desc, eq, count } from 'drizzle-orm';
 
 export async function GET(event: RequestEvent) {
 	try {
+		const url = event.url;
+		const page = Math.max(1, parseInt(url.searchParams.get('page') ?? '1'));
+		const limit = Math.min(100, Math.max(1, parseInt(url.searchParams.get('limit') ?? '50')));
+		const offset = (page - 1) * limit;
+
+		const [{ total }] = await db.select({ total: count() }).from(historyEntry);
+
 		const entries = await db
 			.select({
 				id: historyEntry.id,
@@ -23,9 +30,11 @@ export async function GET(event: RequestEvent) {
 			})
 			.from(historyEntry)
 			.leftJoin(user, eq(historyEntry.userId, user.id))
-			.orderBy(desc(historyEntry.id));
+			.orderBy(desc(historyEntry.id))
+			.limit(limit)
+			.offset(offset);
 
-		return json(entries);
+		return json({ entries, total, page, limit, totalPages: Math.ceil(total / limit) });
 	} catch {
 		return json({ error: 'Failed to fetch history' }, { status: 500 });
 	}
