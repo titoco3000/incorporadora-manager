@@ -7,7 +7,8 @@ import {
 	integer,
 	date,
 	numeric,
-	unique
+	unique,
+	timestamp
 } from 'drizzle-orm/pg-core';
 
 export const transactionType = pgTable('transaction_type', {
@@ -63,6 +64,22 @@ export const contact = pgTable('contact', {
 		.references(() => company.id)
 		.notNull(),
 	obs: text('obs')
+});
+
+export const user = pgTable('user', {
+	id: serial('id').primaryKey(),
+	email: text('email').notNull().unique(),
+	passwordHash: text('password_hash').notNull(),
+	googleId: text('google_id'),
+	name: text('name'),
+	createdAt: timestamp('created_at').defaultNow().notNull()
+});
+
+export const whitelistEntry = pgTable('whitelist_entry', {
+	id: serial('id').primaryKey(),
+	email: text('email').notNull().unique(),
+	addedById: integer('added_by_id').references(() => user.id),
+	createdAt: timestamp('created_at').defaultNow().notNull()
 });
 
 export const transaction = pgTable(

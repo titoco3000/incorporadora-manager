@@ -12,7 +12,6 @@
 
 /reports -> Permite gerar relatorios
 
-
 ## Instalação
 
 Adicione um .env a raiz do projeto e preencha com base em .env.example.
@@ -41,7 +40,3 @@ Ao mudar dados no schema:
 - Data selecionavel
 
 - Relatórios
-
-
-
-

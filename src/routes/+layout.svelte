@@ -4,9 +4,9 @@
 	import ContainerWithNavbar from '$lib/components/ContainerWithNavbar.svelte';
 	import LoginScreen from '$lib/components/LoginScreen.svelte';
 
-	let { children } = $props();
+	let { children, data } = $props();
 
-	const userAuthenticated = true;
+	const userAuthenticated = $derived(data.user != null);
 </script>
 
 <svelte:head>
