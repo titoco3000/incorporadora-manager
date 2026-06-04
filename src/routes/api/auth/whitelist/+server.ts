@@ -20,10 +20,11 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 	}
 
 	try {
-		const { email } = await request.json();
+		let { email } = await request.json();
 		if (!email) {
 			return json({ error: 'Email is required' }, { status: 400 });
 		}
+		email = email.toLowerCase().trim();
 
 		const [entry] = await db
 			.insert(whitelistEntry)

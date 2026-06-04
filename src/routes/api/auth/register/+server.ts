@@ -8,11 +8,13 @@ import { getDbErrorMessage } from '$lib/db/errors';
 
 export const POST: RequestHandler = async ({ request, cookies }) => {
 	try {
-		const { email, password } = await request.json();
-
+		const data = await request.json();
+		let { email } = data;
+		const { password } = data;
 		if (!email || !password) {
 			return json({ error: 'Email and password are required' }, { status: 400 });
 		}
+		email = email.toLowerCase().trim();
 
 		if (password.length < 6) {
 			return json({ error: 'Password must be at least 6 characters' }, { status: 400 });

@@ -7,11 +7,13 @@ import { eq } from 'drizzle-orm';
 
 export const POST: RequestHandler = async ({ request, cookies }) => {
 	try {
-		const { email, password } = await request.json();
-
+		const data = await request.json();
+		let { email } = data;
+		const { password } = data;
 		if (!email || !password) {
 			return json({ error: 'Email and password are required' }, { status: 400 });
 		}
+		email = email.toLowerCase().trim();
 
 		const [found] = await db.select().from(user).where(eq(user.email, email));
 

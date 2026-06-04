@@ -6,11 +6,11 @@ import { eq } from 'drizzle-orm';
 
 export const POST: RequestHandler = async ({ request }) => {
 	try {
-		const { email } = await request.json();
-
+		let { email } = await request.json();
 		if (!email) {
 			return json({ error: 'Email is required' }, { status: 400 });
 		}
+		email = email.toLowerCase().trim();
 
 		const [existing] = await db.select().from(user).where(eq(user.email, email));
 		if (existing) {

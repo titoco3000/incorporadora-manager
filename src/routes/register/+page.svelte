@@ -13,7 +13,7 @@
 		error = '';
 
 		if (password !== confirm) {
-			error = 'As senhas não conferem.';
+			error = 'As senhas não estão iguais.';
 			return;
 		}
 
