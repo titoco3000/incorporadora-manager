@@ -8,7 +8,8 @@ import {
 	date,
 	numeric,
 	unique,
-	timestamp
+	timestamp,
+	jsonb
 } from 'drizzle-orm/pg-core';
 
 export const transactionType = pgTable('transaction_type', {
@@ -79,6 +80,21 @@ export const whitelistEntry = pgTable('whitelist_entry', {
 	id: serial('id').primaryKey(),
 	email: text('email').notNull().unique(),
 	addedById: integer('added_by_id').references(() => user.id),
+	createdAt: timestamp('created_at').defaultNow().notNull()
+});
+
+export const historyEntry = pgTable('history_entry', {
+	id: serial('id').primaryKey(),
+	userId: integer('user_id')
+		.references(() => user.id)
+		.notNull(),
+	action: text('action').notNull(),
+	tableName: text('table_name').notNull(),
+	rowId: integer('row_id').notNull(),
+	changes: jsonb('changes'),
+	description: text('description').notNull(),
+	undoneByUserId: integer('undone_by_user_id').references(() => user.id),
+	undoneAt: timestamp('undone_at'),
 	createdAt: timestamp('created_at').defaultNow().notNull()
 });
 

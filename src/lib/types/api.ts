@@ -8,7 +8,8 @@ import {
 	contact,
 	transaction,
 	user,
-	whitelistEntry
+	whitelistEntry,
+	historyEntry
 } from '$lib/db/schema';
 
 export type TransactionType = InferSelectModel<typeof transactionType>;
@@ -19,3 +20,4 @@ export type Contact = InferSelectModel<typeof contact>;
 export type Transaction = InferSelectModel<typeof transaction>;
 export type User = InferSelectModel<typeof user>;
 export type WhitelistEntry = InferSelectModel<typeof whitelistEntry>;
+export type HistoryEntry = InferSelectModel<typeof historyEntry>;

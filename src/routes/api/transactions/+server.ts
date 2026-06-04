@@ -1,10 +1,10 @@
-// src/routes/api/transactions/+server.ts
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { db } from '$lib/db';
-import { transaction, company } from '$lib/db/schema';
+import { transaction, company, transactionType } from '$lib/db/schema';
 import { eq, gte, lte, and } from 'drizzle-orm';
 import { getDbErrorMessage } from '$lib/db/errors';
+import { recordHistory } from '$lib/history';
 
 export const GET: RequestHandler = async ({ url }) => {
 	try {
@@ -50,16 +50,15 @@ export const GET: RequestHandler = async ({ url }) => {
 	}
 };
 
-export const POST: RequestHandler = async ({ request }) => {
-	console.log('Creating a new transaction: ', request);
+export const POST: RequestHandler = async ({ request, locals }) => {
+	const userId = locals.user?.userId;
+	if (!userId) return json({ error: 'Not authenticated' }, { status: 401 });
 
 	try {
 		const body = await request.json();
 
-		// Create transaction
 		const [newTransaction] = await db.insert(transaction).values(body).returning();
 
-		// Update company's transactionTypeId if it's a supplier
 		const [supplierCompany] = await db.select().from(company).where(eq(company.id, body.companyId));
 
 		if (supplierCompany) {
@@ -69,9 +68,28 @@ export const POST: RequestHandler = async ({ request }) => {
 				.where(eq(company.id, body.companyId));
 		}
 
+		const [type] = await db
+			.select()
+			.from(transactionType)
+			.where(eq(transactionType.id, newTransaction.transactionTypeId));
+
+		const isExpense = type?.isExpense ?? true;
+		const formattedValue = new Intl.NumberFormat('pt-BR', {
+			style: 'currency',
+			currency: 'BRL'
+		}).format(parseFloat(newTransaction.value));
+
+		recordHistory({
+			userId,
+			action: 'CREATE',
+			tableName: 'transaction',
+			rowId: newTransaction.id,
+			changes: { after: newTransaction },
+			description: `${isExpense ? 'Despesa' : 'Receita'} de ${formattedValue} adicionada`
+		}).catch((e) => console.error('Failed to record history:', e));
+
 		return json(newTransaction, { status: 201 });
 	} catch (error) {
-		console.log(error);
 		const msg = getDbErrorMessage(error);
 
 		if (msg) return json({ error: msg }, { status: 409 });
@@ -79,7 +97,10 @@ export const POST: RequestHandler = async ({ request }) => {
 	}
 };
 
-export const PATCH: RequestHandler = async ({ request }) => {
+export const PATCH: RequestHandler = async ({ request, locals }) => {
+	const userId = locals.user?.userId;
+	if (!userId) return json({ error: 'Not authenticated' }, { status: 401 });
+
 	try {
 		const body = await request.json();
 		const { id, ...data } = body;
@@ -88,7 +109,12 @@ export const PATCH: RequestHandler = async ({ request }) => {
 			return json({ error: 'ID is required' }, { status: 400 });
 		}
 
-		// Update transaction
+		const [oldTransaction] = await db.select().from(transaction).where(eq(transaction.id, id));
+
+		if (!oldTransaction) {
+			return json({ error: 'Transaction not found' }, { status: 404 });
+		}
+
 		const [updated] = await db
 			.update(transaction)
 			.set(data)
@@ -99,7 +125,6 @@ export const PATCH: RequestHandler = async ({ request }) => {
 			return json({ error: 'Transaction not found' }, { status: 404 });
 		}
 
-		// Update company's transactionTypeId if transactionTypeId is being changed and company is a supplier
 		if (data.transactionTypeId && data.companyId) {
 			const [supplierCompany] = await db
 				.select()
@@ -113,7 +138,6 @@ export const PATCH: RequestHandler = async ({ request }) => {
 					.where(eq(company.id, data.companyId));
 			}
 		} else if (data.transactionTypeId) {
-			// Use existing companyId from the updated transaction
 			const [supplierCompany] = await db
 				.select()
 				.from(company)
@@ -127,6 +151,15 @@ export const PATCH: RequestHandler = async ({ request }) => {
 			}
 		}
 
+		recordHistory({
+			userId,
+			action: 'UPDATE',
+			tableName: 'transaction',
+			rowId: id,
+			changes: { before: oldTransaction, after: updated },
+			description: `Transação #${id} atualizada`
+		}).catch((e) => console.error('Failed to record history:', e));
+
 		return json(updated);
 	} catch (error) {
 		const msg = getDbErrorMessage(error);
@@ -135,7 +168,10 @@ export const PATCH: RequestHandler = async ({ request }) => {
 	}
 };
 
-export const DELETE: RequestHandler = async ({ request }) => {
+export const DELETE: RequestHandler = async ({ request, locals }) => {
+	const userId = locals.user?.userId;
+	if (!userId) return json({ error: 'Not authenticated' }, { status: 401 });
+
 	try {
 		const { id } = await request.json();
 
@@ -143,11 +179,26 @@ export const DELETE: RequestHandler = async ({ request }) => {
 			return json({ error: 'ID is required' }, { status: 400 });
 		}
 
+		const [oldTransaction] = await db.select().from(transaction).where(eq(transaction.id, id));
+
+		if (!oldTransaction) {
+			return json({ error: 'Transaction not found' }, { status: 404 });
+		}
+
 		const [deleted] = await db.delete(transaction).where(eq(transaction.id, id)).returning();
 
 		if (!deleted) {
 			return json({ error: 'Transaction not found' }, { status: 404 });
 		}
+
+		recordHistory({
+			userId,
+			action: 'DELETE',
+			tableName: 'transaction',
+			rowId: id,
+			changes: { before: oldTransaction },
+			description: `Transação #${id} removida`
+		}).catch((e) => console.error('Failed to record history:', e));
 
 		return json({ success: true });
 	} catch {

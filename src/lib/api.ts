@@ -6,7 +6,8 @@ import type {
 	Contract,
 	Contact,
 	Transaction,
-	WhitelistEntry
+	WhitelistEntry,
+	HistoryEntry
 } from '$lib/types/api';
 
 const cache = new Map<string, Promise<any>>();
@@ -58,6 +59,11 @@ async function apiFetch(path: string, method = 'GET', body?: any) {
 	} else if (method !== 'GET') {
 		console.log('Invalidate cache on mutations');
 		cache.delete(path.split('?')[0]);
+		for (const key of cache.keys()) {
+			if (path.startsWith(key)) {
+				cache.delete(key);
+			}
+		}
 	}
 
 	return requestPromise;
@@ -144,5 +150,10 @@ export const api = {
 		get: (): Promise<WhitelistEntry[]> => apiFetch('/api/auth/whitelist'),
 		post: (data: { email: string }) => apiFetch('/api/auth/whitelist', 'POST', data),
 		delete: (id: number) => apiFetch('/api/auth/whitelist', 'DELETE', { id })
+	},
+	history: {
+		get: (): Promise<(HistoryEntry & { userName: string | null; userEmail: string })[]> =>
+			apiFetch('/api/history'),
+		undo: (id: number) => apiFetch(`/api/history/${id}/undo`, 'POST')
 	}
 };

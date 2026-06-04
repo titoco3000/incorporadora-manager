@@ -1,9 +1,9 @@
-// src/routes/api/contacts/+server.ts
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { db } from '$lib/db';
 import { contact } from '$lib/db/schema';
 import { eq, like, or, and } from 'drizzle-orm';
+import { recordHistory } from '$lib/history';
 
 export const GET: RequestHandler = async ({ url }) => {
 	try {
@@ -40,17 +40,33 @@ export const GET: RequestHandler = async ({ url }) => {
 	}
 };
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request, locals }) => {
+	const userId = locals.user?.userId;
+	if (!userId) return json({ error: 'Not authenticated' }, { status: 401 });
+
 	try {
 		const body = await request.json();
 		const [newContact] = await db.insert(contact).values(body).returning();
+
+		await recordHistory({
+			userId,
+			action: 'CREATE',
+			tableName: 'contact',
+			rowId: newContact.id,
+			changes: { after: newContact },
+			description: `Contato '${newContact.name}' criado`
+		});
+
 		return json(newContact, { status: 201 });
 	} catch (error) {
 		return json({ error: 'Failed to create contact' }, { status: 500 });
 	}
 };
 
-export const PATCH: RequestHandler = async ({ request }) => {
+export const PATCH: RequestHandler = async ({ request, locals }) => {
+	const userId = locals.user?.userId;
+	if (!userId) return json({ error: 'Not authenticated' }, { status: 401 });
+
 	try {
 		const body = await request.json();
 		const { id, ...data } = body;
@@ -59,11 +75,25 @@ export const PATCH: RequestHandler = async ({ request }) => {
 			return json({ error: 'ID is required' }, { status: 400 });
 		}
 
+		const [oldContact] = await db.select().from(contact).where(eq(contact.id, id));
+		if (!oldContact) {
+			return json({ error: 'Contact not found' }, { status: 404 });
+		}
+
 		const [updated] = await db.update(contact).set(data).where(eq(contact.id, id)).returning();
 
 		if (!updated) {
 			return json({ error: 'Contact not found' }, { status: 404 });
 		}
+
+		await recordHistory({
+			userId,
+			action: 'UPDATE',
+			tableName: 'contact',
+			rowId: id,
+			changes: { before: oldContact, after: updated },
+			description: `Contato '${updated.name}' atualizado`
+		});
 
 		return json(updated);
 	} catch (error) {
@@ -71,7 +101,10 @@ export const PATCH: RequestHandler = async ({ request }) => {
 	}
 };
 
-export const DELETE: RequestHandler = async ({ request }) => {
+export const DELETE: RequestHandler = async ({ request, locals }) => {
+	const userId = locals.user?.userId;
+	if (!userId) return json({ error: 'Not authenticated' }, { status: 401 });
+
 	try {
 		const { id } = await request.json();
 
@@ -79,11 +112,25 @@ export const DELETE: RequestHandler = async ({ request }) => {
 			return json({ error: 'ID is required' }, { status: 400 });
 		}
 
+		const [oldContact] = await db.select().from(contact).where(eq(contact.id, id));
+		if (!oldContact) {
+			return json({ error: 'Contact not found' }, { status: 404 });
+		}
+
 		const [deleted] = await db.delete(contact).where(eq(contact.id, id)).returning();
 
 		if (!deleted) {
 			return json({ error: 'Contact not found' }, { status: 404 });
 		}
+
+		await recordHistory({
+			userId,
+			action: 'DELETE',
+			tableName: 'contact',
+			rowId: id,
+			changes: { before: oldContact },
+			description: `Contato '${oldContact.name}' removido`
+		});
 
 		return json({ success: true });
 	} catch (error) {

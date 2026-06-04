@@ -6,12 +6,23 @@ const constraintMessages: Record<string, string> = {
 	user_email_unique: 'Já existe um usuário com este email.'
 };
 
+const foreignKeyMessages: Record<string, string> = {
+	whitelist_entry_added_by_id_user_id_fk: 'Usuário não encontrado. Tente sair e entrar novamente.'
+};
+
 export function getDbErrorMessage(error: unknown): string | null {
 	const pg = (error as any)?.cause ?? error;
 	if (pg?.code === '23505') {
 		const constraint = pg.constraint_name ?? pg.constraint;
 		return (
 			constraintMessages[constraint] ?? 'Registro duplicado: já existe um registro com estes dados.'
+		);
+	}
+	if (pg?.code === '23503') {
+		const constraint = pg.constraint_name ?? pg.constraint;
+		return (
+			foreignKeyMessages[constraint] ??
+			'Operação não permitida: este registro possui referências em outros dados.'
 		);
 	}
 	return null;

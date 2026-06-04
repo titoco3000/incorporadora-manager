@@ -1,9 +1,9 @@
-// src/routes/api/clients/+server.ts
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { db } from '$lib/db';
 import { company } from '$lib/db/schema';
 import { eq, like, or, and } from 'drizzle-orm';
+import { recordHistory } from '$lib/history';
 
 export const GET: RequestHandler = async ({ url }) => {
 	try {
@@ -34,17 +34,33 @@ export const GET: RequestHandler = async ({ url }) => {
 	}
 };
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request, locals }) => {
+	const userId = locals.user?.userId;
+	if (!userId) return json({ error: 'Not authenticated' }, { status: 401 });
+
 	try {
 		const body = await request.json();
 		const [newCompany] = await db.insert(company).values(body).returning();
+
+		await recordHistory({
+			userId,
+			action: 'CREATE',
+			tableName: 'company',
+			rowId: newCompany.id,
+			changes: { after: newCompany },
+			description: `Cliente '${newCompany.name}' criado`
+		});
+
 		return json(newCompany, { status: 201 });
 	} catch {
 		return json({ error: 'Failed to create company' }, { status: 500 });
 	}
 };
 
-export const PATCH: RequestHandler = async ({ request }) => {
+export const PATCH: RequestHandler = async ({ request, locals }) => {
+	const userId = locals.user?.userId;
+	if (!userId) return json({ error: 'Not authenticated' }, { status: 401 });
+
 	try {
 		const body = await request.json();
 		const { id, ...data } = body;
@@ -53,11 +69,25 @@ export const PATCH: RequestHandler = async ({ request }) => {
 			return json({ error: 'ID is required' }, { status: 400 });
 		}
 
+		const [oldCompany] = await db.select().from(company).where(eq(company.id, id));
+		if (!oldCompany) {
+			return json({ error: 'Company not found' }, { status: 404 });
+		}
+
 		const [updated] = await db.update(company).set(data).where(eq(company.id, id)).returning();
 
 		if (!updated) {
 			return json({ error: 'Company not found' }, { status: 404 });
 		}
+
+		await recordHistory({
+			userId,
+			action: 'UPDATE',
+			tableName: 'company',
+			rowId: id,
+			changes: { before: oldCompany, after: updated },
+			description: `Cliente '${updated.name}' atualizado`
+		});
 
 		return json(updated);
 	} catch {
@@ -65,7 +95,10 @@ export const PATCH: RequestHandler = async ({ request }) => {
 	}
 };
 
-export const DELETE: RequestHandler = async ({ request }) => {
+export const DELETE: RequestHandler = async ({ request, locals }) => {
+	const userId = locals.user?.userId;
+	if (!userId) return json({ error: 'Not authenticated' }, { status: 401 });
+
 	try {
 		const { id } = await request.json();
 
@@ -73,11 +106,25 @@ export const DELETE: RequestHandler = async ({ request }) => {
 			return json({ error: 'ID is required' }, { status: 400 });
 		}
 
+		const [oldCompany] = await db.select().from(company).where(eq(company.id, id));
+		if (!oldCompany) {
+			return json({ error: 'Company not found' }, { status: 404 });
+		}
+
 		const [deleted] = await db.delete(company).where(eq(company.id, id)).returning();
 
 		if (!deleted) {
 			return json({ error: 'Company not found' }, { status: 404 });
 		}
+
+		await recordHistory({
+			userId,
+			action: 'DELETE',
+			tableName: 'company',
+			rowId: id,
+			changes: { before: oldCompany },
+			description: `Cliente '${oldCompany.name}' removido`
+		});
 
 		return json({ success: true });
 	} catch {

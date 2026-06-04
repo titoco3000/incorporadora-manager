@@ -17,7 +17,8 @@
 		TrendingUp,
 		TrendingDown,
 		Shield,
-		LogOut
+		LogOut,
+		History
 	} from 'lucide-svelte';
 
 	import PageButton from './PageButton.svelte';
@@ -79,6 +80,7 @@
 
 		<SidebarItem isOpen={true} label="Administração">
 			<PageButton href="/whitelist" icon={Shield}>Whitelist</PageButton>
+			<PageButton href="/history" icon={History}>Histórico</PageButton>
 		</SidebarItem>
 
 		<div class="spacer"></div>

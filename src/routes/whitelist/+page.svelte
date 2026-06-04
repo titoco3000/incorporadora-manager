@@ -7,6 +7,7 @@
 	let newEmail = $state('');
 	let error = $state('');
 	let loading = $state(true);
+	let submitting = $state(false);
 
 	onMount(() => {
 		loadEntries();
@@ -16,7 +17,7 @@
 		loading = true;
 		error = '';
 		try {
-			const res = await fetch('/api/auth/whitelist');
+			const res = await fetch('/api/auth/whitelist', { cache: 'no-cache' });
 			if (!res.ok) throw new Error('Failed to load');
 			entries = await res.json();
 		} catch {
@@ -27,8 +28,9 @@
 	}
 
 	async function addEntry() {
-		if (!newEmail.trim()) return;
+		if (!newEmail.trim() || submitting) return;
 		error = '';
+		submitting = true;
 		try {
 			const res = await fetch('/api/auth/whitelist', {
 				method: 'POST',
@@ -44,6 +46,8 @@
 			await loadEntries();
 		} catch {
 			error = 'Failed to add email';
+		} finally {
+			submitting = false;
 		}
 	}
 
@@ -86,9 +90,9 @@
 			placeholder="email@exemplo.com"
 			onkeydown={(e) => e.key === 'Enter' && addEntry()}
 		/>
-		<button onclick={addEntry} disabled={!newEmail.trim()}>
+		<button onclick={addEntry} disabled={!newEmail.trim() || submitting}>
 			<Plus size={18} />
-			Adicionar
+			{submitting ? 'Adicionando...' : 'Adicionar'}
 		</button>
 	</div>
 
