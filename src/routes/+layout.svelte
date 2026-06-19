@@ -9,6 +9,7 @@
 
 	const userAuthenticated = $derived(data.user != null);
 	const isRegisterRoute = $derived(($page.route.id as string) === '/register');
+	const isConfirmPasswordRoute = $derived(($page.route.id as string) === '/confirm-password');
 </script>
 
 <svelte:head>
@@ -20,7 +21,7 @@
 		<ContainerWithNavbar>
 			{@render children()}
 		</ContainerWithNavbar>
-	{:else if isRegisterRoute}
+	{:else if isRegisterRoute || isConfirmPasswordRoute}
 		{@render children()}
 	{:else}
 		<LoginScreen />

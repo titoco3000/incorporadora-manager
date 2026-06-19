@@ -22,6 +22,10 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 			return json({ error: 'Usuário não encontrado', whitelisted: !!entry }, { status: 404 });
 		}
 
+		if (!found.passwordHash) {
+			return json({ needsPasswordSetup: true, email: found.email }, { status: 200 });
+		}
+
 		const valid = await verifyPassword(password, found.passwordHash);
 		if (!valid) {
 			return json({ error: 'Senha incorreta' }, { status: 401 });

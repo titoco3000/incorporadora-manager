@@ -25,6 +25,16 @@
 			return;
 		}
 
+		if (data.needsPasswordSetup) {
+			goto(
+				'/confirm-password?email=' +
+					encodeURIComponent(email) +
+					'&password=' +
+					encodeURIComponent(password)
+			);
+			return;
+		}
+
 		localStorage.setItem('token', data.token);
 		await invalidateAll();
 	}
