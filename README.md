@@ -1,42 +1,35 @@
-# Projeto Incorporadora
+# Incorporadora Manager
 
-## Arvore de navegação
+Management system for a real-estate development company, in production use. It replaces spreadsheets with a single app
+for buildings, clients, contracts, income, expenses and suppliers.
 
-/ -> dashboard, mostrando graficos
+## Features
 
-/table -> mostra todas as tabelas que podem ser visualizadas
+- **Dashboard** (`/`): charts summarizing income, expenses and contracts.
+- **Tables** (`/table`, `/table/<name>`): browse every table and edit values inline (resizable, event-driven inputs).
+- **Forms** (`/forms`): add buildings, clients, contacts, contracts, expenses, income, suppliers and transaction types.
+- **Reports** (`/reports`): generate reports (in progress).
+- Authentication with a login screen and server hooks.
 
-/table/tableName -> mostra a tabela e permite editar valores
+## Stack
 
-/forms -> Permite abrir todos os formularios para adicionar valores as tabelas
+SvelteKit, TypeScript, Drizzle ORM, Bun. Continuous deployment on every push to `main`.
 
-/reports -> Permite gerar relatorios
+## Setup
 
-## Instalação
+```bash
+cp .env.example .env   # fill in database URL and credentials
+bun install
+bun run dev
+```
 
-Adicione um .env a raiz do projeto e preencha com base em .env.example.
+Schema changes:
 
-Instale deps:
+```bash
+npx drizzle-kit push
+```
 
-    bun install
+## Roadmap
 
-## Uso
-
-    bun run dev
-
-## Deploy
-
-Ao fazer deploy na branch main, já faz deploy automatico.
-
-## Modificando a DB
-
-Ao mudar dados no schema:
-
-    npx drizzle-kit push
-
-## TODO
-
-- Data copiavel
-- Data selecionavel
-
-- Relatórios
+- Copyable and selectable dates
+- Reports
