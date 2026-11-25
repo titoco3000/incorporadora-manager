@@ -4,9 +4,10 @@ This file documents the repository conventions for agentic coding tools.
 
 ## Tech Stack
 
-- **Framework:** SvelteKit 2 (Svelte 5 runes API)
+- **Framework:** SvelteKit 2 (Svelte 5 runes API), single-page app (`adapter-static`, `ssr = false`)
+- **API:** Hono in `api/` (Lambda behind CloudFront in AWS, `api/dev.ts` locally); see MIGRATION.md
 - **Language:** TypeScript (strict mode)
-- **Database:** PostgreSQL + Drizzle ORM
+- **Database:** PostgreSQL (local, docker) / Aurora DSQL (AWS) + Drizzle ORM
 - **Auth:** JWT (jsonwebtoken) + bcryptjs
 - **Styling:** Scoped `<style>` + CSS custom properties (dark theme)
 - **Package manager:** Bun (bun.lock), also compatible with npm
@@ -23,7 +24,14 @@ This file documents the repository conventions for agentic coding tools.
 | `npm run check:watch`  | Type-check in watch mode                         |
 | `npm run format`       | Format all files with Prettier                   |
 | `npm run lint`         | Prettier check + ESLint                          |
-| `npx drizzle-kit push` | Push DB schema changes (after editing schema.ts) |
+| `make run`             | Postgres in docker + migrations + API + Vite     |
+| `bunx drizzle-kit generate` | New migration in `drizzle/` after editing `api/src/db/schema.ts` |
+| `make db-migrate`      | Apply migrations locally (`db-migrate-aws` for DSQL) |
+| `make copy-local`      | Wipe local DB, copy Railway into it, verify      |
+
+Never use `drizzle-kit push`. Write code that also runs on Aurora DSQL: identity columns (no
+`serial`), one DDL statement per transaction, ≤ 3,000 rows modified per transaction, every
+write through `write()` from `api/src/db/index.ts` (transaction + retry on 40001/OC000).
 | `npx svelte-kit sync`  | Generate SvelteKit types                         |
 
 **No test framework is installed** — there are zero tests in the repo. Do not write tests unless explicitly asked.

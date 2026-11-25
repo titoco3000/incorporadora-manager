@@ -1,6 +1,6 @@
 //src/lib/types/api.ts
 import type { InferSelectModel } from 'drizzle-orm';
-import {
+import type {
 	transactionType,
 	building,
 	company,
@@ -10,7 +10,7 @@ import {
 	user,
 	whitelistEntry,
 	historyEntry
-} from '$lib/db/schema';
+} from '../../../api/src/db/schema';
 
 export type TransactionType = InferSelectModel<typeof transactionType>;
 export type Building = InferSelectModel<typeof building>;

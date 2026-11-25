@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { request } from '$lib/api';
 	import { onMount } from 'svelte';
 	import { X, Plus } from 'lucide-svelte';
 	import type { WhitelistEntry } from '$lib/types/api';
@@ -17,7 +18,7 @@
 		loading = true;
 		error = '';
 		try {
-			const res = await fetch('/api/auth/whitelist', { cache: 'no-cache' });
+			const res = await request('/api/auth/whitelist');
 			if (!res.ok) throw new Error('Failed to load');
 			entries = await res.json();
 		} catch {
@@ -32,11 +33,7 @@
 		error = '';
 		submitting = true;
 		try {
-			const res = await fetch('/api/auth/whitelist', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ email: newEmail.trim() })
-			});
+			const res = await request('/api/auth/whitelist', 'POST', { email: newEmail.trim() });
 			if (!res.ok) {
 				const data = await res.json();
 				error = data.error || 'Failed to add email';
@@ -54,11 +51,7 @@
 	async function removeEntry(id: number) {
 		error = '';
 		try {
-			const res = await fetch('/api/auth/whitelist', {
-				method: 'DELETE',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ id })
-			});
+			const res = await request('/api/auth/whitelist', 'DELETE', { id });
 			if (!res.ok) {
 				const data = await res.json();
 				error = data.error || 'Failed to remove email';

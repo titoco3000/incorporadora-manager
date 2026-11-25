@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { request } from '$lib/api';
 	import { invalidateAll } from '$app/navigation';
 	import ContainerWithMenu from './ContainerWithMenu.svelte';
 	import type { Snippet } from 'svelte';
@@ -29,8 +30,7 @@
 	}>();
 
 	async function handleLogout() {
-		await fetch('/api/auth/logout', { method: 'POST' });
-		localStorage.removeItem('token');
+		await request('/api/auth/logout', 'POST');
 		await invalidateAll();
 	}
 </script>

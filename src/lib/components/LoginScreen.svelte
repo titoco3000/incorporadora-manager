@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { request } from '$lib/api';
 	import { goto, invalidateAll } from '$app/navigation';
 	import CompanyHeader from './CompanyHeader.svelte';
 
@@ -9,11 +10,7 @@
 	let registerMode = $state(false);
 
 	async function handleLogin() {
-		const res = await fetch('/api/auth/login', {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ email, password })
-		});
+		const res = await request('/api/auth/login', 'POST', { email, password });
 		const data = await res.json();
 
 		if (!res.ok) {
@@ -34,17 +31,11 @@
 			);
 			return;
 		}
-
-		localStorage.setItem('token', data.token);
 		await invalidateAll();
 	}
 
 	async function handleRegisterCheck() {
-		const res = await fetch('/api/auth/check-email', {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ email })
-		});
+		const res = await request('/api/auth/check-email', 'POST', { email });
 		const data = await res.json();
 
 		if (!res.ok) {

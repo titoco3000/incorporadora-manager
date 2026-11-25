@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { request } from '$lib/api';
 	import CompanyHeader from '$lib/components/CompanyHeader.svelte';
 
 	let { data } = $props();
@@ -25,11 +26,7 @@
 		loading = true;
 
 		try {
-			const res = await fetch('/api/auth/register', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ email: data.email, password })
-			});
+			const res = await request('/api/auth/register', 'POST', { email: data.email, password });
 
 			const result = await res.json();
 
@@ -37,8 +34,6 @@
 				error = result.error || 'Falha no registro';
 				return;
 			}
-
-			localStorage.setItem('token', result.token);
 			window.location.href = '/';
 		} catch {
 			error = 'Falha de conexão';

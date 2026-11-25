@@ -23,3 +23,10 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
 local
+# API bundle and Terraform
+/api/dist
+infra/.terraform/
+*.tfstate.backup
+
+# Railway backups (real business data, never commit)
+*.dump

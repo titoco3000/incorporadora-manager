@@ -12,11 +12,17 @@ import type {
 
 const cache = new Map<string, Promise<any>>();
 
-function authHeaders(): Record<string, string> {
-	const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-	const token = typeof localStorage !== 'undefined' ? localStorage.getItem('token') : null;
-	if (token) headers['Authorization'] = `Bearer ${token}`;
-	return headers;
+// Every request with a method that can carry a body sends the body's SHA-256: CloudFront
+// signs requests to the Lambda (OAC), and that only works when the viewer sends this header.
+// Auth is the HttpOnly `token` cookie, sent automatically (no Authorization header: OAC uses it).
+export async function request(path: string, method = 'GET', body?: unknown): Promise<Response> {
+	if (method === 'GET' || method === 'HEAD') return fetch(path, { method });
+	const text = body === undefined ? '' : JSON.stringify(body);
+	const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+	const hash = [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, '0')).join('');
+	const headers: Record<string, string> = { 'x-amz-content-sha256': hash };
+	if (body !== undefined) headers['content-type'] = 'application/json';
+	return fetch(path, { method, headers, body: body === undefined ? undefined : text });
 }
 
 async function apiFetch(path: string, method = 'GET', body?: any) {
@@ -27,16 +33,12 @@ async function apiFetch(path: string, method = 'GET', body?: any) {
 	}
 
 	const requestPromise = (async () => {
-		const res = await fetch(path, {
-			method,
-			headers: authHeaders(),
-			body: body ? JSON.stringify(body) : undefined
-		});
+		const res = await request(path, method, body);
 
 		if (!res.ok) {
 			if (isCacheableGet) cache.delete(path);
 			if (res.status === 401 && typeof window !== 'undefined') {
-				localStorage.removeItem('token');
+				// Session expired: reload, the layout then shows the login screen.
 				window.location.reload();
 			}
 			const text = await res.text();
@@ -61,6 +63,14 @@ async function apiFetch(path: string, method = 'GET', body?: any) {
 	}
 
 	return requestPromise;
+}
+
+// For page loads: GET without the cache (data must be fresh after invalidateAll()).
+export async function load<T = any>(path: string): Promise<T> {
+	const res = await request(path);
+	if (res.status === 401 && typeof window !== 'undefined') window.location.reload();
+	if (!res.ok) throw new Error((await res.json().catch(() => null))?.error ?? res.statusText);
+	return res.json();
 }
 
 export const api = {

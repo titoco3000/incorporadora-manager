@@ -15,21 +15,28 @@
 		"lint": "prettier --check . && eslint ."
 	},
 	"devDependencies": {
+		"@aws-sdk/client-ssm": "^3.1176.0",
+		"@aws-sdk/dsql-signer": "^3.1176.0",
 		"@eslint/compat": "^1.4.0",
 		"@eslint/js": "^9.39.1",
-		"@sveltejs/adapter-auto": "^7.0.0",
-		"@sveltejs/adapter-node": "^5.4.0",
+		"@sveltejs/adapter-static": "^4.0.1",
 		"@sveltejs/kit": "^2.49.1",
 		"@sveltejs/vite-plugin-svelte": "^6.2.1",
 		"@types/bcryptjs": "^3.0.0",
+		"@types/bun": "^1.4.5",
 		"@types/jsonwebtoken": "^9.0.10",
 		"@types/node": "^24",
+		"bcryptjs": "^3.0.3",
 		"dotenv": "^17.2.3",
 		"drizzle-kit": "^0.31.8",
+		"drizzle-orm": "^0.45.4",
 		"eslint": "^9.39.1",
 		"eslint-config-prettier": "^10.1.8",
 		"eslint-plugin-svelte": "^3.13.1",
 		"globals": "^16.5.0",
+		"hono": "^4.13.21",
+		"jsonwebtoken": "^9.0.3",
+		"postgres": "^3.4.7",
 		"prettier": "^3.7.4",
 		"prettier-plugin-svelte": "^3.4.0",
 		"svelte": "^5.45.6",
@@ -39,11 +46,7 @@
 		"vite": "^7.2.6"
 	},
 	"dependencies": {
-		"bcryptjs": "^3.0.3",
-		"drizzle-orm": "^0.45.1",
-		"jsonwebtoken": "^9.0.3",
 		"lucide-svelte": "^0.562.0",
-		"postgres": "^3.4.7",
 		"svelte-collapse": "^0.1.4"
 	}
 }
