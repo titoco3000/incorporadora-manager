@@ -1,35 +1,43 @@
 # Incorporadora Manager
 
-Management system for a real-estate development company, in production use. It replaces spreadsheets with a single app
-for buildings, clients, contracts, income, expenses and suppliers.
+Management system for a real-estate development company, in production use: buildings, clients,
+contracts, income, expenses and suppliers in one app.
 
-## Features
-
-- **Dashboard** (`/`): charts summarizing income, expenses and contracts.
-- **Tables** (`/table`, `/table/<name>`): browse every table and edit values inline (resizable, event-driven inputs).
-- **Forms** (`/forms`): add buildings, clients, contacts, contracts, expenses, income, suppliers and transaction types.
-- **Reports** (`/reports`): generate reports (in progress).
-- Authentication with a login screen and server hooks.
+- prod: https://incorporadora.titoco.dev
+- dev: https://dev.incorporadora.titoco.dev
 
 ## Stack
 
-SvelteKit, TypeScript, Drizzle ORM, Bun. Continuous deployment on every push to `main`.
+SvelteKit SPA on S3 + CloudFront, Hono API on Lambda, Aurora DSQL, Drizzle ORM, Terraform, Bun.
 
-## Setup
-
-```bash
-cp .env.example .env   # fill in database URL and credentials
-bun install
-bun run dev
-```
-
-Schema changes:
+## Local
 
 ```bash
-npx drizzle-kit push
+make install
+make run                  # Postgres in docker + API + site
 ```
 
-## Roadmap
+## Deploy
 
-- Copyable and selectable dates
-- Reports
+```bash
+make deploy dev           # or prod; also applies new migrations
+```
+
+## Schema changes
+
+```bash
+# edit api/src/db/schema.ts
+make migration name=what  # commit drizzle/
+make run                  # applies locally
+make deploy dev && make deploy prod
+```
+
+Additive changes only (new table, nullable or defaulted column).
+
+## Data
+
+```bash
+make copy-prod-dev        # refresh dev with prod data
+```
+
+Each copy wipes the target, copies, and checks the result.
