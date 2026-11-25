@@ -25,9 +25,9 @@ This file documents the repository conventions for agentic coding tools.
 | `npm run format`       | Format all files with Prettier                   |
 | `npm run lint`         | Prettier check + ESLint                          |
 | `make run`             | Postgres in docker + migrations + API + Vite     |
-| `bunx drizzle-kit generate` | New migration in `drizzle/` after editing `api/src/db/schema.ts` |
-| `make db-migrate`      | Apply migrations locally (`db-migrate-aws` for DSQL) |
-| `make copy-local`      | Wipe local DB, copy Railway into it, verify      |
+| `make migration name=x` | New migration in `drizzle/` after editing the schema |
+| `make deploy dev\|prod` | Migrate that stack's DB, apply infra, upload site |
+| `make copy-railway-local` | Wipe local DB, copy Railway into it, verify (also `copy-local-prod`, `copy-prod-dev`) |
 
 Never use `drizzle-kit push`. Write code that also runs on Aurora DSQL: identity columns (no
 `serial`), one DDL statement per transaction, ≤ 3,000 rows modified per transaction, every

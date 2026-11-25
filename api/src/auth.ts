@@ -15,8 +15,9 @@ async function readSecret(): Promise<string> {
 	const res = await new SSMClient({}).send(
 		new GetParameterCommand({ Name: `${SSM_PREFIX}/jwt-secret`, WithDecryption: true })
 	);
-	const value = res.Parameter?.Value?.trim();
-	if (!value) throw new Error('jwt-secret is empty');
+	const value = res.Parameter?.Value?.trim() ?? '';
+	// Terraform creates the parameter with "placeholder"; a known secret lets anyone forge logins.
+	if (value.length < 32) throw new Error('jwt-secret not set: run `make jwt-secret <env>`');
 	return value;
 }
 

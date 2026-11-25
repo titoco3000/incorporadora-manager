@@ -1,10 +1,13 @@
-// Copies the Railway production database into the local database or Aurora DSQL, then checks
-// the copy and exits non-zero on any difference.
-//   bun scripts/copy-from-railway.ts local|aws            wipe target, copy, check
-//   bun scripts/copy-from-railway.ts local|aws --check    only compare (nothing is written)
-// Railway is only read, inside one REPEATABLE READ READ ONLY transaction, so the copy and the
-// Railway side of the checks come from the same snapshot. The target must already be migrated.
-import { connect, parseTarget, railway } from './target.ts';
+// Copies one database into another (same schema), then checks the copy and exits non-zero on
+// any difference.
+//   bun scripts/copy.ts <from> <to>            wipe <to>, copy, check
+//   bun scripts/copy.ts <from> <to> --check    only compare (nothing is written)
+// <from>: railway | local | prod | dev.  <to>: local | prod | dev (Railway is never written).
+// Writing prod asks you to type "prod" (or pass --yes).
+// The source is read inside one REPEATABLE READ READ ONLY transaction, so the copy and the
+// source side of the checks come from the same snapshot. The target must already be migrated.
+import { createInterface } from 'node:readline/promises';
+import { open, parseDatabase } from './target.ts';
 
 // FK order: every table comes after the tables it references.
 const TABLES = [
@@ -21,11 +24,32 @@ const TABLES = [
 const BATCH = 500; // rows per insert transaction (DSQL limit: 3,000 modified rows)
 const IGNORED_SOURCE_TABLES = new Set(['_migrations', '__drizzle_migrations']);
 
-const target = parseTarget(process.argv[2]);
+const USAGE = 'bun scripts/copy.ts railway|local|prod|dev local|prod|dev [--check] [--yes]';
+const from = parseDatabase(process.argv[2], USAGE);
+const to = parseDatabase(process.argv[3], USAGE);
 const checkOnly = process.argv.includes('--check');
+if (to === 'railway') {
+	console.error('Railway is never written. ' + USAGE);
+	process.exit(2);
+}
+if (from === to) {
+	console.error('Source and target are the same database.');
+	process.exit(2);
+}
+if (to === 'prod' && !checkOnly && !process.argv.includes('--yes')) {
+	const rl = createInterface({ input: process.stdin, output: process.stdout });
+	const answer = await rl.question(
+		`This WIPES all data in prod and replaces it with ${from}. Type "prod" to continue: `
+	);
+	rl.close();
+	if (answer.trim() !== 'prod') {
+		console.error('Cancelled, nothing changed.');
+		process.exit(1);
+	}
+}
 
-const src = await railway();
-const { sql: dst } = await connect(target);
+const src = await open(from);
+const dst = await open(to);
 const { withRetry } = await import('../api/src/db/index.ts');
 
 type Column = { name: string; type: string };
@@ -64,7 +88,7 @@ async function checks(sql: any, columns: Record<string, Column[]>): Promise<Chec
 }
 
 try {
-	console.log('connecting to railway and comparing schemas...');
+	console.log('comparing schemas...');
 	// 1. Schemas must match column for column, or the copy would silently drop data.
 	const columns: Record<string, Column[]> = {};
 	const problems: string[] = [];
@@ -74,20 +98,22 @@ try {
 	).map((r: any) => r.table_name as string);
 	for (const t of sourceTables) {
 		if (!TABLES.includes(t) && !IGNORED_SOURCE_TABLES.has(t)) {
-			problems.push(`Railway has table "${t}", which this script does not copy`);
+			problems.push(`${from} has table "${t}", which this script does not copy`);
 		}
 	}
 	for (const table of TABLES) {
 		const [s, d] = [await columnsOf(src, table), await columnsOf(dst, table)];
 		// Same names and types; order may differ (Railway got columns added later). All
 		// queries use the target's column list by name, so order does not matter.
+		// Railway has int4 ids; the new schema has int8 (DSQL identity must be bigint): a lossless
+		// widening, and the text form (used by the md5 check) is identical.
 		const describe = (cols: Column[]) =>
 			cols
-				.map((c) => `${c.name}:${c.type}`)
+				.map((c) => `${c.name}:${c.type === 'int4' ? 'int8' : c.type}`)
 				.sort()
 				.join(', ');
 		if (describe(s) !== describe(d)) {
-			problems.push(`${table} differs\n    railway: ${describe(s)}\n    ${target}: ${describe(d)}`);
+			problems.push(`${table} differs\n    ${from}: ${describe(s)}\n    ${to}: ${describe(d)}`);
 		}
 		columns[table] = d;
 	}
@@ -96,8 +122,8 @@ try {
 		process.exit(1);
 	}
 
-	// 2. Read Railway (one consistent snapshot): rows as text, plus its side of the checks.
-	console.log('reading railway...');
+	// 2. Read the source (one consistent snapshot): rows as text, plus its side of the checks.
+	console.log(`reading ${from}...`);
 	const data: Record<string, Record<string, string | null>[]> = {};
 	const sourceChecks: Checks = await src.begin(
 		'ISOLATION LEVEL REPEATABLE READ READ ONLY',
@@ -174,11 +200,11 @@ try {
 	if (diffs.length) {
 		console.error(`\nCHECKS FAILED (${diffs.length}):`);
 		for (const k of diffs) {
-			console.error(`  ${k}: railway=${sourceChecks[k]} ${target}=${targetChecks[k]}`);
+			console.error(`  ${k}: ${from}=${sourceChecks[k]} ${to}=${targetChecks[k]}`);
 		}
 		process.exitCode = 1;
 	} else {
-		console.log(`\nAll checks passed (${keys.length}, incl. md5 of every table).`);
+		console.log(`\n${from} → ${to}: all checks passed (${keys.length}, incl. md5 of every table).`);
 	}
 } finally {
 	await src.end();

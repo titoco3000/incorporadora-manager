@@ -1,5 +1,5 @@
 {
-  "id": "f17b9def-4f41-4b11-953d-8d2193e765ba",
+  "id": "2dc92707-54cd-4e01-8844-3e24a6dafb7e",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -10,7 +10,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "integer",
+          "type": "bigint",
           "primaryKey": true,
           "notNull": true,
           "identity": {
@@ -20,7 +20,7 @@
             "increment": "1",
             "startWith": "1",
             "minValue": "1",
-            "maxValue": "2147483647",
+            "maxValue": "9223372036854775807",
             "cache": "1",
             "cycle": false
           }
@@ -84,7 +84,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "integer",
+          "type": "bigint",
           "primaryKey": true,
           "notNull": true,
           "identity": {
@@ -94,7 +94,7 @@
             "increment": "1",
             "startWith": "1",
             "minValue": "1",
-            "maxValue": "2147483647",
+            "maxValue": "9223372036854775807",
             "cache": "1",
             "cycle": false
           }
@@ -131,7 +131,7 @@
         },
         "transaction_type_id": {
           "name": "transaction_type_id",
-          "type": "integer",
+          "type": "bigint",
           "primaryKey": false,
           "notNull": false
         },
@@ -192,7 +192,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "integer",
+          "type": "bigint",
           "primaryKey": true,
           "notNull": true,
           "identity": {
@@ -202,7 +202,7 @@
             "increment": "1",
             "startWith": "1",
             "minValue": "1",
-            "maxValue": "2147483647",
+            "maxValue": "9223372036854775807",
             "cache": "1",
             "cycle": false
           }
@@ -233,7 +233,7 @@
         },
         "company_id": {
           "name": "company_id",
-          "type": "integer",
+          "type": "bigint",
           "primaryKey": false,
           "notNull": true
         },
@@ -272,7 +272,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "integer",
+          "type": "bigint",
           "primaryKey": true,
           "notNull": true,
           "identity": {
@@ -282,7 +282,7 @@
             "increment": "1",
             "startWith": "1",
             "minValue": "1",
-            "maxValue": "2147483647",
+            "maxValue": "9223372036854775807",
             "cache": "1",
             "cycle": false
           }
@@ -295,13 +295,13 @@
         },
         "building_id": {
           "name": "building_id",
-          "type": "integer",
+          "type": "bigint",
           "primaryKey": false,
           "notNull": true
         },
         "company_id": {
           "name": "company_id",
-          "type": "integer",
+          "type": "bigint",
           "primaryKey": false,
           "notNull": true
         },
@@ -365,7 +365,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "integer",
+          "type": "bigint",
           "primaryKey": true,
           "notNull": true,
           "identity": {
@@ -375,14 +375,14 @@
             "increment": "1",
             "startWith": "1",
             "minValue": "1",
-            "maxValue": "2147483647",
+            "maxValue": "9223372036854775807",
             "cache": "1",
             "cycle": false
           }
         },
         "user_id": {
           "name": "user_id",
-          "type": "integer",
+          "type": "bigint",
           "primaryKey": false,
           "notNull": true
         },
@@ -400,7 +400,7 @@
         },
         "row_id": {
           "name": "row_id",
-          "type": "integer",
+          "type": "bigint",
           "primaryKey": false,
           "notNull": true
         },
@@ -418,7 +418,7 @@
         },
         "undone_by_user_id": {
           "name": "undone_by_user_id",
-          "type": "integer",
+          "type": "bigint",
           "primaryKey": false,
           "notNull": false
         },
@@ -477,7 +477,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "integer",
+          "type": "bigint",
           "primaryKey": true,
           "notNull": true,
           "identity": {
@@ -487,14 +487,14 @@
             "increment": "1",
             "startWith": "1",
             "minValue": "1",
-            "maxValue": "2147483647",
+            "maxValue": "9223372036854775807",
             "cache": "1",
             "cycle": false
           }
         },
         "transaction_type_id": {
           "name": "transaction_type_id",
-          "type": "integer",
+          "type": "bigint",
           "primaryKey": false,
           "notNull": true
         },
@@ -506,7 +506,7 @@
         },
         "company_id": {
           "name": "company_id",
-          "type": "integer",
+          "type": "bigint",
           "primaryKey": false,
           "notNull": true
         },
@@ -518,7 +518,7 @@
         },
         "building_id": {
           "name": "building_id",
-          "type": "integer",
+          "type": "bigint",
           "primaryKey": false,
           "notNull": false
         },
@@ -598,7 +598,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "integer",
+          "type": "bigint",
           "primaryKey": true,
           "notNull": true,
           "identity": {
@@ -608,7 +608,7 @@
             "increment": "1",
             "startWith": "1",
             "minValue": "1",
-            "maxValue": "2147483647",
+            "maxValue": "9223372036854775807",
             "cache": "1",
             "cycle": false
           }
@@ -641,7 +641,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "integer",
+          "type": "bigint",
           "primaryKey": true,
           "notNull": true,
           "identity": {
@@ -651,7 +651,7 @@
             "increment": "1",
             "startWith": "1",
             "minValue": "1",
-            "maxValue": "2147483647",
+            "maxValue": "9223372036854775807",
             "cache": "1",
             "cycle": false
           }
@@ -710,7 +710,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "integer",
+          "type": "bigint",
           "primaryKey": true,
           "notNull": true,
           "identity": {
@@ -720,7 +720,7 @@
             "increment": "1",
             "startWith": "1",
             "minValue": "1",
-            "maxValue": "2147483647",
+            "maxValue": "9223372036854775807",
             "cache": "1",
             "cycle": false
           }
@@ -733,7 +733,7 @@
         },
         "added_by_id": {
           "name": "added_by_id",
-          "type": "integer",
+          "type": "bigint",
           "primaryKey": false,
           "notNull": false
         },

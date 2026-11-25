@@ -19,7 +19,16 @@ export function createSql(
 
 	const hostname = process.env.DSQL_ENDPOINT;
 	if (!hostname) throw new Error('Set DATABASE_URL (local) or DSQL_ENDPOINT (AWS)');
-	const region = process.env.AWS_REGION ?? hostname.split('.')[2];
+	return createDsqlSql(hostname, options);
+}
+
+// Aurora DSQL cluster by endpoint (<id>.dsql.<region>.on.aws). Scripts use this directly to
+// talk to two clusters at once (e.g. copy prod → dev).
+export function createDsqlSql(
+	hostname: string,
+	options: postgres.Options<Record<string, postgres.PostgresType>> = {}
+): Sql {
+	const region = hostname.split('.')[2] ?? process.env.AWS_REGION;
 	const signer = new DsqlSigner({ hostname, region });
 	return postgres({
 		host: hostname,

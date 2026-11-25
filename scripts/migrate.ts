@@ -1,16 +1,21 @@
 // Applies drizzle/*.sql (from `drizzle-kit generate`) to the local database or Aurora DSQL.
-//   bun scripts/migrate.ts local|aws
+//   bun scripts/migrate.ts local|prod|dev
 // DSQL allows one DDL statement per transaction, so each statement runs (and is recorded in
 // _migrations) on its own; a failed run can simply be re-run. On DSQL, CREATE INDEX becomes
 // CREATE INDEX ASYNC and foreign keys added by ALTER TABLE get NOT VALID (tables are empty
 // then; new rows are still checked).
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { connect, parseTarget } from './target.ts';
+import { isDsql, open, parseDatabase } from './target.ts';
 
 const DIR = join(import.meta.dir, '..', 'drizzle');
-const target = parseTarget(process.argv[2]);
-const { sql, dsql } = await connect(target);
+const target = parseDatabase(process.argv[2], 'bun scripts/migrate.ts local|prod|dev');
+if (target === 'railway') {
+	console.error('Railway is never migrated.');
+	process.exit(2);
+}
+const dsql = isDsql(target);
+const sql = await open(target);
 
 function forDsql(statement: string): string {
 	let s = statement.replace(/^CREATE (UNIQUE )?INDEX (?!ASYNC)/i, 'CREATE $1INDEX ASYNC ');
